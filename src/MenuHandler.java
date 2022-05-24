@@ -1,2 +1,102 @@
+import java.util.Scanner;
+import java.util.regex.*;
+
 public class MenuHandler {
+    static Scanner sc = new Scanner(System.in);
+
+    public static boolean matchedInput(String regex, String input) {
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+        return matcher.find();
+    }
+
+    public static void showMenu() {
+        System.out.println("""
+                1)Sign up
+                2)Login
+                3)Exit""");
+        int choice = 10;
+        try {
+            choice = Integer.parseInt(sc.nextLine());
+        } catch (NumberFormatException e) {
+            System.out.println("Entered Input wasn't valid.");
+            showMenu();
+        }
+        switch (choice){
+            case 1 -> onSignUpButton();
+            case 2 -> onLoginButton();
+            case 3 -> System.exit(0);
+            default -> {
+                System.out.println("Entered Input wasn't valid.");
+                showMenu();
+            }
+        }
+    }
+
+    public static void onSignUpButton() {
+        createNewUser();
+    }
+
+
+    public static void onLoginButton() {
+
+    }
+
+    public static void createNewUser() {
+        String username = getUsername();
+        String password = getPassword();
+        String email = getEmail();
+        System.out.print("Enter Phone number(optional): ");
+        String phoneNumber = sc.nextLine();
+
+        User user = new User(username, password, email, phoneNumber);
+    }
+
+    public static String getUsername() {
+        String usernameRegex = "^[A-Za-z0-9]{6,}$";
+        System.out.print("Enter Username: ");
+        String username = sc.nextLine();
+
+        if (matchedInput(usernameRegex, username)) {
+            return username;
+        } else {
+            System.out.println("Username length must be at least 6 and contains numbers and characters.");
+            return getUsername();
+        }
+    }
+
+
+    public static String getPassword() {
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d+]{8,}$";
+        System.out.print("Enter Password: ");
+        String password = sc.nextLine();
+
+        if (matchedInput(passwordRegex, password)) {
+            return password;
+        } else {
+            System.out.println("password length must be at least 8 and contains numbers and characters.");
+            return getPassword();
+        }
+    }
+
+
+    public static String getEmail() {
+        String emailRegex = "^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z]+(?:\\.[a-zA-Z]+)*$";
+        System.out.print("Enter Email: ");
+        String email = sc.nextLine();
+
+        if (matchedInput(emailRegex, email)) {
+            return email;
+        } else {
+            System.out.println("Entered email wasn't valid.");
+            return getEmail();
+        }
+
+    }
+
+    public static void getAvatar(){
+
+    }
+
+
 }
