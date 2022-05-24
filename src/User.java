@@ -3,6 +3,7 @@ public class User {
     private String password;
     private String email;
     private String phoneNumber;
+    private Status status;
 
     /**
      * Instantiates a new User.
@@ -17,5 +18,6 @@ public class User {
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
+        this.status = Status.ONLINE;
     }
 }

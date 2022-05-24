@@ -1,3 +1,7 @@
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.*;
 
@@ -48,6 +52,7 @@ public class MenuHandler {
         String email = getEmail();
         System.out.print("Enter Phone number(optional): ");
         String phoneNumber = sc.nextLine();
+        getAvatar();
 
         User user = new User(username, password, email, phoneNumber);
     }
@@ -95,6 +100,16 @@ public class MenuHandler {
     }
 
     public static void getAvatar(){
+        System.out.print("Enter image address(phg format):");
+        String path  = sc.nextLine();
+
+        try {
+            BufferedImage image = ImageIO.read(new File(path));
+            ImageIO.write(image , "png", new File("F:\\Projects\\Java_work_space\\Projects\\Discord\\AP-Midterm-Discord\\image.png"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
