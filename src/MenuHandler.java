@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Scanner;
 import java.util.regex.*;
-
+import java.sql.*;
 public class MenuHandler {
     static Scanner sc = new Scanner(System.in);
 
@@ -38,7 +38,7 @@ public class MenuHandler {
     }
 
     public static void onSignUpButton() {
-        createNewUser();
+        insertToDB();
     }
 
 
@@ -46,17 +46,36 @@ public class MenuHandler {
 
     }
 
-    public static void createNewUser() {
+    public static void insertToDB() {
         String username = getUsername();
         String password = getPassword();
         String email = getEmail();
         System.out.print("Enter Phone number(optional): ");
         String phoneNumber = sc.nextLine();
         getAvatar();
+        //User user = new User(username, password, email, phoneNumber);
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/discord","root","177013");
 
-        User user = new User(username, password, email, phoneNumber);
+            String query = "insert into users (userName, password, email, phoneNumber,userID,avatar) values(?, ?,?,?,?,?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, username);
+            statement.setString(2,password);
+            statement.setString(3,email);
+            statement.setString(4,phoneNumber);
+            statement.setString(5,"1475");
+            statement.setString(6,"");
+            statement.execute();
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
+//    public static void insertToDB(String username, String password, String email, String phoneNumber){
+//
+//    }
     public static String getUsername() {
         String usernameRegex = "^[A-Za-z0-9]{6,}$";
         System.out.print("Enter Username: ");
@@ -107,7 +126,7 @@ public class MenuHandler {
             BufferedImage image = ImageIO.read(new File(path));
             ImageIO.write(image , "png", new File("F:\\Projects\\Java_work_space\\Projects\\Discord\\AP-Midterm-Discord\\image.png"));
         } catch (IOException e) {
-            e.printStackTrace();
+
         }
 
 
