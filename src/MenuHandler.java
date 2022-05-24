@@ -42,12 +42,56 @@ public class MenuHandler {
     }
 
 
-    public static void onLoginButton() {
+    public static User onLoginButton() {
+        try {
+
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/discord", "root", "177013");
+            Statement statement = connection.createStatement();
+            System.out.print("Enter username : ");
+            String username = sc.nextLine();
+            ResultSet resultSet = statement.executeQuery("select * from users where userName = " + "'" + username + "'");
+            if(!resultSet.next()){
+                System.out.println("this username does not exist.");
+            } else {
+                System.out.print("Enter password : ");
+                String password = sc.nextLine();
+                String realPassword = resultSet.getString("password");
+                if(password.equals(realPassword)){
+                    return createUser(resultSet);
+                } else {
+                    System.out.println("Wrong password.");
+                    showMenu(); // Create a new LoginMenu
+                }
+
+            }
+            connection.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
+    }
+    public static User createUser(ResultSet resultSet){
+        return null;
+    }
+    public static void checkUniqueUsername(String username){
+
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/discord", "root", "177013");
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select * from users where userName = " + "'" + username + "'");
+            if(resultSet.next()){
+                System.out.println("Username Already Exists.");
+                onSignUpButton();
+            }
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
     }
-
     public static void insertToDB() {
         String username = getUsername();
+        checkUniqueUsername(username);
         String password = getPassword();
         String email = getEmail();
         System.out.print("Enter Phone number(optional): ");
