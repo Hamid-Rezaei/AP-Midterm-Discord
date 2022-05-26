@@ -1,7 +1,4 @@
 package client_side;
-<<<<<<< HEAD
-=======
->>>>>>> af86eab3cd9f7e4b03048a928bea40cfefee744d
 
 
 public class Application {

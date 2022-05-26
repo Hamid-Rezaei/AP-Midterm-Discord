@@ -1,10 +1,8 @@
 package guild;
 
-<<<<<<< HEAD
-=======
 import java.util.*;
 
->>>>>>> af86eab3cd9f7e4b03048a928bea40cfefee744d
+
 public class Guild {
     private String name;
     private GuildUser owner;

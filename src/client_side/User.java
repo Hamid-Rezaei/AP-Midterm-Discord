@@ -31,10 +31,7 @@ public class User {
         this.status = Status.ONLINE;
         friends = new ArrayList<>();
         guilds = new ArrayList<>();
-<<<<<<< HEAD
 
-=======
->>>>>>> af86eab3cd9f7e4b03048a928bea40cfefee744d
     }
 
     public void setStatus(Status status) {
