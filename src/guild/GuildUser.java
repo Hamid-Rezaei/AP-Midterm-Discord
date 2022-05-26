@@ -1,6 +1,11 @@
+package guild;
+
 import client_side.User;
 
 public class GuildUser extends User {
+
+
+    Role role;
     /**
      * Instantiates a new User.
      *
@@ -11,5 +16,9 @@ public class GuildUser extends User {
      */
     public GuildUser(String username, String password, String email, String phoneNumber) {
         super(username, password, email, phoneNumber);
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
     }
 }

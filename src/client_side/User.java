@@ -1,4 +1,6 @@
 package client_side;
+import guild.*;
+import java.util.ArrayList;
 
 public class User {
     private String username;
@@ -7,9 +9,11 @@ public class User {
     private String phoneNumber;
     private Status status;
 
+    private ArrayList<User> friends;
+    private ArrayList<Guild> guilds;
+
     /**
-     * Instantiates a new User.
-     *
+     * Instantiates a new User.;
      * @param username    the username
      * @param password    the password
      * @param email       the email
@@ -21,9 +25,14 @@ public class User {
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.status = Status.ONLINE;
+        friends = new ArrayList<>();
+        guilds = new ArrayList<>();
+
     }
 
     public void setStatus(Status status) {
         this.status = status;
     }
+
+
 }
