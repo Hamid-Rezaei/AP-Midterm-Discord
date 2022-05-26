@@ -1,3 +1,5 @@
+package guild;
+
 import client_side.User;
 
 public class GuildUser extends User {

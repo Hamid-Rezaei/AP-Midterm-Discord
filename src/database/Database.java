@@ -2,10 +2,12 @@ package database;
 
 import client_side.User;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.Scanner;
 
+import static client_side.Authentication.generateUniqueRandomId;
 import static client_side.MenuHandler.*;
 
 public class Database {
@@ -27,10 +29,15 @@ public class Database {
             statement.setBlob(6, avatar);
             statement.execute();
             connection.close();
+            if (avatar != null) {
+                avatar.close();
+            }
+            System.out.println(username + " was signed up successfully.");
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        System.out.println(username + " was signed up successfully.");
 
     }
 
@@ -53,7 +60,7 @@ public class Database {
                     return createUser(resultSet);
                 } else {
                     System.out.println("Wrong password.");
-                    showMenu(); // Create a new LoginMenu
+                    showStartMenu(); // Create a new LoginMenu
                 }
 
             }
