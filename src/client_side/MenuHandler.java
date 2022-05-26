@@ -3,7 +3,9 @@ package client_side;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Random;
 import java.util.Scanner;
 import java.util.regex.*;
@@ -58,7 +60,7 @@ public class MenuHandler {
      * On sign up button.
      */
     public static void onSignUpButton() {
-        insertToDB();
+        getInfo();
     }
 
 
@@ -69,6 +71,19 @@ public class MenuHandler {
      */
     public static User onLoginButton() {
         return retrieveFromDB();
+    }
+
+
+    public static void getInfo() {
+        String username = getUsername();
+        checkUniqueUsername(username);
+        String password = getPassword();
+        String email = getEmail();
+        System.out.print("Enter Phone number(optional): ");
+        String phoneNumber = sc.nextLine();
+        InputStream img = getAvatar();
+        insertToDB(username, password, email, phoneNumber, img);
+
     }
 
 
@@ -178,18 +193,18 @@ public class MenuHandler {
     /**
      * Gets avatar.
      */
-    public static void getAvatar() {
-        System.out.print("Enter image address(phg format):");
+    public static InputStream getAvatar() {
+        System.out.print("Enter image address:");
         String path = sc.nextLine();
 
         try {
-            BufferedImage image = ImageIO.read(new File(path));
-            ImageIO.write(image, "png", new File("F:\\Projects\\Java_work_space\\Projects\\Discord\\AP-Midterm-Discord\\image.png"));
+            InputStream img = new FileInputStream(path);
+            return img;
         } catch (IOException e) {
 
         }
 
-
+        return null;
     }
 
 

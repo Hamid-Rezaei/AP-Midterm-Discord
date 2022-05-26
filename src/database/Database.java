@@ -2,6 +2,7 @@ package database;
 
 import client_side.User;
 
+import java.io.InputStream;
 import java.sql.*;
 import java.util.Scanner;
 
@@ -10,14 +11,8 @@ import static client_side.MenuHandler.*;
 public class Database {
     static Scanner sc = new Scanner(System.in);
 
-    public static void insertToDB() {
-        String username = getUsername();
-        checkUniqueUsername(username);
-        String password = getPassword();
-        String email = getEmail();
-        System.out.print("Enter Phone number(optional): ");
-        String phoneNumber = sc.nextLine();
-        getAvatar();
+    public static void insertToDB(String username, String password, String email, String phoneNumber, InputStream avatar) {
+
         //User user = new User(username, password, email, phoneNumber);
         try {
             Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/discord", "root", "177013");
@@ -29,7 +24,7 @@ public class Database {
             statement.setString(3, email);
             statement.setString(4, phoneNumber);
             statement.setString(5, String.valueOf(generateUniqueRandomId(connection)));
-            statement.setString(6, "");
+            statement.setBlob(6, avatar);
             statement.execute();
             connection.close();
         } catch (SQLException e) {
