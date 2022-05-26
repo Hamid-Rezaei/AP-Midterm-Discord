@@ -10,7 +10,10 @@ public class Application {
         while (choice != 3) {
             switch (choice) {
                 case 1 -> MenuHandler.onSignUpButton();
-                case 2 -> user = MenuHandler.onLoginButton();
+                case 2 -> {
+                    user = MenuHandler.onLoginButton();
+                    user.sceneHandler();
+                }
                 default -> System.out.println("Entered Input wasn't valid.");
             }
             choice = MenuHandler.showStartMenu();
