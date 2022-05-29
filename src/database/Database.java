@@ -13,11 +13,21 @@ import static client_side.MenuHandler.*;
 public class Database {
     static Scanner sc = new Scanner(System.in);
 
+    public static Connection connectToDB() {
+        try {
+            return DriverManager.getConnection("jdbc:mysql://localhost:3306/discord", "root", "177013");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+    }
+
     public static void insertToDB(String username, String password, String email, String phoneNumber, InputStream avatar) {
 
-        //User user = new User(username, password, email, phoneNumber);
+
         try {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/discord", "root", "177013");
+            Connection connection = connectToDB();
 
             String query = "insert into users (userName, password, email, phoneNumber,userID,avatar) values(?, ?,?,?,?,?)";
             PreparedStatement statement = connection.prepareStatement(query);
@@ -45,13 +55,14 @@ public class Database {
     public static User retrieveFromDB() {
         try {
 
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/discord", "root", "177013");
+            Connection connection = connectToDB();
             Statement statement = connection.createStatement();
             System.out.print("Enter username : ");
             String username = sc.nextLine();
             ResultSet resultSet = statement.executeQuery("select * from users where userName = " + "'" + username + "'");
             if (!resultSet.next()) {
                 System.out.println("this username does not exist.");
+
             } else {
                 System.out.print("Enter password : ");
                 String password = sc.nextLine();

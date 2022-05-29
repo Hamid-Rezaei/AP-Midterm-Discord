@@ -19,9 +19,9 @@ public class MenuHandler {
      */
     public static int showStartMenu() {
         System.out.println("""
-                1)Signup
-                2)Login
-                3)Exit""");
+                1) Signup
+                2) Login
+                3) Exit""");
         int choice;
         try {
             choice = Integer.parseInt(sc.nextLine());
@@ -49,12 +49,13 @@ public class MenuHandler {
         return retrieveFromDB();
     }
 
-    
+
     public static int loginMenu(){
         System.out.println("""
-                1)Sever
-                2)Friend
-                3)Exit""");
+                1) Severs
+                2) Friends
+                3) Settings
+                4) Exit""");
         int choice;
         try {
             choice = Integer.parseInt(sc.nextLine());
@@ -68,9 +69,9 @@ public class MenuHandler {
 
     public static int friendMenu(){
         System.out.println("""
-                1)Add new friend
-                2)List of all friends
-                3)Exit""");
+                1) Add new friend
+                2) List of all friends
+                3) Exit""");
         int choice;
         try {
             choice = Integer.parseInt(sc.nextLine());
@@ -84,9 +85,9 @@ public class MenuHandler {
 
     public static int serverMenu(){
         System.out.println("""
-                1)Add new server
-                2)List of all servers
-                3)Exit""");
+                1) Add new server
+                2) List of all servers
+                3) Exit""");
         int choice;
         try {
             choice = Integer.parseInt(sc.nextLine());

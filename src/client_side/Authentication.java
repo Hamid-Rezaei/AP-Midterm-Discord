@@ -1,5 +1,7 @@
 package client_side;
 
+import database.Database;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -54,7 +56,8 @@ public class Authentication {
     public static void checkUniqueUsername(String username) {
 
         try {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/discord", "root", "177013");
+            Connection connection = Database.connectToDB();
+            assert connection != null;
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from users where userName = " + "'" + username + "'");
             if (resultSet.next()) {
@@ -90,6 +93,9 @@ public class Authentication {
         }
 
     }
+
+
+    //public static boolean
 
 
     /**
