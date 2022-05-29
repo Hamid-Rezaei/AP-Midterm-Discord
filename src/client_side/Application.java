@@ -13,8 +13,9 @@ public class Application {
                 case 1 -> MenuHandler.onSignUpButton();
                 case 2 -> {
                     user = MenuHandler.onLoginButton();
-                    if(user != null)
+                    if(user != null) {
                         loginScene();
+                    }
                 }
                 default -> System.out.println("Entered Input wasn't valid.");
             }
@@ -45,11 +46,11 @@ public class Application {
         menuChoice = MenuHandler.settingMenu();
         while (menuChoice != 3) {
             switch (menuChoice) {
-                case 1 -> MenuHandler.serverMenu();
+                case 1 -> Authentication.changePassword(user);
                 case 2 -> friendScene();
                 default -> System.out.println("Entered Input wasn't valid.");
             }
-            menuChoice = MenuHandler.loginMenu();
+            menuChoice = MenuHandler.settingMenu();
         }
 
     }

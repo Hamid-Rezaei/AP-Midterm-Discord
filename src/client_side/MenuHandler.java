@@ -20,12 +20,11 @@ public class MenuHandler {
      */
 
     public static int returnChoice() {
-        int choice;
+        int choice = 0;
         try {
             choice = Integer.parseInt(sc.nextLine());
         } catch (NumberFormatException e) {
-            System.out.println("Entered Input wasn't valid.");
-            return showStartMenu();
+            return 0;
         }
         return choice;
     }

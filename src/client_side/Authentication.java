@@ -2,6 +2,7 @@ package client_side;
 
 import database.Database;
 
+import javax.xml.crypto.Data;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -117,21 +118,47 @@ public class Authentication {
     }
 
 
+    public static boolean checkValidPass(String password) {
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d+]{8,}$";
+        if (matchedInput(passwordRegex, password)) {
+            return true;
+        } else {
+            System.out.println("password length must be at least 8 and contains numbers and characters.");
+            return false;
+        }
+    }
+
     /**
      * Gets password.
      *
      * @return the password
      */
     public static String getPassword() {
-        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d+]{8,}$";
+
         System.out.print("Enter Password: ");
         String password = sc.nextLine();
 
-        if (matchedInput(passwordRegex, password)) {
+        if (checkValidPass(password)) {
             return password;
         } else {
-            System.out.println("password length must be at least 8 and contains numbers and characters.");
             return getPassword();
+        }
+    }
+
+    public static void changePassword(User user) {
+        System.out.print("Enter your current password: ");
+        String currentPass = sc.nextLine();
+        if (currentPass.equals(user.getPassword())) {
+            System.out.print("(New password) ");
+            String newPass = getPassword();
+            user.changePassword(newPass);
+            if (Database.updateUser(user)) {
+                System.out.println("password changed successfully!");
+            } else {
+                System.out.println("something went wrong.");
+            }
+        } else{
+            System.out.println("Wrong password.");
         }
     }
 

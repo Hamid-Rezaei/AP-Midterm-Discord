@@ -39,5 +39,15 @@ public class User {
         this.status = status;
     }
 
+    public String getPassword() {
+        return password;
+    }
 
+    public void changePassword(String password) {
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
 }

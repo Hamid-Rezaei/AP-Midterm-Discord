@@ -71,7 +71,6 @@ public class Database {
                     return createUser(resultSet);
                 } else {
                     System.out.println("Wrong password.");
-                    showStartMenu(); // Create a new LoginMenu
                 }
 
             }
@@ -94,5 +93,18 @@ public class Database {
 
     }
 
+    public static boolean updateUser(User user){
+        Connection connection = connectToDB();
+        try {
+            Statement statement = connection.createStatement();
+            statement.execute("UPDATE Users SET password = " + "'" + user.getPassword() + "'" + "WHERE userName = " + "'" + user.getUsername() + "';");
+            connection.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
 
 }
