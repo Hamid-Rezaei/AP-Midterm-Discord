@@ -12,16 +12,14 @@ import static database.Database.retrieveFromDB;
 public class MenuHandler {
 
     static Scanner sc = new Scanner(System.in);
+
     /**
      * Show menu int.
      *
      * @return the int
      */
-    public static int showStartMenu() {
-        System.out.println("""
-                1) Signup
-                2) Login
-                3) Exit""");
+
+    public static int returnChoice() {
         int choice;
         try {
             choice = Integer.parseInt(sc.nextLine());
@@ -31,6 +29,15 @@ public class MenuHandler {
         }
         return choice;
     }
+
+    public static int showStartMenu() {
+        System.out.println("""
+                1) Signup
+                2) Login
+                3) Exit""");
+        return returnChoice();
+    }
+
 
     /**
      * On sign up button.
@@ -50,52 +57,42 @@ public class MenuHandler {
     }
 
 
-    public static int loginMenu(){
+    public static int loginMenu() {
         System.out.println("""
                 1) Severs
                 2) Friends
                 3) Settings
                 4) Exit""");
-        int choice;
-        try {
-            choice = Integer.parseInt(sc.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Entered Input wasn't valid.");
-            return loginMenu();
-        }
-        return choice;
+
+        return returnChoice();
     }
 
 
-    public static int friendMenu(){
+    public static int friendMenu() {
         System.out.println("""
                 1) Add new friend
                 2) List of all friends
                 3) Exit""");
-        int choice;
-        try {
-            choice = Integer.parseInt(sc.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Entered Input wasn't valid.");
-            return loginMenu();
-        }
-        return choice;
+
+        return returnChoice();
     }
 
 
-    public static int serverMenu(){
+    public static int serverMenu() {
         System.out.println("""
                 1) Add new server
                 2) List of all servers
                 3) Exit""");
-        int choice;
-        try {
-            choice = Integer.parseInt(sc.nextLine());
-        } catch (NumberFormatException e) {
-            System.out.println("Entered Input wasn't valid.");
-            return loginMenu();
-        }
-        return choice;
+
+        return returnChoice();
+    }
+
+    public static int settingMenu() {
+        System.out.println("""
+                1) Change password
+                2) Change avatar
+                3) Exit""");
+        return returnChoice();
     }
 
 }

@@ -32,13 +32,27 @@ public class Application {
             switch (menuChoice) {
                 case 1 -> MenuHandler.serverMenu();
                 case 2 -> friendScene();
-               // case 3 -> settingScene();
+                case 3 -> settingScene();
                 default -> System.out.println("Entered Input wasn't valid.");
             }
             menuChoice = MenuHandler.loginMenu();
         }
     }
 
+
+    private static void settingScene(){
+        int menuChoice;
+        menuChoice = MenuHandler.settingMenu();
+        while (menuChoice != 3) {
+            switch (menuChoice) {
+                case 1 -> MenuHandler.serverMenu();
+                case 2 -> friendScene();
+                default -> System.out.println("Entered Input wasn't valid.");
+            }
+            menuChoice = MenuHandler.loginMenu();
+        }
+
+    }
 
 
     private static void friendScene(){
