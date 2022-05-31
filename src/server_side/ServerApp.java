@@ -1,6 +1,5 @@
 package server_side;
 
-import database.Database;
 
 import java.io.*;
 import java.net.ServerSocket;
@@ -19,14 +18,6 @@ public class ServerApp {
             while (!serverSocket.isClosed()) {
                 Socket socket = serverSocket.accept();
                 System.out.println("A new Application has connected!");
-
-/*                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-                ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-                int choice = inputStream.readInt();
-                if(choice == 1){
-                    outputStream.writeObject(Database.retrieveFromDB());
-                    outputStream.flush();
-                }*/
                 ServerController serverController = new ServerController(socket);
                 Thread thread = new Thread(serverController);
                 thread.start();

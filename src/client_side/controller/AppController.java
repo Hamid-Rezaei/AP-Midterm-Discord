@@ -23,11 +23,11 @@ public class AppController {
         }
     }
 
+
     public static void getUser(){
         try {
-            outputStream.writeInt(1);
-            outputStream.flush();
             user = (User) inputStream.readObject();
+            System.out.println(inputStream.readUTF());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
