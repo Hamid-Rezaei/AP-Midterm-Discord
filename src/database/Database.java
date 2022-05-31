@@ -1,14 +1,13 @@
 package database;
 
-import client_side.User;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.Scanner;
+import model.user.*;
 
-import static client_side.Authentication.generateUniqueRandomId;
-import static client_side.MenuHandler.*;
+import static client_side.controller.Authentication.generateUniqueRandomId;
+
 
 public class Database {
     static Scanner sc = new Scanner(System.in);

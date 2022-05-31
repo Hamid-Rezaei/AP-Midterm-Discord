@@ -1,5 +1,7 @@
-package client_side;
+package client_side.view;
 
+import client_side.controller.*;
+import model.user.User;
 
 public class Application {
 

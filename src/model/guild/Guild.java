@@ -1,4 +1,4 @@
-package guild;
+package model.guild;
 
 import java.util.*;
 

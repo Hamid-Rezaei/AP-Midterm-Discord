@@ -1,4 +1,4 @@
-package guild;
+package model.guild;
 
 public enum Permission {
     CAN_CREATE_CHANNEL(false),

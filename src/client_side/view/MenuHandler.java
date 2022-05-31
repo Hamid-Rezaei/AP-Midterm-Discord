@@ -1,8 +1,10 @@
-package client_side;
+package client_side.view;
 
 import java.util.Scanner;
 
-import static client_side.Authentication.*;
+import model.user.*;
+
+import static client_side.controller.Authentication.getInfo;
 import static database.Database.retrieveFromDB;
 
 

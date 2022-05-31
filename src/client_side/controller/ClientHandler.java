@@ -1,4 +1,4 @@
-package client_side;
+package client_side.controller;
 
 public class ClientHandler {
 }

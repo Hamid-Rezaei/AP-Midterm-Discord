@@ -1,6 +1,7 @@
-package guild;
+package model.guild;
 
-import client_side.User;
+
+import model.user.User;
 
 public class GuildUser extends User {
 

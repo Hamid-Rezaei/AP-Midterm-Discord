@@ -1,6 +1,7 @@
-package client_side;
+package client_side.controller;
 
 import database.Database;
+import model.user.User;
 
 import javax.xml.crypto.Data;
 import java.io.FileInputStream;
@@ -12,7 +13,8 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static client_side.MenuHandler.*;
+
+import static client_side.view.MenuHandler.*;
 import static database.Database.insertToDB;
 
 public class Authentication {

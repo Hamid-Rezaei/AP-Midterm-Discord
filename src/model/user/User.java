@@ -1,8 +1,9 @@
-package client_side;
-import guild.*;
+package model.user;
+
 import java.util.ArrayList;
 
-import guild.Guild;
+
+import model.guild.Guild;
 
 import java.util.*;
 
