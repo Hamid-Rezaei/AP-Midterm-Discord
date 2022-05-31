@@ -1,8 +1,11 @@
-package client_side;
+package client_side.view;
 
 import java.util.Scanner;
 
-import static client_side.Authentication.*;
+import client_side.controller.AppController;
+import model.user.*;
+
+import static client_side.controller.Authentication.getInfo;
 import static database.Database.retrieveFromDB;
 
 
@@ -20,7 +23,7 @@ public class MenuHandler {
      */
 
     public static int returnChoice() {
-        int choice = 0;
+        int choice;
         try {
             choice = Integer.parseInt(sc.nextLine());
         } catch (NumberFormatException e) {
@@ -51,8 +54,8 @@ public class MenuHandler {
      *
      * @return the user
      */
-    public static User onLoginButton() {
-        return retrieveFromDB();
+    public static void onLoginButton() {
+        AppController.getUser();
     }
 
 

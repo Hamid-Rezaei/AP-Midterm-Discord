@@ -1,12 +1,13 @@
-package client_side;
-import guild.*;
-import java.util.ArrayList;
+package model.user;
 
-import guild.Guild;
-
+import java.io.Serializable;
 import java.util.*;
 
-public class User {
+
+import model.guild.Guild;
+
+
+public class User implements Serializable {
     private String username;
     private String password;
     private String email;
