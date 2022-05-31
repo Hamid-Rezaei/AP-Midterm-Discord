@@ -1,14 +1,14 @@
 package database;
 
-import client_side.User;
+import client_side.model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
 import java.util.Scanner;
 
-import static client_side.Authentication.generateUniqueRandomId;
-import static client_side.MenuHandler.*;
+import static client_side.controller.Authentication.generateUniqueRandomId;
+import static client_side.view.MenuHandler.*;
 
 public class Database {
     static Scanner sc = new Scanner(System.in);
@@ -62,7 +62,6 @@ public class Database {
             ResultSet resultSet = statement.executeQuery("select * from users where userName = " + "'" + username + "'");
             if (!resultSet.next()) {
                 System.out.println("this username does not exist.");
-
             } else {
                 System.out.print("Enter password : ");
                 String password = sc.nextLine();

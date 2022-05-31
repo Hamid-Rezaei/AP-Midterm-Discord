@@ -1,19 +1,28 @@
-package client_side;
+package client_side.view;
+
+
+import client_side.model.*;
+import client_side.controller.*;
 
 
 public class Application {
 
     private static User user;
 
-    private static void sceneHandler(){
+    public static void setUser(User user) {
+        Application.user = user;
+    }
+
+    private static void sceneHandler() {
 
         int choice = MenuHandler.showStartMenu();
         while (choice != 3) {
             switch (choice) {
                 case 1 -> MenuHandler.onSignUpButton();
                 case 2 -> {
-                    user = MenuHandler.onLoginButton();
-                    if(user != null) {
+                    MenuHandler.onLoginButton();
+                    AppController.initialUser();
+                    if (user != null) {
                         loginScene();
                     }
                 }
@@ -24,8 +33,7 @@ public class Application {
 
     }
 
-
-    private static void loginScene(){
+    public static void loginScene() {
 
         int menuChoice;
         menuChoice = MenuHandler.loginMenu();
@@ -41,13 +49,13 @@ public class Application {
     }
 
 
-    private static void settingScene(){
+    public static void settingScene() {
         int menuChoice;
         menuChoice = MenuHandler.settingMenu();
         while (menuChoice != 3) {
             switch (menuChoice) {
                 case 1 -> Authentication.changePassword(user);
-                case 2 -> friendScene();
+                case 2 -> Authentication.changeAvatar();
                 default -> System.out.println("Entered Input wasn't valid.");
             }
             menuChoice = MenuHandler.settingMenu();
@@ -56,7 +64,7 @@ public class Application {
     }
 
 
-    private static void friendScene(){
+    public static void friendScene() {
 
         int menuChoice;
         menuChoice = MenuHandler.friendMenu();
@@ -73,7 +81,9 @@ public class Application {
 
 
     public static void main(String[] args) {
+        AppController.initialNetwork();
         sceneHandler();
+
     }
 
 

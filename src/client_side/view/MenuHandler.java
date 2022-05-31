@@ -1,8 +1,11 @@
-package client_side;
+package client_side.view;
+
+import client_side.controller.AppController;
+import client_side.model.*;
 
 import java.util.Scanner;
 
-import static client_side.Authentication.*;
+import static client_side.controller.Authentication.*;
 import static database.Database.retrieveFromDB;
 
 
@@ -52,7 +55,8 @@ public class MenuHandler {
      * @return the user
      */
     public static User onLoginButton() {
-        return retrieveFromDB();
+        AppController.initialUser();
+        return null;
     }
 
 

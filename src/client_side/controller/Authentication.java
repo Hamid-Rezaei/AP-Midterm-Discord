@@ -1,6 +1,7 @@
-package client_side;
+package client_side.controller;
 
 import database.Database;
+import client_side.model.*;
 
 import javax.xml.crypto.Data;
 import java.io.FileInputStream;
@@ -12,7 +13,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static client_side.MenuHandler.*;
+import static client_side.view.MenuHandler.*;
 import static database.Database.insertToDB;
 
 public class Authentication {
@@ -94,9 +95,6 @@ public class Authentication {
         }
 
     }
-
-
-    //public static boolean
 
 
     /**
@@ -195,6 +193,12 @@ public class Authentication {
         } catch (IOException e) {
             return null;
         }
+    }
+
+
+
+    public static void changeAvatar(){
+
     }
 
 
