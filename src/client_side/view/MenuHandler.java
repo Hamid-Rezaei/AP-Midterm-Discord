@@ -2,6 +2,7 @@ package client_side.view;
 
 import java.util.Scanner;
 
+import client_side.controller.AppController;
 import model.user.*;
 
 import static client_side.controller.Authentication.getInfo;
@@ -22,7 +23,7 @@ public class MenuHandler {
      */
 
     public static int returnChoice() {
-        int choice = 0;
+        int choice;
         try {
             choice = Integer.parseInt(sc.nextLine());
         } catch (NumberFormatException e) {
@@ -53,8 +54,8 @@ public class MenuHandler {
      *
      * @return the user
      */
-    public static User onLoginButton() {
-        return retrieveFromDB();
+    public static void onLoginButton() {
+        AppController.getUser();
     }
 
 

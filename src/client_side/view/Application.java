@@ -1,22 +1,23 @@
 package client_side.view;
 
 import client_side.controller.*;
-import model.user.User;
+
+import static client_side.controller.AppController.user;
 
 public class Application {
 
-    private static User user;
-
-    private static void sceneHandler(){
+    public static void sceneHandler() {
 
         int choice = MenuHandler.showStartMenu();
         while (choice != 3) {
             switch (choice) {
                 case 1 -> MenuHandler.onSignUpButton();
                 case 2 -> {
-                    user = MenuHandler.onLoginButton();
-                    if(user != null) {
+                    MenuHandler.onLoginButton();
+                    if (user != null) {
                         loginScene();
+                    } else {
+                        System.out.println("User is null");
                     }
                 }
                 default -> System.out.println("Entered Input wasn't valid.");
@@ -27,7 +28,7 @@ public class Application {
     }
 
 
-    private static void loginScene(){
+    private static void loginScene() {
 
         int menuChoice;
         menuChoice = MenuHandler.loginMenu();
@@ -43,7 +44,7 @@ public class Application {
     }
 
 
-    private static void settingScene(){
+    private static void settingScene() {
         int menuChoice;
         menuChoice = MenuHandler.settingMenu();
         while (menuChoice != 3) {
@@ -58,7 +59,7 @@ public class Application {
     }
 
 
-    private static void friendScene(){
+    private static void friendScene() {
 
         int menuChoice;
         menuChoice = MenuHandler.friendMenu();
@@ -75,8 +76,7 @@ public class Application {
 
 
     public static void main(String[] args) {
-        sceneHandler();
+        AppController.initialNetwork();
+        Application.sceneHandler();
     }
-
-
 }

@@ -3,7 +3,6 @@ package client_side.controller;
 import database.Database;
 import model.user.User;
 
-import javax.xml.crypto.Data;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,7 +46,6 @@ public class Authentication {
         String phoneNumber = sc.nextLine();
         InputStream img = getAvatar();
         insertToDB(username, password, email, phoneNumber, img);
-
     }
 
 
