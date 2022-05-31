@@ -6,7 +6,7 @@ import java.io.*;
 import java.net.Socket;
 
 public class AppController {
-    public static User user;
+
 
     private static Socket socket;
     private static ObjectInputStream inputStream;
@@ -20,18 +20,8 @@ public class AppController {
             inputStream = new ObjectInputStream(socket.getInputStream());
         } catch (IOException e) {
             e.printStackTrace();
+            System.exit(1);
         }
     }
 
-    public static void getUser(){
-        try {
-            outputStream.writeInt(1);
-            outputStream.flush();
-            user = (User) inputStream.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 }

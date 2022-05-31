@@ -4,6 +4,7 @@ import database.Database;
 import model.user.User;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
@@ -185,7 +186,7 @@ public class Authentication {
     /**
      * Gets avatar.
      */
-    public static InputStream getAvatar() {
+    public static InputStream getAvatar()   {
         System.out.print("Enter image address:");
         String path = sc.nextLine();
 
@@ -193,7 +194,13 @@ public class Authentication {
             InputStream img = new FileInputStream(path);
             return img;
         } catch (IOException e) {
-            return null;
+            try {
+                return new FileInputStream("./src/defaultAvatar.png");
+            } catch (FileNotFoundException ex) {
+                ex.printStackTrace();
+                return null;
+
+            }
         }
     }
 
