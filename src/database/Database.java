@@ -1,4 +1,4 @@
-package database;
+package server_side.database;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;

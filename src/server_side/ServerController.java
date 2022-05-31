@@ -5,7 +5,7 @@ import database.Database;
 import java.io.*;
 import java.net.*;
 
-public class ServerController implements Runnable{
+public class ServerController implements Runnable {
 
     private Socket socket;
     private ObjectInputStream inputStream;
@@ -16,7 +16,6 @@ public class ServerController implements Runnable{
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
         this.inputStream = new ObjectInputStream(socket.getInputStream());
     }
-
 
 
     @Override

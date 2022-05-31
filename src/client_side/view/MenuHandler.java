@@ -11,7 +11,7 @@ import model.user.*;
 import javax.xml.crypto.Data;
 
 import static client_side.controller.Authentication.getInfo;
-import static database.Database.retrieveFromDB;
+import static server_side.database.Database.retrieveFromDB;
 
 
 /**
