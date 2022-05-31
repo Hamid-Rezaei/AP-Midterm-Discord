@@ -1,11 +1,11 @@
 package server_side;
 
-import database.Database;
+import server_side.database.Database;
 
 import java.io.*;
 import java.net.*;
 
-public class ServerController implements Runnable{
+public class ServerController implements Runnable {
 
     private Socket socket;
     private ObjectInputStream inputStream;
@@ -18,16 +18,12 @@ public class ServerController implements Runnable{
     }
 
 
-
     @Override
     public void run() {
         int choice = 0;
         try {
-            choice = inputStream.readInt();
-            if(choice == 1){
-                outputStream.writeObject(Database.retrieveFromDB());
-                outputStream.flush();
-            }
+            outputStream.writeObject(Database.retrieveFromDB());
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }

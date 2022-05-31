@@ -16,8 +16,6 @@ public class Application {
                     MenuHandler.onLoginButton();
                     if (user != null) {
                         loginScene();
-                    } else {
-                        System.out.println("User is null");
                     }
                 }
                 default -> System.out.println("Entered Input wasn't valid.");

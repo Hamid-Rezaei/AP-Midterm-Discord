@@ -1,4 +1,4 @@
-package database;
+package server_side.database;
 
 import java.io.IOException;
 import java.io.InputStream;
