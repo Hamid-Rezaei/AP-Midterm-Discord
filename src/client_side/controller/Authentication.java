@@ -1,6 +1,6 @@
 package client_side.controller;
 
-import server_side.database.Database;
+import database.Database;
 import model.user.User;
 
 import java.io.FileInputStream;
@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 
 
 import static client_side.view.MenuHandler.*;
-import static server_side.database.Database.insertToDB;
+import static database.Database.insertToDB;
 
 
 public class Authentication {

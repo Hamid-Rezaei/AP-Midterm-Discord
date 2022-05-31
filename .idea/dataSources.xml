@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="discord@localhost" uuid="03dc90cf-ff8e-4732-b203-155ed4dd446c">
+    <data-source source="LOCAL" name="discord@localhost" uuid="8dcceb4f-1175-4e65-bbb5-6ee8eaf8b557">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>

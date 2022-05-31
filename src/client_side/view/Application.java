@@ -1,15 +1,7 @@
 package client_side.view;
 
 import client_side.controller.*;
-import database.Database;
 import model.user.User;
-
-import model.user.User;
-
-import javax.xml.transform.Result;
-import java.awt.*;
-import java.sql.ResultSet;
-import java.util.ArrayList;
 
 public class Application {
     public static User user;
@@ -82,6 +74,8 @@ public class Application {
         }
 
     }
+
+
 
 
     public static void main(String[] args) {

@@ -1,17 +1,12 @@
 package client_side.view;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-import client_side.controller.AppController;
 import database.Database;
 import model.user.*;
 
-import javax.xml.crypto.Data;
-
 import static client_side.controller.Authentication.getInfo;
-import static server_side.database.Database.retrieveFromDB;
 
 
 /**
