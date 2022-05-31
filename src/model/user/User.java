@@ -7,6 +7,7 @@ import java.util.*;
 
 
 import model.guild.Guild;
+import model.message.DirectChat;
 
 
 public class User {
@@ -15,9 +16,11 @@ public class User {
     private String email;
     private String phoneNumber;
     private Status status;
+    private int uId;
+    private BufferedImage avatar;
     private ArrayList<User> friends;
     private ArrayList<Guild> guilds;
-    private BufferedImage avatar;
+    private ArrayList<DirectChat> directChats;
 
 
     /**
@@ -28,14 +31,16 @@ public class User {
      * @param email       the email
      * @param phoneNumber the phone number
      */
-    public User(String username, String password, String email, String phoneNumber, BufferedImage avatar) {
+    public User(String username, String password, String email, String phoneNumber, BufferedImage avatar, int uId) {
         this.username = username;
         this.password = password;
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.status = Status.ONLINE;
+        this.uId = uId;
         friends = new ArrayList<>();
         guilds = new ArrayList<>();
+        directChats = new ArrayList<>();
         this.avatar = avatar;
     }
 
@@ -50,6 +55,11 @@ public class User {
             System.out.println(i++ + ". " + friend.toString());
         }
     }
+
+    public void goToDirectChat(int friend){
+    // TODO: create direct chat
+    }
+
 
     public void setStatus(Status status) {
         this.status = status;

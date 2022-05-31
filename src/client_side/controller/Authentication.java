@@ -84,7 +84,7 @@ public class Authentication {
      */
     public static int generateUniqueRandomId(Connection connection) throws SQLException {
         Random random = new Random();
-        int id = random.nextInt(1000);
+        int id = random.nextInt(9000) + 1000;
 
         Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("select * from users where userID= " + id);

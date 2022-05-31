@@ -5,6 +5,8 @@ import model.user.User;
 
 public class Application {
     public static User user;
+    public static AppController appController;
+
     public static void sceneHandler() {
 
         int choice = MenuHandler.showStartMenu();
@@ -14,6 +16,7 @@ public class Application {
                 case 2 -> {
                     user = MenuHandler.onLoginButton();
                     if (user != null) {
+                        appController = new AppController(user.getUsername());
                         loginScene();
                     }
                 }
@@ -67,6 +70,10 @@ public class Application {
                 }
                 case 2 -> {
                     user.printFriends();
+                    System.out.print("With which one you want chat: ");
+                    int friend = Integer.parseInt(MenuHandler.sc.nextLine());
+                    user.goToDirectChat(friend - 1);
+
                 }
                 default -> System.out.println("Entered Input wasn't valid.");
             }
@@ -76,10 +83,7 @@ public class Application {
     }
 
 
-
-
     public static void main(String[] args) {
-        AppController.initialNetwork();
         Application.sceneHandler();
     }
 }

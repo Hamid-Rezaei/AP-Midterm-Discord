@@ -91,6 +91,7 @@ public class Database {
         String password = resultSet.getString("password");
         String email = resultSet.getString("email");
         String phoneNumber = resultSet.getString("phoneNumber");
+        int uId = resultSet.getInt("userID");
         BufferedImage avatar = null;
         try {
             avatar = ImageIO.read(resultSet.getBlob("avatar").getBinaryStream());
@@ -98,7 +99,7 @@ public class Database {
             e.printStackTrace();
         }
 
-        return new User(username, password, email, phoneNumber, avatar);
+        return new User(username, password, email, phoneNumber, avatar, uId);
 
     }
 
