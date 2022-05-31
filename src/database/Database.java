@@ -1,10 +1,15 @@
 package server_side.database;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.Scanner;
+
 import model.user.*;
+
+import javax.imageio.ImageIO;
 
 import static client_side.controller.Authentication.generateUniqueRandomId;
 
@@ -86,13 +91,37 @@ public class Database {
         String password = resultSet.getString("password");
         String email = resultSet.getString("email");
         String phoneNumber = resultSet.getString("phoneNumber");
-        // get avatar = resultSet.getString("phoneNumber");
+        BufferedImage avatar = null;
+        try {
+            avatar = ImageIO.read(resultSet.getBlob("avatar").getBinaryStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        return new User(username, password, email, phoneNumber);
+        return new User(username, password, email, phoneNumber, avatar);
 
     }
 
-    public static boolean updateUser(User user){
+    public static ArrayList<User> userList() {
+        Connection connection = connectToDB();
+        try {
+            Statement statement = connection.createStatement();
+
+            ResultSet users = statement.executeQuery("select * from users");
+            ArrayList<User> parsedUsers = new ArrayList<>();
+            while(users.next()){
+                parsedUsers.add(createUser(users));
+            }
+            connection.close();
+            return parsedUsers;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
+    public static boolean updateUser(User user) {
         Connection connection = connectToDB();
         try {
             Statement statement = connection.createStatement();

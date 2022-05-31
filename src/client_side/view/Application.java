@@ -1,11 +1,18 @@
 package client_side.view;
 
 import client_side.controller.*;
+import database.Database;
+import model.user.User;
 
-import static client_side.controller.AppController.user;
+import model.user.User;
+
+import javax.xml.transform.Result;
+import java.awt.*;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 
 public class Application {
-
+    public static User user;
     public static void sceneHandler() {
 
         int choice = MenuHandler.showStartMenu();
@@ -13,7 +20,7 @@ public class Application {
             switch (choice) {
                 case 1 -> MenuHandler.onSignUpButton();
                 case 2 -> {
-                    MenuHandler.onLoginButton();
+                    user = MenuHandler.onLoginButton();
                     if (user != null) {
                         loginScene();
                     }
@@ -63,8 +70,12 @@ public class Application {
         menuChoice = MenuHandler.friendMenu();
         while (menuChoice != 3) {
             switch (menuChoice) {
-                //case 1 -> search for user;
-                //case 2 -> print friend list to enter direct chat;
+                case 1 -> {
+                    MenuHandler.addFriend(user);
+                }
+                case 2 -> {
+                    user.printFriends();
+                }
                 default -> System.out.println("Entered Input wasn't valid.");
             }
             menuChoice = MenuHandler.friendMenu();

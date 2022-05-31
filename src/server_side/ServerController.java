@@ -20,12 +20,6 @@ public class ServerController implements Runnable {
 
     @Override
     public void run() {
-        int choice = 0;
-        try {
-            outputStream.writeObject(Database.retrieveFromDB());
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+
     }
 }

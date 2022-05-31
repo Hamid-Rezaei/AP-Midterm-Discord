@@ -1,9 +1,14 @@
 package client_side.view;
 
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 import client_side.controller.AppController;
+import database.Database;
 import model.user.*;
+
+import javax.xml.crypto.Data;
 
 import static client_side.controller.Authentication.getInfo;
 import static server_side.database.Database.retrieveFromDB;
@@ -54,8 +59,8 @@ public class MenuHandler {
      *
      * @return the user
      */
-    public static void onLoginButton() {
-        AppController.getUser();
+    public static User onLoginButton() {
+        return Database.retrieveFromDB();
     }
 
 
@@ -73,12 +78,37 @@ public class MenuHandler {
     public static int friendMenu() {
         System.out.println("""
                 1) Add new friend
-                2) List of all friends
+                2) Chat with a friend
                 3) Exit""");
 
         return returnChoice();
     }
 
+    public static void addFriend(User user) {
+        ArrayList<User> parsedUsers = Database.userList();
+        int i = 1;
+        System.out.println("enter the username of the user you want to add as your friend : ");
+        for (User member : parsedUsers) {
+            if (!member.getUsername().equals(user.getUsername())) {
+                System.out.println(i + ". " + member.getUsername());
+                i++;
+            }
+        }
+        String username = sc.nextLine();
+        User chosenUser = null;
+        for (User member : parsedUsers) {
+            if (member.getUsername().equals(username)) {
+                chosenUser = member;
+            }
+        }
+        if (chosenUser == null) {
+            System.out.println("Wrong username.");
+            return;
+        }
+        user.addFriend(chosenUser);
+        System.out.println("Successfully added " + chosenUser.getUsername() + " to your friends list.");
+
+    }
 
     public static int serverMenu() {
         System.out.println("""
