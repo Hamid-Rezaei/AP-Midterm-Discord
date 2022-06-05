@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="6910da94-dad8-4109-8115-e618596ac84d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/intellij-javadocs-4.0.1.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/AP-Midterm-Discord.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/DB/db/discord_users.sql" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client_side/controller/AppController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client_side/controller/Authentication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client_side/view/Application.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/client_side/view/MenuHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/guild/Channel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/guild/Guild.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/guild/GuildUser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/guild/Permission.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/guild/Role.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/guild/TextChannel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/guild/VoiceChannel.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/message/DirectChat.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/message/Message.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/message/Reaction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/user/Status.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/model/user/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server_side/ServerApp.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server_side/ServerController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/server_side/database/Database.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="ProjectId" id="2A9yfeRnIQ1033H5YHCoQ227HPO" />
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Server/src/database/mysql-connector-java-8.0.29.jar" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.0" />
+    <property name="project.structure.side.proportion" value="0.0" />
+    <property name="settings.editor.selected.configurable" value="MTConfigurable" />
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="6910da94-dad8-4109-8115-e618596ac84d" name="Changes" comment="" />
+      <created>1654436204391</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1654436204391</updated>
+      <workItem from="1654436215434" duration="203000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>
