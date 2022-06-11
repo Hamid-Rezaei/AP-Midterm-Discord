@@ -17,6 +17,9 @@ public class Application {
         String email = MenuHandler.getEmail();
         System.out.print("Enter Phone number(optional): ");
         String phoneNumber = sc.nextLine();
+        if(phoneNumber == null){
+            phoneNumber = "";
+        }
         InputStream img = MenuHandler.getAvatar();
         if (appController.signUp(username, password, email, phoneNumber, img)) {
             System.out.println("SignUp successfully");
@@ -25,5 +28,15 @@ public class Application {
         }
     }
 
+    public static void main(String[] args) {
+        appController = new AppController();
+        appController.initializeNetwork();
+        int choice = MenuHandler.showStartMenu();
+        switch (choice) {
+            case 1 -> signUpMenu();
+        }
+
+
+    }
 
 }

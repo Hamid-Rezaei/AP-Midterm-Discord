@@ -1,6 +1,8 @@
 package controller;
 
+
 import model.User;
+import Database.database;
 
 import java.io.*;
 import java.net.*;
@@ -16,6 +18,7 @@ public class ServerController implements Runnable {
     private String appUsername;
     private static ArrayList<User> allUsers = new ArrayList<>();
     private static HashMap<String, User> loggedInUsers;
+    private String userToken;
 
     public ServerController(Socket socket) throws IOException {
         this.socket = socket;
@@ -41,11 +44,17 @@ public class ServerController implements Runnable {
             String username = parts[0];
             String pass = parts[1];
             String email = parts[2];
-            String phoneNum = parts[3];
+            String phoneNum = null;
+            if (parts.length == 4)
+                phoneNum = parts[3];
             String token = UUID.randomUUID().toString();
+            int avatarSize = inputStream.readInt();
+            byte[] avatar = new byte[avatarSize];
+            inputStream.readFully(avatar, 0, avatarSize);
+            String answer = database.insertToDB(username, pass, email, phoneNum, token, avatar);
+            outputStream.writeUTF(answer);
+            outputStream.flush();
             //allUsers.add(new User(parts[0], parts[1], parts[]));
-
-
         } catch (IOException e) {
             e.printStackTrace();
         }
