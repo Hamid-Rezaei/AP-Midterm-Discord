@@ -33,8 +33,11 @@ public class AppController {
             outputStream.flush();
             outputStream.writeUTF(username + " " + password + " " + email + " " + phoneNum);
             outputStream.flush();
-            //outputStream.write(avatar);
-            //outputStream.flush();
+            byte[] img = avatar.readAllBytes();
+            outputStream.writeInt(img.length);
+            outputStream.flush();
+            outputStream.write(img, 0, img.length);
+            outputStream.reset();
             String result = inputStream.readUTF();
             if (result.equals("true")) return true;
             else return false;
