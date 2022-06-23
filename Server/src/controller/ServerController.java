@@ -24,11 +24,11 @@ public class ServerController implements Runnable {
         this.socket = socket;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
         this.inputStream = new ObjectInputStream(socket.getInputStream());
-        startService();
+        getService();
     }
 
 
-    public void startService() {
+    public void getService() {
         try {
             String task = inputStream.readUTF();
             if (task.equals("signUp")) signUp();
@@ -77,7 +77,9 @@ public class ServerController implements Runnable {
 
     @Override
     public void run() {
-        startService();
+        while (true) {
+            getService();
+        }
     }
 }
 

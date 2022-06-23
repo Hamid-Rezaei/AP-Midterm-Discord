@@ -19,12 +19,6 @@ public class MenuHandler {
 
     static Scanner sc = new Scanner(System.in);
 
-    public static boolean matchedInput(String regex, String input) {
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(input);
-        return matcher.find();
-    }
-
 
     public static int returnChoice() {
         int choice;
@@ -46,28 +40,11 @@ public class MenuHandler {
 
 
     public static String getUsername() {
-        String usernameRegex = "^[A-Za-z0-9]{6,}$";
         System.out.print("Enter Username: ");
         String username = sc.nextLine();
-
-        if (matchedInput(usernameRegex, username)) {
-            return username;
-        } else {
-            System.out.println("Username length must be at least 6 and contains numbers and characters.");
-            return getUsername();
-        }
+        return username;
     }
 
-
-    public static boolean checkValidPass(String password) {
-        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d+]{8,}$";
-        if (matchedInput(passwordRegex, password)) {
-            return true;
-        } else {
-            System.out.println("password length must be at least 8 and contains numbers and characters.");
-            return false;
-        }
-    }
 
     /**
      * Gets password.
@@ -75,30 +52,16 @@ public class MenuHandler {
      * @return the password
      */
     public static String getPassword() {
-
         System.out.print("Enter Password: ");
         String password = sc.nextLine();
-
-        if (checkValidPass(password)) {
-            return password;
-        } else {
-            return getPassword();
-        }
+        return password;
     }
 
 
     public static String getEmail() {
-        String emailRegex = "^[a-zA-Z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-zA-Z]+(?:\\.[a-zA-Z]+)*$";
         System.out.print("Enter Email: ");
         String email = sc.nextLine();
-
-        if (matchedInput(emailRegex, email)) {
-            return email;
-        } else {
-            System.out.println("Entered email wasn't valid.");
-            return getEmail();
-        }
-
+        return email;
     }
 
     /**
