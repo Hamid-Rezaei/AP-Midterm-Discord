@@ -23,13 +23,14 @@ public class Application {
         InputStream img = MenuHandler.getAvatar();
         String authenticationStatus = Authentication.checkValidationOfInfo(username, password, email);
         if (authenticationStatus.equals("Success")) {
-            if (appController.signUp(username, password, email, phoneNumber, img)) {
+            String signUpResult = appController.signUp(username, password, email, phoneNumber, img);
+            if (signUpResult.equals("Success")) {
                 System.out.println("SignUp successfully");
             } else {
-                System.out.println("SignUp error");
+                System.out.println(signUpResult);
                 signUpMenu();
             }
-        }else {
+        } else {
             System.out.println(authenticationStatus);
             signUpMenu();
         }
