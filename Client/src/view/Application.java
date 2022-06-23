@@ -17,26 +17,43 @@ public class Application {
         String email = MenuHandler.getEmail();
         System.out.print("Enter Phone number(optional): ");
         String phoneNumber = sc.nextLine();
-        if(phoneNumber == null){
+        if (phoneNumber == null) {
             phoneNumber = "";
         }
         InputStream img = MenuHandler.getAvatar();
-        if (appController.signUp(username, password, email, phoneNumber, img)) {
-            System.out.println("SignUp successfully");
-        } else {
-            System.out.println("SignUp error");
+        String authenticationStatus = Authentication.checkValidationOfInfo(username, password, email);
+        if (authenticationStatus.equals("Success")) {
+            if (appController.signUp(username, password, email, phoneNumber, img)) {
+                System.out.println("SignUp successfully");
+            } else {
+                System.out.println("SignUp error");
+                signUpMenu();
+            }
+        }else {
+            System.out.println(authenticationStatus);
+            signUpMenu();
+        }
+
+    }
+
+    private static void runApp() {
+        runLoop:
+        while (true) {
+            int choice = MenuHandler.showStartMenu();
+            switch (choice) {
+                case 1 -> signUpMenu();
+                case 3 -> {
+                    break runLoop;
+                }
+                default -> choice = MenuHandler.showStartMenu();
+            }
+
         }
     }
 
     public static void main(String[] args) {
         appController = new AppController();
-        appController.initializeNetwork();
-        int choice = MenuHandler.showStartMenu();
-        switch (choice) {
-            case 1 -> signUpMenu();
-        }
-
-
+        runApp();
     }
 
 }

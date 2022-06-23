@@ -7,15 +7,20 @@ import java.net.*;
 import java.util.*;
 
 public class AppController {
+    public enum ServerErrorType {
+        NO_ERROR, INVALID_USER_NAME, INVALID_PASS_WORD, INVALID_EMAIL, SERVER_CONNECTION_FAILED, UNKNOWN_ERROR
+    }
 
-    private static ArrayList<User> allUsers = new ArrayList<>();
     private static User currentUser;
-
     private static Socket socket;
     private static ObjectOutputStream outputStream;
     private static ObjectInputStream inputStream;
 
-    public void initializeNetwork() {
+    public AppController(){
+        setupConnection();
+    }
+
+    private void setupConnection() {
         try {
             socket = new Socket("localhost", 7777);
             outputStream = new ObjectOutputStream(socket.getOutputStream());
