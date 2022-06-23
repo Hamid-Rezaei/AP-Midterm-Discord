@@ -8,7 +8,13 @@ import java.util.*;
 
 public class AppController {
     public enum ServerErrorType {
-        NO_ERROR, INVALID_USER_NAME, INVALID_PASS_WORD, INVALID_EMAIL, SERVER_CONNECTION_FAILED, UNKNOWN_ERROR
+        NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4), UNKNOWN_ERROR(404);
+
+        private int code;
+
+        ServerErrorType(int code) {
+            this.code = code;
+        }
     }
 
     private static User currentUser;
@@ -16,7 +22,7 @@ public class AppController {
     private static ObjectOutputStream outputStream;
     private static ObjectInputStream inputStream;
 
-    public AppController(){
+    public AppController() {
         setupConnection();
     }
 
@@ -26,12 +32,13 @@ public class AppController {
             outputStream = new ObjectOutputStream(socket.getOutputStream());
             inputStream = new ObjectInputStream(socket.getInputStream());
         } catch (IOException x) {
-            x.printStackTrace();
+            System.out.println("SERVER CONNECTION FAILED.");
+            System.exit(0);
         }
     }
 
 
-    public boolean signUp(String username, String password, String email, String phoneNum, InputStream avatar) {
+    public String signUp(String username, String password, String email, String phoneNum, InputStream avatar) {
 
         try {
             outputStream.writeUTF("signUp");
@@ -43,12 +50,33 @@ public class AppController {
             outputStream.flush();
             outputStream.write(img, 0, img.length);
             outputStream.reset();
-            String result = inputStream.readUTF();
-            if (result.equals("true")) return true;
-            else return false;
+            return parseError(inputStream.readInt());
         } catch (IOException x) {
             x.printStackTrace();
-            return false;
+            return "IOException";
         }
+    }
+
+    public String parseError(int errorCode) {
+        String error;
+        switch (errorCode) {
+            case 1:
+                error = "Success";
+                break;
+            case 2:
+                error = "This user already exists.";
+                break;
+            case 3:
+                error = "Connection with server failed.";
+                break;
+            case 4:
+                error = "There was a problem with database.";
+                break;
+            default:
+                error = "UNKNOWN ERROR.";
+                break;
+
+        }
+        return error;
     }
 }

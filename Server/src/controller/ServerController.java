@@ -24,7 +24,6 @@ public class ServerController implements Runnable {
         this.socket = socket;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
         this.inputStream = new ObjectInputStream(socket.getInputStream());
-        getService();
     }
 
 
@@ -34,7 +33,14 @@ public class ServerController implements Runnable {
             if (task.equals("signUp")) signUp();
             else login();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println("A user disconnected.");
+            try {
+                inputStream.close();
+                outputStream.close();
+                this.socket.close();
+            } catch (IOException err) {
+                err.printStackTrace();
+            }
         }
     }
 
@@ -51,8 +57,8 @@ public class ServerController implements Runnable {
             int avatarSize = inputStream.readInt();
             byte[] avatar = new byte[avatarSize];
             inputStream.readFully(avatar, 0, avatarSize);
-            String answer = database.insertToDB(username, pass, email, phoneNum, token, avatar);
-            outputStream.writeUTF(answer);
+            int answer = database.insertToDB(username, pass, email, phoneNum, token, avatar).getCode();
+            outputStream.writeInt(answer);
             outputStream.flush();
             //allUsers.add(new User(parts[0], parts[1], parts[]));
         } catch (IOException e) {
@@ -77,7 +83,7 @@ public class ServerController implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!socket.isClosed()) {
             getService();
         }
     }
