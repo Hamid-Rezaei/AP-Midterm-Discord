@@ -51,6 +51,15 @@ public class MenuHandler {
         return email;
     }
 
+    public static String getPhoneNumber(){
+        System.out.print("Enter Phone number(optional): ");
+        String phoneNumber = sc.nextLine();
+        if (phoneNumber == null) {
+            phoneNumber = "";
+        }
+        return phoneNumber;
+    }
+
     /**
      * Gets avatar.
      */
@@ -77,44 +86,53 @@ public class MenuHandler {
                 1) Signup
                 2) Login
                 3) Exit""");
+        System.out.print("> ");
         return returnChoice();
     }
 
-    public static int showLoginMenu() {
+    public static int inAppMenu() {
         System.out.println("""
                 1) Severs
                 2) Friends
                 3) Settings
-                4) Exit""");
+                4) Back""");
+        System.out.print("> ");
         return returnChoice();
     }
 
 
-    public static int friendMenu() {
-        System.out.println("""
-                1) Add new friend
-                2) Chat with a friend
-                3) Exit""");
-
-        return returnChoice();
-    }
-
-
-    public static int serverMenu() {
+    public static int showServerMenu() {
         System.out.println("""
                 1) Add new server
                 2) List of all servers
-                3) Exit""");
-
+                3) Back""");
+        System.out.print("> ");
         return returnChoice();
     }
 
-    public static int settingMenu() {
+
+    public static int showFriendMenu() {
+        System.out.println("""
+                1) Send friend request
+                2) Chat with a friend
+                3) Back""");
+        System.out.print("> ");
+        return returnChoice();
+    }
+
+
+    public static int showSettingMenu() {
         System.out.println("""
                 1) Change password
                 2) Change avatar
-                3) Exit""");
+                3) Back""");
+        System.out.print("> ");
         return returnChoice();
     }
 
+
+    public static String getFriendName(){
+        System.out.print("Enter username: ");
+        return sc.nextLine();
+    }
 }
