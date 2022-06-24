@@ -4,6 +4,8 @@ package controller;
 import Database.Database;
 import model.User;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -31,7 +33,7 @@ public class ServerController implements Runnable {
         try {
             String task = inputStream.readUTF();
             if (task.equals("signUp")) signUp();
-            else if(task.equals("login")) login();
+            else if (task.equals("login")) login();
 
         } catch (IOException e) {
             System.out.println("A user disconnected.");
@@ -59,6 +61,7 @@ public class ServerController implements Runnable {
             byte[] avatar = new byte[avatarSize];
             inputStream.readFully(avatar, 0, avatarSize);
             int answer = Database.insertToDB(username, pass, email, phoneNum, token, avatar).getCode();
+
             outputStream.writeInt(answer);
             outputStream.flush();
             //allUsers.add(new User(parts[0], parts[1], parts[]));
@@ -73,8 +76,23 @@ public class ServerController implements Runnable {
             String username = parts[0];
             String pass = parts[1];
             User answer = Database.retrieveFromDB(username, pass);
+            if(answer == null){
+                outputStream.writeObject(answer);
+                return;
+            }
+            BufferedImage userAvatar = answer.getAvatar();
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            ImageIO.write(userAvatar, "png", baos);
+            byte[] byteAvatar = baos.toByteArray();
+
             outputStream.writeObject(answer);
             outputStream.flush();
+
+            outputStream.writeInt(byteAvatar.length);
+
+            outputStream.flush();
+            outputStream.write(byteAvatar, 0, byteAvatar.length);
+            outputStream.reset();
         } catch (IOException e) {
             e.printStackTrace();
         }

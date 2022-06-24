@@ -38,13 +38,20 @@ public class AppController {
     }
 
 
-    public User login(String username, String password){
+    public User login(String username, String password) {
         try {
             outputStream.writeUTF("login");
             outputStream.flush();
             outputStream.writeUTF(username + " " + password);
             outputStream.flush();
             User user = (User) inputStream.readObject();
+            if(user == null){
+                return user;
+            }
+            int avatarSize = inputStream.readInt();
+            byte[] avatar = new byte[avatarSize];
+            inputStream.readFully(avatar, 0, avatarSize);
+            user.setAvatar(avatar);
             return user;
         } catch (IOException e) {
             System.out.println("Can not write for server.");

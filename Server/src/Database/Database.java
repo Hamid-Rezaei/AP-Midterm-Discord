@@ -91,6 +91,8 @@ public class Database {
         }
 
         return new User(username, password, email, phoneNumber, uId, avatar);
+
     }
 
 }
+
