@@ -5,8 +5,7 @@ import model.*;
 
 import java.io.InputStream;
 
-import static view.MenuHandler.showLoginMenu;
-import static view.MenuHandler.sc;
+import static view.MenuHandler.*;
 
 public class Application {
     public static User user;
@@ -16,11 +15,7 @@ public class Application {
         String username = MenuHandler.getUsername();
         String password = MenuHandler.getPassword();
         String email = MenuHandler.getEmail();
-        System.out.print("Enter Phone number(optional): ");
-        String phoneNumber = sc.nextLine();
-        if (phoneNumber == null) {
-            phoneNumber = "";
-        }
+        String phoneNumber = getPhoneNumber();
         InputStream img = MenuHandler.getAvatar();
         String authenticationStatus = Authentication.checkValidationOfInfo(username, password, email);
         if (authenticationStatus.equals("Success")) {
@@ -39,15 +34,52 @@ public class Application {
     }
 
 
-    private static void loginMenuHandler(){
+    private static void loginMenuHandler() {
         String username = MenuHandler.getUsername();
         String password = MenuHandler.getPassword();
         user = appController.login(username, password);
-        if (user == null){
-            //loginMenuHandler();
-            System.out.println("user is null");
-        }else{
+        if (user == null) {
+            System.out.println("Oops! something is wrong (user is null)");
+        } else {
             System.out.println("Login Successfully.");
+            inApplication();
+        }
+    }
+
+    private static void inApplication() {
+        int choice = inAppMenu();
+        switch (choice) {
+            case 1 -> serverMenuHandler();
+            case 2 -> friendMenuHandler();
+            case 3 -> settingMenuHandler();
+            default -> {}
+        }
+    }
+
+    private static void serverMenuHandler(){
+        int choice = showServerMenu();
+        switch (choice){
+            //case 1 -> addNewServer();
+            //case 2 -> listOfAllServer();
+            default -> inApplication();
+        }
+    }
+
+    private static void friendMenuHandler(){
+        int choice = showFriendMenu();
+        switch (choice){
+            //case 1 -> addNewFriend();
+            //case 2 -> chatWithFriend();
+            default -> inApplication();
+        }
+    }
+
+    private static void settingMenuHandler(){
+        int choice = showSettingMenu();
+        switch (choice){
+            //case 1 -> changePass();
+            //case 2 -> changeAvatar();
+            default -> inApplication();
         }
     }
 
