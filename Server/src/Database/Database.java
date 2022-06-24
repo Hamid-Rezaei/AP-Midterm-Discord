@@ -4,6 +4,7 @@ import controller.ServerErrorType;
 import model.User;
 
 import javax.imageio.ImageIO;
+import javax.swing.plaf.nimbus.State;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -77,6 +78,23 @@ public class Database {
         return null;
     }
 
+    public static User retrieveFromDB(String username) {
+        try {
+
+            Connection connection = connectToDB();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select * from users where userName = " + "'" + username + "'");
+            if (!resultSet.next()) {
+                return null;
+            }
+            connection.close();
+            return createUser(resultSet);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
     public static User createUser(ResultSet resultSet) throws SQLException {
         String username = resultSet.getString("userName");
@@ -95,7 +113,7 @@ public class Database {
 
     }
 
-    public static ServerErrorType sendFriendRequest(String fromUser, String targetUser){
+    public static ServerErrorType sendFriendRequest(String fromUser, String targetUser) {
         try {
             Connection connection = connectToDB();
             {
@@ -103,48 +121,66 @@ public class Database {
                 ResultSet checkRules = checkIfAlreadyExists.executeQuery("select from_user, to_user from requests where from_user = " + "'" + fromUser + "'" + "and to_user = " + "'" + targetUser + "'");
                 boolean firstRule = false;
                 boolean secondRule = false;
-                if(!checkRules.next()){
+                if (!checkRules.next()) {
                     firstRule = true;
                 }
                 checkRules = checkIfAlreadyExists.executeQuery("select from_user, to_user from requests where from_user = " + "'" + targetUser + "'" + "and to_user = " + "'" + fromUser + "'");
-                if(!checkRules.next()){
+                if (!checkRules.next()) {
                     secondRule = true;
                 }
-                if(!(firstRule & secondRule)){
+                if (!(firstRule & secondRule)) {
                     return ServerErrorType.Duplicate_ERROR;
                 }
             }
             String insertQuery = "insert into requests (to_user, from_user) values(?, ?)";
             PreparedStatement statement = connection.prepareStatement(insertQuery);
-            statement.setString(1,targetUser);
-            statement.setString(2,fromUser);
+            statement.setString(1, targetUser);
+            statement.setString(2, fromUser);
             statement.execute();
             connection.close();
             return ServerErrorType.NO_ERROR;
-        } catch (SQLIntegrityConstraintViolationException e){
+        } catch (SQLIntegrityConstraintViolationException e) {
             e.printStackTrace();
             return ServerErrorType.Duplicate_ERROR;
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
             return ServerErrorType.DATABASE_ERROR;
         }
     }
 
 
-    public static HashSet<String> viewFriendRequestList(String targetUser){
+    public static HashSet<String> viewFriendRequestList(String targetUser) {
         HashSet<String> reqList = new HashSet<>();
         try {
             Connection connection = connectToDB();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select from_user from requests where to_user = " + "'" + targetUser + "'");
-            while(resultSet.next()){
+            while (resultSet.next()) {
                 reqList.add(resultSet.getString(1));
             }
             connection.close();
-        } catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return reqList;
+    }
+
+    public static HashSet<String> viewFriendList(String username) {
+        HashSet<String> friendList = new HashSet<>();
+        try {
+            Connection connection = connectToDB();
+
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select friends_id from friends where user_id = " + "'" + username + "'");
+            while (resultSet.next()) {
+                friendList.add(resultSet.getString(1));
+            }
+
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return friendList;
     }
 }
 
