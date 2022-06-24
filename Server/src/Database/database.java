@@ -1,7 +1,12 @@
 package Database;
 
 import controller.ServerErrorType;
+import model.User;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.sql.*;
 
 public class database {
@@ -27,6 +32,10 @@ public class database {
             if (foundUser != null) {
                 return ServerErrorType.USER_ALREADY_EXISTS;
             }
+            foundUser = checkuserExists.executeQuery("select * from users where email = " + "'" + email + "'");
+            if (foundUser != null) {
+                return ServerErrorType.USER_ALREADY_EXISTS;
+            }
             String insertQuery = "insert into users (userName, password, email, phoneNumber,userID,avatar) values(?, ?,?,?,?,?)";
             PreparedStatement statement = connection.prepareStatement(insertQuery);
             statement.setString(1, username);
@@ -44,5 +53,44 @@ public class database {
         }
 
     }
+
+    public static User createUser(ResultSet resultSet) throws SQLException {
+        String username = resultSet.getString("userName");
+        String password = resultSet.getString("password");
+        String email = resultSet.getString("email");
+        String phoneNumber = resultSet.getString("phoneNumber");
+        String uId = resultSet.getString("userID");
+        BufferedImage avatar = null;
+        try {
+            avatar = ImageIO.read(new ByteArrayInputStream(resultSet.getBytes("avatar")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new User(username, password, email, phoneNumber, uId, avatar);
+
+    }
+
+    public static User retrieveFromDB(String username, String password) {
+        try {
+
+            Connection connection = connectToDB();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select * from users where userName = " + "'" + username + "'");
+            if (!resultSet.next()) {
+                return null;
+            } else {
+                String realPassword = resultSet.getString("password");
+                if (password.equals(realPassword)) {
+                    return createUser(resultSet);
+                }
+            }
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
 
 }
