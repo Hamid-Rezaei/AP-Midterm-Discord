@@ -5,6 +5,7 @@ import Database.Database;
 import model.User;
 
 import javax.imageio.ImageIO;
+import javax.xml.crypto.Data;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
@@ -37,6 +38,8 @@ public class ServerController implements Runnable {
                 case "login" -> login();
                 case "friendRequest" -> friendRequest();
                 case "RequestList" -> friendRequestList();
+                case "FriendList" -> friendList();
+                case "getUser" -> getUserWithUsername();
             }
 
         } catch (IOException e) {
@@ -50,7 +53,6 @@ public class ServerController implements Runnable {
             }
         }
     }
-
 
 
     public void signUp() {
@@ -109,7 +111,7 @@ public class ServerController implements Runnable {
         try {
             String fromUser = inputStream.readUTF();
             String targetUser = inputStream.readUTF();
-            ServerErrorType answer = Database.sendFriendRequest(fromUser,targetUser);
+            ServerErrorType answer = Database.sendFriendRequest(fromUser, targetUser);
             outputStream.writeInt(answer.getCode());
             outputStream.flush();
         } catch (IOException e) {
@@ -123,11 +125,31 @@ public class ServerController implements Runnable {
             HashSet<String> reqList = Database.viewFriendRequestList(username);
             outputStream.writeObject(reqList);
             outputStream.flush();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    public void friendList() {
+        try {
+            String username = inputStream.readUTF();
+            HashSet<String> friendList = Database.viewFriendList(username);
+            outputStream.writeObject(friendList);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void getUserWithUsername() {
+        try {
+            String username = inputStream.readUTF();
+            outputStream.writeObject(Database.retrieveFromDB(username));
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void run() {
