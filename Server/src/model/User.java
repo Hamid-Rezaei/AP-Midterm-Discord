@@ -25,7 +25,6 @@ public class User implements Serializable {
     // private ArrayList<DirectChat> directChats;
 
 
-
     /**
      * Instantiates a new User.;
      *
@@ -50,6 +49,19 @@ public class User implements Serializable {
 
     public void addFriend(User friend) {
         friends.add(friend);
+
+    }
+
+    public void addFriendRequest(String request){
+        friendRequests.add(request);
+    }
+
+    public void setFriends(ArrayList<User> friends) {
+        this.friends = friends;
+    }
+
+    public void setFriendRequests(ArrayList<String> friendRequests) {
+        this.friendRequests = friendRequests;
     }
 
     public void printFriends() {
@@ -61,6 +73,10 @@ public class User implements Serializable {
 
     public void goToDirectChat(int friend){
         // TODO: create direct chat
+    }
+
+    public ArrayList<User> getFriends() {
+        return friends;
     }
 
     public BufferedImage getAvatar() {

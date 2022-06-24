@@ -3,6 +3,7 @@ package view;
 import controller.*;
 import model.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 
@@ -73,9 +74,9 @@ public class Application {
 
     private static void friendMenuHandler() {
         int choice = showFriendMenu();
-        switch (choice) {
-            case 1 -> appController.friendRequest(user.getUsername(), getFriendName());
-            //case 2 ->
+        switch (choice){
+            case 1 -> System.out.println(appController.friendRequest(user.getUsername(), getFriendName()));
+            //case 2 -> chatWithFriend();x
             case 3 -> listOfFriends();
             default -> inApplication();
         }

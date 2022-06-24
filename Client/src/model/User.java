@@ -21,9 +21,8 @@ public class User implements Serializable {
     private transient BufferedImage avatar;
     private ArrayList<User> friends;
     private ArrayList<String> friendRequests;
-   // private ArrayList<Guild> guilds;
-   // private ArrayList<DirectChat> directChats;
-
+    // private ArrayList<Guild> guilds;
+    // private ArrayList<DirectChat> directChats;
 
 
     /**
@@ -42,18 +41,38 @@ public class User implements Serializable {
         this.status = Status.ONLINE;
         this.token = token;
         friends = new ArrayList<>();
-     //   guilds = new ArrayList<>();
-     //   directChats = new ArrayList<>();
+        //   guilds = new ArrayList<>();
+        //   directChats = new ArrayList<>();
         this.avatar = avatar;
     }
 
 
     public void addFriend(User friend) {
         friends.add(friend);
+
+    }
+
+    public void addFriendRequest(String request){
+        friendRequests.add(request);
+    }
+
+    public void setFriends(ArrayList<User> friends) {
+        this.friends = friends;
+    }
+
+    public void setFriendRequests(ArrayList<String> friendRequests) {
+        this.friendRequests = friendRequests;
+    }
+
+    public void printFriends() {
+        int i = 1;
+        for (User friend : friends) {
+            System.out.println(i++ + ". " + friend.toString());
+        }
     }
 
     public void goToDirectChat(int friend){
-    // TODO: create direct chat
+        // TODO: create direct chat
     }
 
     public ArrayList<User> getFriends() {
