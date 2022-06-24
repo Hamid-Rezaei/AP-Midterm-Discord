@@ -8,6 +8,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.*;
+import java.util.HashSet;
 
 public class Database {
     public static Connection connectToDB() {
@@ -94,5 +95,56 @@ public class Database {
 
     }
 
+    public static ServerErrorType sendFriendRequest(String fromUser, String targetUser){
+        try {
+            Connection connection = connectToDB();
+            {
+                Statement checkIfAlreadyExists = connection.createStatement();
+                ResultSet checkRules = checkIfAlreadyExists.executeQuery("select from_user, to_user from requests where from_user = " + "'" + fromUser + "'" + "and to_user = " + "'" + targetUser + "'");
+                boolean firstRule = false;
+                boolean secondRule = false;
+                if(!checkRules.next()){
+                    firstRule = true;
+                }
+                checkRules = checkIfAlreadyExists.executeQuery("select from_user, to_user from requests where from_user = " + "'" + targetUser + "'" + "and to_user = " + "'" + fromUser + "'");
+                if(!checkRules.next()){
+                    secondRule = true;
+                }
+                if(!(firstRule & secondRule)){
+                    return ServerErrorType.Duplicate_ERROR;
+                }
+            }
+            String insertQuery = "insert into requests (to_user, from_user) values(?, ?)";
+            PreparedStatement statement = connection.prepareStatement(insertQuery);
+            statement.setString(1,targetUser);
+            statement.setString(2,fromUser);
+            statement.execute();
+            connection.close();
+            return ServerErrorType.NO_ERROR;
+        } catch (SQLIntegrityConstraintViolationException e){
+            e.printStackTrace();
+            return ServerErrorType.Duplicate_ERROR;
+        } catch (SQLException e){
+            e.printStackTrace();
+            return ServerErrorType.DATABASE_ERROR;
+        }
+    }
+
+
+    public static HashSet<String> viewFriendRequestList(String targetUser){
+        HashSet<String> reqList = new HashSet<>();
+        try {
+            Connection connection = connectToDB();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select from_user from requests where to_user = " + "'" + targetUser + "'");
+            while(resultSet.next()){
+                reqList.add(resultSet.getString(1));
+            }
+            connection.close();
+        } catch (SQLException e){
+            e.printStackTrace();
+        }
+        return reqList;
+    }
 }
 
