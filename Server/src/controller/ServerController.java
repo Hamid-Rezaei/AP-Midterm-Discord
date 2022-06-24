@@ -1,8 +1,8 @@
 package controller;
 
 
+import Database.Database;
 import model.User;
-import Database.database;
 
 import java.io.*;
 import java.net.*;
@@ -31,7 +31,8 @@ public class ServerController implements Runnable {
         try {
             String task = inputStream.readUTF();
             if (task.equals("signUp")) signUp();
-            else login();
+            else if(task.equals("login")) login();
+
         } catch (IOException e) {
             System.out.println("A user disconnected.");
             try {
@@ -57,7 +58,7 @@ public class ServerController implements Runnable {
             int avatarSize = inputStream.readInt();
             byte[] avatar = new byte[avatarSize];
             inputStream.readFully(avatar, 0, avatarSize);
-            int answer = database.insertToDB(username, pass, email, phoneNum, token, avatar).getCode();
+            int answer = Database.insertToDB(username, pass, email, phoneNum, token, avatar).getCode();
             outputStream.writeInt(answer);
             outputStream.flush();
             //allUsers.add(new User(parts[0], parts[1], parts[]));
@@ -67,6 +68,16 @@ public class ServerController implements Runnable {
     }
 
     public void login() {
+        try {
+            String[] parts = inputStream.readUTF().split(" ");
+            String username = parts[0];
+            String pass = parts[1];
+            User answer = Database.retrieveFromDB(username, pass);
+            outputStream.writeObject(answer);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 /*
