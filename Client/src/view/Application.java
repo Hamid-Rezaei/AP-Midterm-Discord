@@ -68,7 +68,7 @@ public class Application {
     private static void friendMenuHandler(){
         int choice = showFriendMenu();
         switch (choice){
-            //case 1 -> addNewFriend();
+            case 1 -> appController.friendRequest(user.getUsername(), getFriendName());
             //case 2 -> chatWithFriend();
             default -> inApplication();
         }

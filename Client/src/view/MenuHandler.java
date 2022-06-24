@@ -113,7 +113,7 @@ public class MenuHandler {
 
     public static int showFriendMenu() {
         System.out.println("""
-                1) Add new friend
+                1) Send friend request
                 2) Chat with a friend
                 3) Back""");
         System.out.print("> ");
@@ -130,4 +130,9 @@ public class MenuHandler {
         return returnChoice();
     }
 
+
+    public static String getFriendName(){
+        System.out.print("Enter username: ");
+        return sc.nextLine();
+    }
 }
