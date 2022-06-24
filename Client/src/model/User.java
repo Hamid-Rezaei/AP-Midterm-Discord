@@ -20,6 +20,7 @@ public class User implements Serializable {
     private String token;
     private transient BufferedImage avatar;
     private ArrayList<User> friends;
+    private ArrayList<String> friendRequests;
    // private ArrayList<Guild> guilds;
    // private ArrayList<DirectChat> directChats;
 
@@ -47,19 +48,16 @@ public class User implements Serializable {
     }
 
 
-    public void addFriend(User user) {
-        friends.add(user);
-    }
-
-    public void printFriends() {
-        int i = 1;
-        for (User friend : friends) {
-            System.out.println(i++ + ". " + friend.toString());
-        }
+    public void addFriend(User friend) {
+        friends.add(friend);
     }
 
     public void goToDirectChat(int friend){
     // TODO: create direct chat
+    }
+
+    public ArrayList<User> getFriends() {
+        return friends;
     }
 
     public BufferedImage getAvatar() {
@@ -92,6 +90,6 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return username;
+        return status + username + Status.RESET;
     }
 }

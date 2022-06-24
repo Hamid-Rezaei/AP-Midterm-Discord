@@ -90,6 +90,7 @@ public class AppController {
             outputStream.writeUTF(username);
             outputStream.flush();
             outputStream.writeUTF(targetUser);
+            outputStream.flush();
             answer = inputStream.readUTF();
         } catch (IOException e) {
             e.printStackTrace();
