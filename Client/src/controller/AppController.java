@@ -114,6 +114,19 @@ public class AppController {
         return answer;
     }
 
+    public HashSet<String> friendRequestList(String username){
+        try {
+            outputStream.writeUTF("RequestList");
+            outputStream.flush();
+            outputStream.writeUTF(username);
+            outputStream.flush();
+            return (HashSet<String>) inputStream.readObject();
+        }catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public String parseError(int errorCode) {
         String error;
         switch (errorCode) {

@@ -5,12 +5,18 @@ import model.*;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import static view.MenuHandler.*;
 
 public class Application {
+    //fields
+
     public static User user;
     public static AppController appController;
+
+    // handling application menus.
 
     private static void signUpMenu() {
         String username = MenuHandler.getUsername();
@@ -53,37 +59,91 @@ public class Application {
             case 1 -> serverMenuHandler();
             case 2 -> friendMenuHandler();
             case 3 -> settingMenuHandler();
-            default -> {}
+            default -> {
+            }
         }
     }
 
-    private static void serverMenuHandler(){
+    private static void serverMenuHandler() {
         int choice = showServerMenu();
-        switch (choice){
+        switch (choice) {
             //case 1 -> addNewServer();
             //case 2 -> listOfAllServer();
             default -> inApplication();
         }
     }
 
-    private static void friendMenuHandler(){
+    private static void friendMenuHandler() {
         int choice = showFriendMenu();
         switch (choice){
             case 1 -> System.out.println(appController.friendRequest(user.getUsername(), getFriendName()));
-            //case 2 -> chatWithFriend();x
-            case 3 -> appController.printfriendreq();
+            case 2 -> listOfFriendRequests();
+            case 3 -> listOfFriends();
             default -> inApplication();
         }
     }
 
-    private static void settingMenuHandler(){
+    private static void settingMenuHandler() {
         int choice = showSettingMenu();
-        switch (choice){
+        switch (choice) {
             //case 1 -> changePass();
             //case 2 -> changeAvatar();
             default -> inApplication();
         }
     }
+
+
+    //Required methods for parts of friendMenuHandler and serverMenuHandler.
+
+    private static void listOfFriendRequests() {
+        HashSet<String> friendRequests = appController.friendRequestList(user.getUsername());
+        System.out.println("All friend requests: ");
+        for(String friendRequest : friendRequests){
+            System.out.println(friendRequest);
+        }
+        System.out.print("Enter usernames you want to accept (user1-user2-...): ");
+        String[] accepted = sc.nextLine().split("-");
+        System.out.print("Enter usernames you want to reject (user1-user2-...): ");
+        String[] rejected = sc.nextLine().split("-");
+
+    }
+
+
+    private static void listOfFriends() {
+        ArrayList<User> friends = user.getFriends();
+        printFriends(friends);
+        User friend = getFriendForChat(friends);
+        //user.goToDirectChat(friend);
+    }
+
+
+    private static void printFriends(ArrayList<User> friends) {
+        int i = 1;
+        for (User friend : friends) {
+            System.out.println(i++ + ". " + friend.toString());
+        }
+    }
+
+
+    private static User getFriendForChat(ArrayList<User> friends) {
+        System.out.print("chose friend you want to chat with (Enter number): ");
+        int friendToChat = 0;
+        User friend = null;
+        try {
+            friendToChat = Integer.parseInt(sc.nextLine());
+            friend = friends.get(friendToChat - 1);
+        } catch (NumberFormatException e) {
+            System.out.println("Oops! something is wrong with your input.");
+            getFriendForChat(friends);
+        }catch (ArrayIndexOutOfBoundsException e){
+            System.out.println("Oops! input is out of array bound.");
+            getFriendForChat(friends);
+        }
+
+        return friend;
+    }
+
+    //Running Application.
 
     private static void runApp() {
         runLoop:
