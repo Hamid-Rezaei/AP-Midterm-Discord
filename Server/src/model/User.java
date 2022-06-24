@@ -49,6 +49,7 @@ public class User implements Serializable {
 
     public void addFriend(User friend) {
         friends.add(friend);
+
     }
 
     public void addFriendRequest(String request){
@@ -72,6 +73,10 @@ public class User implements Serializable {
 
     public void goToDirectChat(int friend){
         // TODO: create direct chat
+    }
+
+    public ArrayList<User> getFriends() {
+        return friends;
     }
 
     public BufferedImage getAvatar() {
