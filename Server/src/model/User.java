@@ -64,13 +64,6 @@ public class User implements Serializable {
         this.friendRequests = friendRequests;
     }
 
-    public void printFriends() {
-        int i = 1;
-        for (User friend : friends) {
-            System.out.println(i++ + ". " + friend.toString());
-        }
-    }
-
     public void goToDirectChat(int friend){
         // TODO: create direct chat
     }
