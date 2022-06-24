@@ -32,8 +32,12 @@ public class ServerController implements Runnable {
     public void getService() {
         try {
             String task = inputStream.readUTF();
-            if (task.equals("signUp")) signUp();
-            else if (task.equals("login")) login();
+            switch (task) {
+                case "signUp" -> signUp();
+                case "login" -> login();
+                case "friendRequest" -> friendRequest();
+                case "RequestList" -> friendRequestList();
+            }
 
         } catch (IOException e) {
             System.out.println("A user disconnected.");
@@ -46,6 +50,8 @@ public class ServerController implements Runnable {
             }
         }
     }
+
+
 
     public void signUp() {
         try {
@@ -76,7 +82,7 @@ public class ServerController implements Runnable {
             String username = parts[0];
             String pass = parts[1];
             User answer = Database.retrieveFromDB(username, pass);
-            if(answer == null){
+            if (answer == null) {
                 outputStream.writeObject(answer);
                 return;
             }
@@ -97,6 +103,29 @@ public class ServerController implements Runnable {
             e.printStackTrace();
         }
 
+    }
+
+    public void friendRequest() {
+        try {
+            String fromUser = inputStream.readUTF();
+            String targetUser = inputStream.readUTF();
+            ServerErrorType answer = Database.sendFriendRequest(fromUser,targetUser);
+            outputStream.writeInt(answer.getCode());
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void friendRequestList() {
+        try {
+            String username = inputStream.readUTF();
+            HashSet<String> reqList = Database.viewFriendRequestList(username);
+            outputStream.writeObject(reqList);
+            outputStream.flush();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 /*
     public static synchronized boolean register(String username, String password, String fullName) {

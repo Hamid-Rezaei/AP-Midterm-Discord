@@ -7,8 +7,19 @@ import java.net.*;
 import java.util.*;
 
 public class AppController {
+
+    public void printfriendreq() {
+        try {
+            outputStream.writeUTF("RequestList");
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public enum ServerErrorType {
-        NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4), UNKNOWN_ERROR(404);
+        NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4),Duplicate_ERROR(5), UNKNOWN_ERROR(404);
 
         private int code;
 
@@ -45,7 +56,7 @@ public class AppController {
             outputStream.writeUTF(username + " " + password);
             outputStream.flush();
             User user = (User) inputStream.readObject();
-            if(user == null){
+            if (user == null) {
                 return user;
             }
             int avatarSize = inputStream.readInt();
@@ -82,15 +93,20 @@ public class AppController {
         }
     }
 
-    public String friendRequest(String username, String targetUser){
+    public String friendRequest(String username, String targetUser) {
         String answer;
+        int answerCode;
         try {
             outputStream.writeUTF("friendRequest");
             outputStream.flush();
+
             outputStream.writeUTF(username);
             outputStream.flush();
+
             outputStream.writeUTF(targetUser);
-            answer = inputStream.readUTF();
+            outputStream.flush();
+            answerCode = inputStream.readInt();
+            answer = parseError(answerCode);
         } catch (IOException e) {
             e.printStackTrace();
             answer = "something went wrong with friend Request.";
@@ -112,6 +128,9 @@ public class AppController {
                 break;
             case 4:
                 error = "There was a problem with database.";
+                break;
+            case 5:
+                error = "you already have a friend request with this user.";
                 break;
             default:
                 error = "UNKNOWN ERROR.";

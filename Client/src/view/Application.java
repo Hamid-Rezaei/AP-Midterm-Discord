@@ -3,6 +3,7 @@ package view;
 import controller.*;
 import model.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 import static view.MenuHandler.*;
@@ -68,8 +69,9 @@ public class Application {
     private static void friendMenuHandler(){
         int choice = showFriendMenu();
         switch (choice){
-            case 1 -> appController.friendRequest(user.getUsername(), getFriendName());
-            //case 2 -> chatWithFriend();
+            case 1 -> System.out.println(appController.friendRequest(user.getUsername(), getFriendName()));
+            //case 2 -> chatWithFriend();x
+            case 3 -> appController.printfriendreq();
             default -> inApplication();
         }
     }

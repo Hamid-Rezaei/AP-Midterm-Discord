@@ -115,7 +115,7 @@ public class MenuHandler {
         System.out.println("""
                 1) Send friend request
                 2) Chat with a friend
-                3) Back""");
+                4) Back""");
         System.out.print("> ");
         return returnChoice();
     }
