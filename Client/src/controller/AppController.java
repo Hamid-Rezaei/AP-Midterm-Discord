@@ -38,6 +38,24 @@ public class AppController {
     }
 
 
+    public User login(String username, String password){
+        try {
+            outputStream.writeUTF("login");
+            outputStream.flush();
+            outputStream.writeUTF(username + " " + password);
+            outputStream.flush();
+            User user = (User) inputStream.readObject();
+            return user;
+        } catch (IOException e) {
+            System.out.println("Can not write for server.");
+            return null;
+        } catch (ClassNotFoundException e) {
+            System.out.println("Can not read from server.");
+            return null;
+        }
+    }
+
+
     public String signUp(String username, String password, String email, String phoneNum, InputStream avatar) {
 
         try {

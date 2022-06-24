@@ -1,15 +1,11 @@
 package view;
 
 
-import controller.*;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -29,15 +25,6 @@ public class MenuHandler {
         }
         return choice;
     }
-
-    public static int showStartMenu() {
-        System.out.println("""
-                1) Signup
-                2) Login
-                3) Exit""");
-        return returnChoice();
-    }
-
 
     public static String getUsername() {
         System.out.print("Enter Username: ");
@@ -85,14 +72,20 @@ public class MenuHandler {
         }
     }
 
+    public static int showStartMenu() {
+        System.out.println("""
+                1) Signup
+                2) Login
+                3) Exit""");
+        return returnChoice();
+    }
 
-    public static int loginMenu() {
+    public static int showLoginMenu() {
         System.out.println("""
                 1) Severs
                 2) Friends
                 3) Settings
                 4) Exit""");
-
         return returnChoice();
     }
 

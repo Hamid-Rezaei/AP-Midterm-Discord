@@ -15,7 +15,7 @@ public class User implements Serializable {
     private String phoneNumber;
     private Status status;
     private String token;
-    private BufferedImage avatar;
+    private transient BufferedImage avatar;
     private ArrayList<User> friends;
    // private ArrayList<Guild> guilds;
    // private ArrayList<DirectChat> directChats;
