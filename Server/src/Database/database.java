@@ -9,7 +9,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.sql.*;
 
-public class database {
+public class Database {
     public static Connection connectToDB() {
         try {
             return DriverManager.getConnection("jdbc:mysql://localhost:3306/discord", "root", "177013");
@@ -54,22 +54,6 @@ public class database {
 
     }
 
-    public static User createUser(ResultSet resultSet) throws SQLException {
-        String username = resultSet.getString("userName");
-        String password = resultSet.getString("password");
-        String email = resultSet.getString("email");
-        String phoneNumber = resultSet.getString("phoneNumber");
-        String uId = resultSet.getString("userID");
-        BufferedImage avatar = null;
-        try {
-            avatar = ImageIO.read(new ByteArrayInputStream(resultSet.getBytes("avatar")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return new User(username, password, email, phoneNumber, uId, avatar);
-
-    }
 
     public static User retrieveFromDB(String username, String password) {
         try {
@@ -93,4 +77,22 @@ public class database {
     }
 
 
+    public static User createUser(ResultSet resultSet) throws SQLException {
+        String username = resultSet.getString("userName");
+        String password = resultSet.getString("password");
+        String email = resultSet.getString("email");
+        String phoneNumber = resultSet.getString("phoneNumber");
+        String uId = resultSet.getString("userID");
+        BufferedImage avatar = null;
+        try {
+            avatar = ImageIO.read(new ByteArrayInputStream(resultSet.getBytes("avatar")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return new User(username, password, email, phoneNumber, uId, avatar);
+
+    }
+
 }
+

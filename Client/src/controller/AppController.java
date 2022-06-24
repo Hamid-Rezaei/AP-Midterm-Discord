@@ -38,6 +38,31 @@ public class AppController {
     }
 
 
+    public User login(String username, String password) {
+        try {
+            outputStream.writeUTF("login");
+            outputStream.flush();
+            outputStream.writeUTF(username + " " + password);
+            outputStream.flush();
+            User user = (User) inputStream.readObject();
+            if(user == null){
+                return user;
+            }
+            int avatarSize = inputStream.readInt();
+            byte[] avatar = new byte[avatarSize];
+            inputStream.readFully(avatar, 0, avatarSize);
+            user.setAvatar(avatar);
+            return user;
+        } catch (IOException e) {
+            System.out.println("Can not write for server.");
+            return null;
+        } catch (ClassNotFoundException e) {
+            System.out.println("Can not read from server.");
+            return null;
+        }
+    }
+
+
     public String signUp(String username, String password, String email, String phoneNum, InputStream avatar) {
 
         try {
@@ -55,6 +80,22 @@ public class AppController {
             x.printStackTrace();
             return "IOException";
         }
+    }
+
+    public String friendRequest(String username, String targetUser){
+        String answer;
+        try {
+            outputStream.writeUTF("friendRequest");
+            outputStream.flush();
+            outputStream.writeUTF(username);
+            outputStream.flush();
+            outputStream.writeUTF(targetUser);
+            answer = inputStream.readUTF();
+        } catch (IOException e) {
+            e.printStackTrace();
+            answer = "something went wrong with friend Request.";
+        }
+        return answer;
     }
 
     public String parseError(int errorCode) {
