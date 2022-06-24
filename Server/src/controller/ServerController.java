@@ -127,16 +127,6 @@ public class ServerController implements Runnable {
             e.printStackTrace();
         }
     }
-/*
-    public static synchronized boolean register(String username, String password, String fullName) {
-        for (User user: allUsers) {
-            if (user.getUsername().equals(username)) return false;
-        }
-        allUsers.add(new User(username, password, fullName));
-        return true;
-
-    }
-*/
 
 
     @Override

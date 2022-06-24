@@ -6,6 +6,7 @@ import model.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import static view.MenuHandler.*;
 
@@ -76,7 +77,7 @@ public class Application {
         int choice = showFriendMenu();
         switch (choice){
             case 1 -> System.out.println(appController.friendRequest(user.getUsername(), getFriendName()));
-            //case 2 -> chatWithFriend();x
+            case 2 -> listOfFriendRequests();
             case 3 -> listOfFriends();
             default -> inApplication();
         }
@@ -93,6 +94,19 @@ public class Application {
 
 
     //Required methods for parts of friendMenuHandler and serverMenuHandler.
+
+    private static void listOfFriendRequests() {
+        HashSet<String> friendRequests = appController.friendRequestList(user.getUsername());
+        System.out.println("All friend requests: ");
+        for(String friendRequest : friendRequests){
+            System.out.println(friendRequest);
+        }
+        System.out.print("Enter usernames you want to accept (user1-user2-...): ");
+        String[] accepted = sc.nextLine().split("-");
+        System.out.print("Enter usernames you want to reject (user1-user2-...): ");
+        String[] rejected = sc.nextLine().split("-");
+
+    }
 
 
     private static void listOfFriends() {
