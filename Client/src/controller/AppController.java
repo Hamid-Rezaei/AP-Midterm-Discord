@@ -83,16 +83,19 @@ public class AppController {
     }
 
     public String friendRequest(String username, String targetUser){
+        String answer;
         try {
             outputStream.writeUTF("friendRequest");
             outputStream.flush();
             outputStream.writeUTF(username);
             outputStream.flush();
             outputStream.writeUTF(targetUser);
-            
+            answer = inputStream.readUTF();
         } catch (IOException e) {
             e.printStackTrace();
+            answer = "something went wrong with friend Request.";
         }
+        return answer;
     }
 
     public String parseError(int errorCode) {
