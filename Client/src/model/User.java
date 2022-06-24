@@ -2,7 +2,10 @@ package model;
 
 import model.*;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
 
@@ -19,6 +22,7 @@ public class User implements Serializable {
     private ArrayList<User> friends;
    // private ArrayList<Guild> guilds;
    // private ArrayList<DirectChat> directChats;
+
 
 
     /**
@@ -58,6 +62,17 @@ public class User implements Serializable {
     // TODO: create direct chat
     }
 
+    public BufferedImage getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(BufferedImage avatar) {
+        this.avatar = avatar;
+    }
+
+    public void setAvatar(byte[] avatar) throws IOException {
+        this.avatar = ImageIO.read(new ByteArrayInputStream(avatar));
+    }
 
     public void setStatus(Status status) {
         this.status = status;

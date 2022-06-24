@@ -45,7 +45,7 @@ public class Application {
         user = appController.login(username, password);
         if (user == null){
             //loginMenuHandler();
-            System.out.println("kir khar");
+            System.out.println("user is null");
         }else{
             System.out.println("Login Successfully.");
         }
