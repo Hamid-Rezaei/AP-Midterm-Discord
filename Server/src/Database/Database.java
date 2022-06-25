@@ -30,11 +30,11 @@ public class Database {
             }
             Statement checkuserExists = connection.createStatement();
             ResultSet foundUser = checkuserExists.executeQuery("select * from users where userName = " + "'" + username + "'");
-            if (foundUser != null) {
+            if (foundUser.next()) {
                 return ServerErrorType.USER_ALREADY_EXISTS;
             }
             foundUser = checkuserExists.executeQuery("select * from users where email = " + "'" + email + "'");
-            if (foundUser != null) {
+            if (foundUser.next()) {
                 return ServerErrorType.USER_ALREADY_EXISTS;
             }
             String insertQuery = "insert into users (userName, password, email, phoneNumber,userID,avatar) values(?, ?,?,?,?,?)";

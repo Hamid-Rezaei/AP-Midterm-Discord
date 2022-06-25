@@ -76,7 +76,6 @@ public class ServerController implements Runnable {
 
             if (answer == 1) {
                 appUsername = username;
-                connections.add(new Connection(this.socket, this.appUsername));
             }
 
             outputStream.writeInt(answer);
@@ -110,6 +109,7 @@ public class ServerController implements Runnable {
             outputStream.flush();
             outputStream.write(byteAvatar, 0, byteAvatar.length);
             outputStream.reset();
+            connections.add(new Connection(this.socket, this.appUsername));
         } catch (IOException e) {
             e.printStackTrace();
         }
