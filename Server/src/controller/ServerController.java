@@ -14,7 +14,7 @@ import java.util.*;
 public class ServerController implements Runnable {
 
     public static ArrayList<ServerController> serverControllers = new ArrayList<>();
-   // public static HashMap<String, Socket> usersSockets;
+    // public static HashMap<String, Socket> usersSockets;
     public static HashSet<Connection> connections;
 
     private Socket socket;
@@ -43,6 +43,7 @@ public class ServerController implements Runnable {
                 case "FriendList" -> friendList();
                 case "getUser" -> getUserWithUsername();
                 case "chatWithFriend" -> chatWithFriend();
+                case "revisedFriendRequests" -> revisedFriendRequests();
             }
 
         } catch (IOException e) {
@@ -73,7 +74,7 @@ public class ServerController implements Runnable {
             inputStream.readFully(avatar, 0, avatarSize);
             int answer = Database.insertToDB(username, pass, email, phoneNum, token, avatar).getCode();
 
-            if(answer == 1){
+            if (answer == 1) {
                 appUsername = username;
                 connections.add(new Connection(this.socket, this.appUsername));
             }
@@ -138,6 +139,19 @@ public class ServerController implements Runnable {
         }
     }
 
+    private void revisedFriendRequests() {
+        try {
+            HashSet<String> accepted =  (HashSet<String>) inputStream.readObject();
+            HashSet<String> rejected =  (HashSet<String>) inputStream.readObject();
+            String username = inputStream.readUTF();
+            String answer = Database.reviseFriendRequests(username,accepted,rejected);
+            outputStream.writeUTF(answer);
+            outputStream.flush();
+        } catch (ClassNotFoundException | IOException e){
+            e.printStackTrace();
+        }
+    }
+
     public void friendList() {
         try {
             String username = inputStream.readUTF();
@@ -160,7 +174,7 @@ public class ServerController implements Runnable {
     }
 
 
-    private void chatWithFriend(){
+    private void chatWithFriend() {
 
     }
 
