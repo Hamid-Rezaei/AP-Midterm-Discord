@@ -4,7 +4,6 @@ import controller.ServerErrorType;
 import model.User;
 
 import javax.imageio.ImageIO;
-import javax.swing.plaf.nimbus.State;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -59,19 +58,21 @@ public class Database {
 
     public static User retrieveFromDB(String username, String password) {
         try {
-
             Connection connection = connectToDB();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select * from users where userName = " + "'" + username + "'");
             if (!resultSet.next()) {
+                connection.close();
                 return null;
             } else {
                 String realPassword = resultSet.getString("password");
                 if (password.equals(realPassword)) {
-                    return createUser(resultSet);
+                    User user = createUser(resultSet);
+                    connection.close();
+                    return user;
                 }
             }
-            connection.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -87,8 +88,9 @@ public class Database {
             if (!resultSet.next()) {
                 return null;
             }
+            User user =  createUser(resultSet);
             connection.close();
-            return createUser(resultSet);
+            return user;
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -130,6 +132,11 @@ public class Database {
                 }
                 if (!(firstRule & secondRule)) {
                     return ServerErrorType.Duplicate_ERROR;
+                }
+                Statement CheckIfAlreadyFriend = connection.createStatement();
+                ResultSet isFriend = checkIfAlreadyExists.executeQuery("select user_id from friends where friends_id = " + "'" + fromUser + "'");
+                if(isFriend.next()){
+                    return ServerErrorType.ALREADY_FRIEND;
                 }
             }
             String insertQuery = "insert into requests (to_user, from_user) values(?, ?)";
@@ -181,6 +188,30 @@ public class Database {
             e.printStackTrace();
         }
         return friendList;
+    }
+
+    public static String reviseFriendRequests(String username, HashSet<String> accepted, HashSet<String> rejected) {
+        try {
+            Connection connection = connectToDB();
+            Statement statement = connection.createStatement();
+            PreparedStatement addtoFriends = connection.prepareStatement("INSERT into friends (user_id,friends_id) values(?,?) ");
+            ResultSet resultSet = statement.executeQuery("select from_user from requests where to_user = " + "'" + username + "'");
+            for (String friendUsername : accepted) {
+                addtoFriends.setString(1, username);
+                addtoFriends.setString(2, friendUsername);
+                addtoFriends.execute();
+                statement.execute("DELETE from requests where from_user = " + "'" + friendUsername + "'" + " and to_user = " + "'" + username + "'");
+            }
+            for (String friendUsername : rejected) {
+                statement.execute("DELETE from requests where from_user = " + "'" + friendUsername + "'" + " and to_user = " + "'" + username + "'");
+            }
+
+            connection.close();
+            return "Requests List updated.";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "something went wrong.";
+        }
     }
 }
 

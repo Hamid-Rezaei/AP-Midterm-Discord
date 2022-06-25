@@ -5,6 +5,7 @@ import model.*;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import static view.MenuHandler.*;
@@ -101,10 +102,18 @@ public class Application {
             System.out.println(friendRequest);
         }
         System.out.print("Enter usernames you want to accept (user1-user2-...): ");
-        String[] accepted = sc.nextLine().split("-");
-        System.out.print("Enter usernames you want to reject (user1-user2-...): ");
-        String[] rejected = sc.nextLine().split("-");
+        HashSet<String> accepted = new HashSet<>(Arrays.asList(sc.nextLine().split("-")));
 
+        System.out.print("Enter usernames you want to reject (user1-user2-...): ");
+        HashSet<String> rejected = new HashSet<>();
+        String[] rej = sc.nextLine().split("-");
+        for (int i = 0; i < rej.length; i++) {
+            if (!accepted.contains(rej[i])) {
+                rejected.add(rej[i]); //(Arrays.asList(sc.nextLine().split("-")));
+            }
+        }
+        String response = appController.revisedFriendRequests(user.getUsername(), accepted, rejected);
+        System.out.println(response);
         // az in ja be bad monde
 
     }

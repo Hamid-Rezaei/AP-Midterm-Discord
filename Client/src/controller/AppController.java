@@ -18,8 +18,9 @@ public class AppController {
 
     }
 
+
     public enum ServerErrorType {
-        NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4),Duplicate_ERROR(5), UNKNOWN_ERROR(404);
+        NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4),Duplicate_ERROR(5), ALREADY_FRIEND(6), UNKNOWN_ERROR(404);
 
         private int code;
 
@@ -56,6 +57,7 @@ public class AppController {
             outputStream.writeUTF(username + " " + password);
             outputStream.flush();
             User user = (User) inputStream.readObject();
+            System.out.println(user.getUsername() + user.getPassword());
             if (user == null) {
                 return user;
             }
@@ -65,6 +67,7 @@ public class AppController {
             user.setAvatar(avatar);
             return user;
         } catch (IOException e) {
+            e.printStackTrace();
             System.out.println("Can not write for server.");
             return null;
         } catch (ClassNotFoundException e) {
@@ -127,6 +130,24 @@ public class AppController {
         }
     }
 
+    public String revisedFriendRequests(String username, HashSet<String> accepted, HashSet<String> rejected) {
+        try {
+            outputStream.writeUTF("revisedFriendRequests");
+            outputStream.flush();
+            outputStream.writeObject(accepted);
+            outputStream.flush();
+            outputStream.writeObject(rejected);
+            outputStream.flush();
+            outputStream.writeUTF(username);
+            outputStream.flush();
+            String response = inputStream.readUTF();
+            return response;
+        } catch (IOException e){
+            e.printStackTrace();
+            return "something went wrong while revising Friend requests.";
+        }
+    }
+
     public HashSet<String> friendList(String username){
         try {
             outputStream.writeUTF("FriendList");
@@ -172,6 +193,9 @@ public class AppController {
             case 5:
                 error = "you already have a friend request with this user.";
                 break;
+            case 6:
+                error = "you are already friend of this user.";
+                break;
             default:
                 error = "UNKNOWN ERROR.";
                 break;
@@ -179,4 +203,5 @@ public class AppController {
         }
         return error;
     }
+
 }
