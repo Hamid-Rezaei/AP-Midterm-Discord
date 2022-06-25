@@ -9,7 +9,7 @@ import java.util.*;
 public class AppController {
 
     public enum ServerErrorType {
-        NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4),Duplicate_ERROR(5), ALREADY_FRIEND(6), UNKNOWN_ERROR(404);
+        NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4), Duplicate_ERROR(5), ALREADY_FRIEND(6), UNKNOWN_ERROR(404);
 
         private int code;
 
@@ -118,14 +118,14 @@ public class AppController {
 
     }
 
-    public HashSet<String> friendRequestList(String username){
+    public HashSet<String> friendRequestList(String username) {
         try {
             outputStream.writeUTF("#RequestList");
             outputStream.flush();
             outputStream.writeUTF(username);
             outputStream.flush();
             return (HashSet<String>) inputStream.readObject();
-        }catch (IOException | ClassNotFoundException e){
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;
         }
@@ -143,13 +143,13 @@ public class AppController {
             outputStream.flush();
             String response = inputStream.readUTF();
             return response;
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return "something went wrong while revising Friend requests.";
         }
     }
 
-    public HashSet<String> friendList(String username){
+    public HashSet<String> friendList(String username) {
         try {
             outputStream.writeUTF("#FriendList");
             outputStream.flush();
@@ -162,7 +162,7 @@ public class AppController {
         }
     }
 
-    public User getUser(String username){
+    public User getUser(String username) {
         try {
             outputStream.writeUTF("#getUser");
             outputStream.flush();
@@ -176,7 +176,7 @@ public class AppController {
     }
 
 
-    public String requestForDirectChat(User friend){
+    public String requestForDirectChat(User friend) {
         try {
             outputStream.writeUTF("#requestForDirectChat");
             outputStream.flush();
@@ -185,12 +185,12 @@ public class AppController {
             outputStream.writeObject(currentUser);
             outputStream.flush();
             String[] answer = inputStream.readUTF().split(" ");
-            if(answer[0].equals("Success")){
-                Connection currConnection = new Connection(this.socket, this.currentUser.getUsername());
+            if (answer[0].equals("Success")) {
+                Connection currConnection = new Connection(this.socket, outputStream, inputStream, this.currentUser.getUsername());
                 DirectChatController directChatController = new DirectChatController(currConnection, answer[1]);
                 new Thread(directChatController).start();
                 return "You are in private chat with " + friend.getUsername();
-            }else {
+            } else {
                 return "Must handle.....";
             }
 
