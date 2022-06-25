@@ -8,17 +8,6 @@ import java.util.*;
 
 public class AppController {
 
-    public void printfriendreq() {
-        try {
-            outputStream.writeUTF("RequestList");
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
     public enum ServerErrorType {
         NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4),Duplicate_ERROR(5), ALREADY_FRIEND(6), UNKNOWN_ERROR(404);
 
@@ -29,14 +18,15 @@ public class AppController {
         }
     }
 
-    private static User currentUser;
-    private static Socket socket;
-    private static ObjectOutputStream outputStream;
-    private static ObjectInputStream inputStream;
+    private User currentUser;
+    private Socket socket;
+    private ObjectOutputStream outputStream;
+    private ObjectInputStream inputStream;
 
     public AppController() {
         setupConnection();
     }
+
 
     private void setupConnection() {
         try {
@@ -50,36 +40,10 @@ public class AppController {
     }
 
 
-    public User login(String username, String password) {
-        try {
-            outputStream.writeUTF("login");
-            outputStream.flush();
-            outputStream.writeUTF(username + " " + password);
-            outputStream.flush();
-            User user = (User) inputStream.readObject();
-            if (user == null) {
-                return user;
-            }
-            int avatarSize = inputStream.readInt();
-            byte[] avatar = new byte[avatarSize];
-            inputStream.readFully(avatar, 0, avatarSize);
-            user.setAvatar(avatar);
-            return user;
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Can not write for server.");
-            return null;
-        } catch (ClassNotFoundException e) {
-            System.out.println("Can not read from server.");
-            return null;
-        }
-    }
-
-
     public String signUp(String username, String password, String email, String phoneNum, InputStream avatar) {
 
         try {
-            outputStream.writeUTF("signUp");
+            outputStream.writeUTF("#signUp");
             outputStream.flush();
             outputStream.writeUTF(username + " " + password + " " + email + " " + phoneNum);
             outputStream.flush();
@@ -95,11 +59,39 @@ public class AppController {
         }
     }
 
+
+    public User login(String username, String password) {
+        try {
+            outputStream.writeUTF("#login");
+            outputStream.flush();
+            outputStream.writeUTF(username + " " + password);
+            outputStream.flush();
+            User user = (User) inputStream.readObject();
+            if (user == null) {
+                return user;
+            }
+            int avatarSize = inputStream.readInt();
+            byte[] avatar = new byte[avatarSize];
+            inputStream.readFully(avatar, 0, avatarSize);
+            user.setAvatar(avatar);
+            currentUser = user;
+            return user;
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Can not write for server.");
+            return null;
+        } catch (ClassNotFoundException e) {
+            System.out.println("Can not read from server.");
+            return null;
+        }
+    }
+
+
     public String friendRequest(String username, String targetUser) {
         String answer;
         int answerCode;
         try {
-            outputStream.writeUTF("friendRequest");
+            outputStream.writeUTF("#friendRequest");
             outputStream.flush();
 
             outputStream.writeUTF(username);
@@ -116,9 +108,19 @@ public class AppController {
         return answer;
     }
 
+    public void printfriendreq() {
+        try {
+            outputStream.writeUTF("#RequestList");
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
     public HashSet<String> friendRequestList(String username){
         try {
-            outputStream.writeUTF("RequestList");
+            outputStream.writeUTF("#RequestList");
             outputStream.flush();
             outputStream.writeUTF(username);
             outputStream.flush();
@@ -131,7 +133,7 @@ public class AppController {
 
     public String revisedFriendRequests(String username, HashSet<String> accepted, HashSet<String> rejected) {
         try {
-            outputStream.writeUTF("revisedFriendRequests");
+            outputStream.writeUTF("#revisedFriendRequests");
             outputStream.flush();
             outputStream.writeObject(accepted);
             outputStream.flush();
@@ -149,7 +151,7 @@ public class AppController {
 
     public HashSet<String> friendList(String username){
         try {
-            outputStream.writeUTF("FriendList");
+            outputStream.writeUTF("#FriendList");
             outputStream.flush();
             outputStream.writeUTF(username);
             outputStream.flush();
@@ -162,7 +164,7 @@ public class AppController {
 
     public User getUser(String username){
         try {
-            outputStream.writeUTF("getUser");
+            outputStream.writeUTF("#getUser");
             outputStream.flush();
             outputStream.writeUTF(username);
             outputStream.flush();
@@ -173,6 +175,26 @@ public class AppController {
         }
     }
 
+
+    public String requestForDirectChat(User friend){
+        try {
+            outputStream.writeUTF("#requestForDirectChat");
+            outputStream.flush();
+            String[] answer = inputStream.readUTF().split(" ");
+            if(answer[0].equals("Success")){
+                Connection currConnection = new Connection(this.socket, this.currentUser.getUsername());
+                DirectChatController directChatController = new DirectChatController(currConnection, answer[1]);
+                new Thread(directChatController).start();
+                return "You are in private chat with " + friend.getUsername();
+            }else {
+                return "Must handle.....";
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Could not open chat with " + friend.getUsername();
+        }
+    }
 
     public String parseError(int errorCode) {
         String error;

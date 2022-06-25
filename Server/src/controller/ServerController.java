@@ -36,14 +36,14 @@ public class ServerController implements Runnable {
         try {
             String task = inputStream.readUTF();
             switch (task) {
-                case "signUp" -> signUp();
-                case "login" -> login();
-                case "friendRequest" -> friendRequest();
-                case "RequestList" -> friendRequestList();
-                case "FriendList" -> friendList();
-                case "getUser" -> getUserWithUsername();
-                case "chatWithFriend" -> chatWithFriend();
-                case "revisedFriendRequests" -> revisedFriendRequests();
+                case "#signUp" -> signUp();
+                case "#login" -> login();
+                case "#friendRequest" -> friendRequest();
+                case "#RequestList" -> friendRequestList();
+                case "#FriendList" -> friendList();
+                case "#getUser" -> getUserWithUsername();
+                case "#requestForDirectChat" -> chatWithFriend();
+                case "#revisedFriendRequests" -> revisedFriendRequests();
             }
 
         } catch (IOException e) {
@@ -175,7 +175,8 @@ public class ServerController implements Runnable {
 
 
     private void chatWithFriend() {
-
+        //TODO: check if we can load direct chat controller
+        
     }
 
 

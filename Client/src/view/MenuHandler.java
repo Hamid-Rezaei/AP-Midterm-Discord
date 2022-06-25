@@ -13,7 +13,7 @@ import java.util.Scanner;
  */
 public class MenuHandler {
 
-    static Scanner sc = new Scanner(System.in);
+    public static Scanner sc = new Scanner(System.in);
 
 
     public static int returnChoice() {
