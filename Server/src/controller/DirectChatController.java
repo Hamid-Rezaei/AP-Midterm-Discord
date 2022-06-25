@@ -16,13 +16,25 @@ public class DirectChatController implements Runnable{
     private ArrayList<Connection> usersInChatConnection;
 
 
-    public DirectChatController(String chatHashCode, ArrayList<Connection> usersInChatConnection) {
+    public DirectChatController(ArrayList<Connection> usersInChatConnection) {
         messages = new ArrayList<>();
         this.usersInChatConnection = usersInChatConnection;
-        this.chatHashCode = chatHashCode;
+        this.chatHashCode = generateHashCode();
         directChatControllers.put(this.chatHashCode, this);
     }
 
+
+    public String generateHashCode(){
+        String hash;
+        String user_1 = usersInChatConnection.get(0).getUsername();
+        String user_2 = usersInChatConnection.get(1).getUsername();
+        if(user_1.length() < user_2.length()){
+            hash = user_1 + user_2;
+        } else {
+            hash = user_2 + user_1;
+        }
+        return hash;
+    }
     public synchronized void addMessage(Message message){
         messages.add(message);
     }

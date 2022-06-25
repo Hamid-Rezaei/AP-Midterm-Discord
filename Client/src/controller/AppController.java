@@ -67,7 +67,6 @@ public class AppController {
             outputStream.writeUTF(username + " " + password);
             outputStream.flush();
             User user = (User) inputStream.readObject();
-            //System.out.println(user.getUsername() + user.getPassword());
             if (user == null) {
                 return user;
             }
