@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-public class DirectChatController implements Runnable{
+public class DirectChatController implements Runnable {
 
     public static HashMap<String, DirectChatController> directChatControllers = new HashMap<>();
     private ArrayList<Message> messages;
@@ -24,28 +24,29 @@ public class DirectChatController implements Runnable{
     }
 
 
-    public String generateHashCode(){
+    public String generateHashCode() {
         String hash;
         String user_1 = usersInChatConnection.get(0).getUsername();
         String user_2 = usersInChatConnection.get(1).getUsername();
-        if(user_1.length() < user_2.length()){
+        if (user_1.length() < user_2.length()) {
             hash = user_1 + user_2;
         } else {
             hash = user_2 + user_1;
         }
         return hash;
     }
-    public synchronized void addMessage(Message message){
+
+    public synchronized void addMessage(Message message) {
         messages.add(message);
     }
 
-    public void broadcastMessages(){
-        for(Connection connection: usersInChatConnection){
-            for(int i = 10; i >= 0; i--){
+    public void broadcastMessages() {
+        for (Connection connection : usersInChatConnection) {
+            for (int i = messages.size(); i > 0; i--) {
                 //if(!message.getAuthorName().equals(connection.getUsername())){
-                  //  connection.sendMessage(message);
-               // }
-                connection.sendMessage(messages.get(messages.size() - 1 - i));
+                //  connection.sendMessage(message);
+                // }
+                connection.sendMessage(messages.get(i - 1));
 
             }
         }
@@ -53,14 +54,17 @@ public class DirectChatController implements Runnable{
     }
 
 
+    public String getChatHashCode() {
+        return chatHashCode;
+    }
 
     @Override
     public void run() {
-        while (true){
-           for(Connection connection : usersInChatConnection){
-               addMessage(connection.receiveMessage());
-               broadcastMessages();
-           }
+        while (true) {
+            for (Connection connection : usersInChatConnection) {
+                addMessage(connection.receiveMessage());
+                broadcastMessages();
+            }
         }
     }
 }

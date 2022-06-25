@@ -15,7 +15,7 @@ public class ServerController implements Runnable {
 
     public static ArrayList<ServerController> serverControllers = new ArrayList<>();
     // public static HashMap<String, Socket> usersSockets;
-    public static HashSet<Connection> connections;
+    public static HashSet<Connection> connections = new HashSet<>();
 
     private Socket socket;
     private ObjectOutputStream outputStream;
@@ -73,11 +73,6 @@ public class ServerController implements Runnable {
             byte[] avatar = new byte[avatarSize];
             inputStream.readFully(avatar, 0, avatarSize);
             int answer = Database.insertToDB(username, pass, email, phoneNum, token, avatar).getCode();
-
-            if (answer == 1) {
-                appUsername = username;
-            }
-
             outputStream.writeInt(answer);
             outputStream.flush();
 
@@ -109,7 +104,9 @@ public class ServerController implements Runnable {
             outputStream.flush();
             outputStream.write(byteAvatar, 0, byteAvatar.length);
             outputStream.reset();
-            connections.add(new Connection(this.socket, this.appUsername));
+            appUsername = answer.getUsername();
+            Connection connection = new Connection(this.socket, outputStream, inputStream, this.appUsername);
+            connections.add(connection);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -141,13 +138,13 @@ public class ServerController implements Runnable {
 
     private void revisedFriendRequests() {
         try {
-            HashSet<String> accepted =  (HashSet<String>) inputStream.readObject();
-            HashSet<String> rejected =  (HashSet<String>) inputStream.readObject();
+            HashSet<String> accepted = (HashSet<String>) inputStream.readObject();
+            HashSet<String> rejected = (HashSet<String>) inputStream.readObject();
             String username = inputStream.readUTF();
-            String answer = Database.reviseFriendRequests(username,accepted,rejected);
+            String answer = Database.reviseFriendRequests(username, accepted, rejected);
             outputStream.writeUTF(answer);
             outputStream.flush();
-        } catch (ClassNotFoundException | IOException e){
+        } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -176,7 +173,29 @@ public class ServerController implements Runnable {
 
     private void chatWithFriend() {
         //TODO: check if we can load direct chat controller
-        
+        try {
+            User friend = (User) inputStream.readObject();
+            User currentUser = (User) inputStream.readObject();
+            Connection userConnection = null;
+            Connection friendConnection = null;
+            for (Connection connection : connections) {
+                if (connection.getUsername().equals(friend.getUsername())) {
+                    friendConnection = connection;
+                }
+                if (connection.getUsername().equals(currentUser.getUsername())) {
+                    userConnection = connection;
+                }
+            }
+            ArrayList<Connection> directChatConnections = new ArrayList<>();
+            directChatConnections.add(userConnection);
+            directChatConnections.add(friendConnection);
+            DirectChatController directChat = new DirectChatController(directChatConnections);
+            outputStream.writeUTF("Success " + directChat.getChatHashCode());
+            outputStream.flush();
+            new Thread(directChat).start();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 

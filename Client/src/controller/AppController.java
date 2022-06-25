@@ -180,6 +180,10 @@ public class AppController {
         try {
             outputStream.writeUTF("#requestForDirectChat");
             outputStream.flush();
+            outputStream.writeObject(friend);
+            outputStream.flush();
+            outputStream.writeObject(currentUser);
+            outputStream.flush();
             String[] answer = inputStream.readUTF().split(" ");
             if(answer[0].equals("Success")){
                 Connection currConnection = new Connection(this.socket, this.currentUser.getUsername());
