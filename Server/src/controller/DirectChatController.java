@@ -29,10 +29,12 @@ public class DirectChatController implements Runnable{
 
     public void broadcastMessages(){
         for(Connection connection: usersInChatConnection){
-            for(Message message : messages){
-                if(!message.getAuthorName().equals(connection.getUsername())){
-                    connection.sendMessage(message);
-                }
+            for(int i = 10; i >= 0; i--){
+                //if(!message.getAuthorName().equals(connection.getUsername())){
+                  //  connection.sendMessage(message);
+               // }
+                connection.sendMessage(messages.get(messages.size() - 1 - i));
+
             }
         }
 

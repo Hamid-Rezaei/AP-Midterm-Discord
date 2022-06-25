@@ -61,4 +61,8 @@ public class Connection {
     public String getUsername() {
         return username;
     }
+
+    public boolean isGood(){
+        return socket.isConnected();
+    }
 }

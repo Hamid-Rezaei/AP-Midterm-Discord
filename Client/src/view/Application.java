@@ -114,7 +114,6 @@ public class Application {
         }
         String response = appController.revisedFriendRequests(user.getUsername(), accepted, rejected);
         System.out.println(response);
-        // az in ja be bad monde
 
     }
 
@@ -123,7 +122,7 @@ public class Application {
         HashSet<String> friends = appController.friendList(user.getUsername());
         printFriends(friends);
         User friend = getFriendForChat();
-        //user.goToDirectChat(friend);
+        appController.requestForDirectChat(friend);
     }
 
 
