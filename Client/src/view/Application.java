@@ -3,7 +3,6 @@ package view;
 import controller.*;
 import model.*;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -75,7 +74,7 @@ public class Application {
 
     private static void friendMenuHandler() {
         int choice = showFriendMenu();
-        switch (choice){
+        switch (choice) {
             case 1 -> System.out.println(appController.friendRequest(user.getUsername(), getFriendName()));
             case 2 -> listOfFriendRequests();
             case 3 -> listOfFriends();
@@ -98,7 +97,7 @@ public class Application {
     private static void listOfFriendRequests() {
         HashSet<String> friendRequests = appController.friendRequestList(user.getUsername());
         System.out.println("All friend requests: ");
-        for(String friendRequest : friendRequests){
+        for (String friendRequest : friendRequests) {
             System.out.println(friendRequest);
         }
         System.out.print("Enter usernames you want to accept (user1-user2-...): ");
@@ -106,41 +105,31 @@ public class Application {
         System.out.print("Enter usernames you want to reject (user1-user2-...): ");
         String[] rejected = sc.nextLine().split("-");
 
+        // az in ja be bad monde
+
     }
 
 
     private static void listOfFriends() {
-        ArrayList<User> friends = user.getFriends();
+        HashSet<String> friends = appController.friendList(user.getUsername());
         printFriends(friends);
-        User friend = getFriendForChat(friends);
+        User friend = getFriendForChat();
         //user.goToDirectChat(friend);
     }
 
 
-    private static void printFriends(ArrayList<User> friends) {
+    private static void printFriends(HashSet<String> friends) {
         int i = 1;
-        for (User friend : friends) {
-            System.out.println(i++ + ". " + friend.toString());
+        for (String friend : friends) {
+            System.out.println(i++ + ". " + friend);
         }
     }
 
 
-    private static User getFriendForChat(ArrayList<User> friends) {
-        System.out.print("chose friend you want to chat with (Enter number): ");
-        int friendToChat = 0;
-        User friend = null;
-        try {
-            friendToChat = Integer.parseInt(sc.nextLine());
-            friend = friends.get(friendToChat - 1);
-        } catch (NumberFormatException e) {
-            System.out.println("Oops! something is wrong with your input.");
-            getFriendForChat(friends);
-        }catch (ArrayIndexOutOfBoundsException e){
-            System.out.println("Oops! input is out of array bound.");
-            getFriendForChat(friends);
-        }
-
-        return friend;
+    private static User getFriendForChat() {
+        System.out.print("chose friend you want to chat with (Enter username): ");
+        String friendToChat = sc.nextLine();
+        return appController.getUser(friendToChat);
     }
 
     //Running Application.

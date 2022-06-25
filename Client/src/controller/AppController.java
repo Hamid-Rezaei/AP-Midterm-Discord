@@ -127,6 +127,33 @@ public class AppController {
         }
     }
 
+    public HashSet<String> friendList(String username){
+        try {
+            outputStream.writeUTF("FriendList");
+            outputStream.flush();
+            outputStream.writeUTF(username);
+            outputStream.flush();
+            return (HashSet<String>) inputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public User getUser(String username){
+        try {
+            outputStream.writeUTF("getUser");
+            outputStream.flush();
+            outputStream.writeUTF(username);
+            outputStream.flush();
+            return (User) inputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
     public String parseError(int errorCode) {
         String error;
         switch (errorCode) {

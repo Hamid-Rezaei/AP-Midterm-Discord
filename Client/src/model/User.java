@@ -68,9 +68,6 @@ public class User implements Serializable {
         // TODO: create direct chat
     }
 
-    public ArrayList<User> getFriends() {
-        return friends;
-    }
 
     public BufferedImage getAvatar() {
         return avatar;
