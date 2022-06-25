@@ -195,7 +195,6 @@ public class Database {
             Connection connection = connectToDB();
             Statement statement = connection.createStatement();
             PreparedStatement addtoFriends = connection.prepareStatement("INSERT into friends (user_id,friends_id) values(?,?) ");
-            ResultSet resultSet = statement.executeQuery("select from_user from requests where to_user = " + "'" + username + "'");
             for (String friendUsername : accepted) {
                 addtoFriends.setString(1, username);
                 addtoFriends.setString(2, friendUsername);
