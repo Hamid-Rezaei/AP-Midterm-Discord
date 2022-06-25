@@ -14,19 +14,21 @@ import java.util.*;
 public class ServerController implements Runnable {
 
     public static ArrayList<ServerController> serverControllers = new ArrayList<>();
+   // public static HashMap<String, Socket> usersSockets;
+    public static HashSet<Connection> connections;
+
     private Socket socket;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
-
     private String appUsername;
-    private static ArrayList<User> allUsers = new ArrayList<>();
-    private static HashMap<String, User> loggedInUsers;
+
     private String userToken;
 
     public ServerController(Socket socket) throws IOException {
         this.socket = socket;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
         this.inputStream = new ObjectInputStream(socket.getInputStream());
+        serverControllers.add(this);
     }
 
 
@@ -40,6 +42,7 @@ public class ServerController implements Runnable {
                 case "RequestList" -> friendRequestList();
                 case "FriendList" -> friendList();
                 case "getUser" -> getUserWithUsername();
+                case "chatWithFriend" -> chatWithFriend();
             }
 
         } catch (IOException e) {
@@ -70,9 +73,14 @@ public class ServerController implements Runnable {
             inputStream.readFully(avatar, 0, avatarSize);
             int answer = Database.insertToDB(username, pass, email, phoneNum, token, avatar).getCode();
 
+            if(answer == 1){
+                appUsername = username;
+                connections.add(new Connection(this.socket, this.appUsername));
+            }
+
             outputStream.writeInt(answer);
             outputStream.flush();
-            //allUsers.add(new User(parts[0], parts[1], parts[]));
+
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -150,6 +158,12 @@ public class ServerController implements Runnable {
             e.printStackTrace();
         }
     }
+
+
+    private void chatWithFriend(){
+
+    }
+
 
     @Override
     public void run() {
