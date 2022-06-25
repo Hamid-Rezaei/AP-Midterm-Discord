@@ -200,6 +200,9 @@ public class Database {
                 addtoFriends.setString(1, username);
                 addtoFriends.setString(2, friendUsername);
                 addtoFriends.execute();
+                addtoFriends.setString(1, friendUsername);
+                addtoFriends.setString(2, username);
+                addtoFriends.execute();
                 statement.execute("DELETE from requests where from_user = " + "'" + friendUsername + "'" + " and to_user = " + "'" + username + "'");
             }
             for (String friendUsername : rejected) {
