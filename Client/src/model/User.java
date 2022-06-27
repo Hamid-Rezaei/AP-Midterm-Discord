@@ -21,8 +21,6 @@ public class User implements Serializable {
     private transient BufferedImage avatar;
     private ArrayList<User> friends;
     private ArrayList<String> friendRequests;
-    // private ArrayList<Guild> guilds;
-    // private ArrayList<DirectChat> directChats;
 
 
     /**
@@ -41,35 +39,7 @@ public class User implements Serializable {
         this.status = Status.ONLINE;
         this.token = token;
         friends = new ArrayList<>();
-        //   guilds = new ArrayList<>();
-        //   directChats = new ArrayList<>();
         this.avatar = avatar;
-    }
-
-
-    public void addFriend(User friend) {
-        friends.add(friend);
-
-    }
-
-    public void addFriendRequest(String request){
-        friendRequests.add(request);
-    }
-
-    public void setFriends(ArrayList<User> friends) {
-        this.friends = friends;
-    }
-
-    public void setFriendRequests(ArrayList<String> friendRequests) {
-        this.friendRequests = friendRequests;
-    }
-
-    public void goToDirectChat(int friend){
-        // TODO: create direct chat
-    }
-
-    public ArrayList<User> getFriends() {
-        return friends;
     }
 
     public BufferedImage getAvatar() {
@@ -98,6 +68,35 @@ public class User implements Serializable {
 
     public String getUsername() {
         return username;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof User)) return false;
+        User user = (User) o;
+        return Objects.equals(getUsername(), user.getUsername()) && Objects.equals(getPassword(), user.getPassword()) && Objects.equals(getEmail(), user.getEmail()) && Objects.equals(getPhoneNumber(), user.getPhoneNumber()) && getStatus() == user.getStatus() && Objects.equals(getToken(), user.getToken()) && Objects.equals(getAvatar(), user.getAvatar()) && Objects.equals(friends, user.friends) && Objects.equals(friendRequests, user.friendRequests);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getUsername(), getPassword(), getEmail(), getPhoneNumber(), getStatus(), getToken(), getAvatar(), friends, friendRequests);
     }
 
     @Override
