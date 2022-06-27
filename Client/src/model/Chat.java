@@ -46,7 +46,6 @@ public class Chat implements Runnable, Serializable {
     @Override
     public void run() {
         Scanner scanner = new Scanner(System.in);
-        String input = scanner.nextLine();
         Thread listenForMsg = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -64,6 +63,7 @@ public class Chat implements Runnable, Serializable {
             }
         });
         listenForMsg.start();
+        String input = scanner.nextLine();
         while (!input.equals("#exit")) {
             Message message;
             if (input.startsWith("#file")) {
@@ -71,11 +71,14 @@ public class Chat implements Runnable, Serializable {
             } else {
                 message = new Message(input, currUser.getUsername(), LocalDateTime.now());
             }
+            try {
+                outputStream.writeObject(message);
+            }catch (IOException e){
+                e.printStackTrace();
+            }
             messages.add(message);
-            System.out.println(message);
             input = scanner.nextLine();
         }
         exit = true;
-        listenForMsg.stop();
     }
 }

@@ -185,7 +185,6 @@ public class ServerController implements Runnable {
     private DirectChatController getDirChatController(User currentUser, User friend ){
         String chatHash = directChatHashCode(currentUser.getUsername(), friend.getUsername());
         DirectChatController directChatController = directChats.get(chatHash);
-        directChatController.loadMessages();
         if (directChatController == null) {
             Connection userConnection = connections.get(currentUser.getUsername());
 
@@ -197,9 +196,9 @@ public class ServerController implements Runnable {
             directChatConnections.add(userConnection);
 
             directChatController = new DirectChatController(directChatConnections, participants);
+            directChatController.loadMessages();
             directChats.put(directChatController.getChatHashCode(), directChatController);
         }
-
         directChatController.addConnection(connections.get(currentUser.getUsername()));
 
         return directChatController;
@@ -210,7 +209,6 @@ public class ServerController implements Runnable {
         try {
             User friend = (User) inputStream.readObject();
             User currentUser = (User) inputStream.readObject();
-
             DirectChatController directChatController = getDirChatController(currentUser, friend);
             new Thread(directChatController).start();
             outputStream.writeUTF("Success");
