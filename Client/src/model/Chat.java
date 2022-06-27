@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -12,7 +13,7 @@ public class Chat implements Runnable, Serializable {
     private User currUser;
     private transient ObjectOutputStream outputStream;
     private transient ObjectInputStream inputStream;
-
+    private boolean exit = false;
     public Chat() {
         messages = new ArrayList<>();
     }
@@ -49,7 +50,7 @@ public class Chat implements Runnable, Serializable {
         Thread listenForMsg = new Thread(new Runnable() {
             @Override
             public void run() {
-                while(true){
+                while (!exit) {
                     try {
                         Message msg = (Message) inputStream.readObject();
                         System.out.println(msg.toString());
@@ -64,15 +65,17 @@ public class Chat implements Runnable, Serializable {
         });
         listenForMsg.start();
         while (!input.equals("#exit")) {
-            try {
-                Message message = new Message(input, currUser.getUsername());
-                outputStream.writeObject(message);
-                messages.add(message);
-                input = scanner.nextLine();
-            } catch (IOException e){
-                e.printStackTrace();
+            Message message;
+            if (input.startsWith("#file")) {
+                message = new Message(input, currUser.getUsername(), LocalDateTime.now(), true);
+            } else {
+                message = new Message(input, currUser.getUsername(), LocalDateTime.now());
             }
+            messages.add(message);
+            System.out.println(message);
+            input = scanner.nextLine();
         }
-        listenForMsg.interrupt();
+        exit = true;
+        listenForMsg.stop();
     }
 }

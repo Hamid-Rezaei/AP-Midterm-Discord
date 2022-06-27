@@ -16,7 +16,6 @@ import java.util.*;
 public class ServerController implements Runnable {
 
     public static ArrayList<ServerController> serverControllers = new ArrayList<>();
-    // public static HashMap<String, Socket> usersSockets;
     public static HashMap<String, DirectChatController> directChats = new HashMap<>();
     public static HashMap<String, Connection> connections = new HashMap<>();
 
@@ -183,31 +182,36 @@ public class ServerController implements Runnable {
         return hash;
     }
 
+    private DirectChatController getDirChatController(User currentUser, User friend ){
+        String chatHash = directChatHashCode(currentUser.getUsername(), friend.getUsername());
+        DirectChatController directChatController = directChats.get(chatHash);
+        directChatController.loadMessages();
+        if (directChatController == null) {
+            Connection userConnection = connections.get(currentUser.getUsername());
+
+            ArrayList<User> participants = new ArrayList<>();
+            participants.add(currentUser);
+            participants.add(friend);
+
+            HashSet<Connection> directChatConnections = new HashSet<>();
+            directChatConnections.add(userConnection);
+
+            directChatController = new DirectChatController(directChatConnections, participants);
+            directChats.put(directChatController.getChatHashCode(), directChatController);
+        }
+
+        directChatController.addConnection(connections.get(currentUser.getUsername()));
+
+        return directChatController;
+    }
+
     private void chatWithFriend() {
         //TODO: check if we can load direct chat controller
         try {
             User friend = (User) inputStream.readObject();
             User currentUser = (User) inputStream.readObject();
-            String chatHash = directChatHashCode(currentUser.getUsername(), friend.getUsername());
-            DirectChatController directChatController = directChats.get(chatHash);
-            if (directChatController == null) {
-                Connection userConnection = connections.get(currentUser.getUsername());
-                Connection friendConnection = connections.get(friend.getUsername());
 
-                ArrayList<User> participants = new ArrayList<>();
-                participants.add(currentUser);
-                participants.add(friend);
-
-                HashSet<Connection> directChatConnections = new HashSet<>();
-                directChatConnections.add(userConnection);
-
-                if (friendConnection != null)
-                    directChatConnections.add(friendConnection);
-
-                directChatController = new DirectChatController(directChatConnections, participants);
-                directChats.put(directChatController.getChatHashCode(), directChatController);
-            }
-            directChatController.addConnection(connections.get(currentUser.getUsername()));
+            DirectChatController directChatController = getDirChatController(currentUser, friend);
             new Thread(directChatController).start();
             outputStream.writeUTF("Success");
             outputStream.flush();
@@ -224,6 +228,7 @@ public class ServerController implements Runnable {
             e.printStackTrace();
         }
     }
+
 
 
     @Override

@@ -76,9 +76,18 @@ public class Application {
     private static void friendMenuHandler() {
         int choice = showFriendMenu();
         switch (choice) {
-            case 1 -> System.out.println(appController.friendRequest(user.getUsername(), getFriendName()));
-            case 2 -> listOfFriendRequests();
-            case 3 -> listOfFriends();
+            case 1 -> {
+                System.out.println(appController.friendRequest(user.getUsername(), getFriendName()));
+                friendMenuHandler();
+            }
+            case 2 -> {
+                listOfFriendRequests();
+                friendMenuHandler();
+            }
+            case 3 -> {
+                listOfFriends();
+                friendMenuHandler();
+            }
             default -> inApplication();
         }
     }
@@ -122,8 +131,10 @@ public class Application {
         HashSet<String> friends = appController.friendList(user.getUsername());
         printFriends(friends);
         User friend = getFriendForChat();
+        if(friend == null)
+            return;
         Chat directChat = appController.requestForDirectChat(friend);
-
+        // what's happened here with directChat...
     }
 
 
@@ -136,8 +147,9 @@ public class Application {
 
 
     private static User getFriendForChat() {
-        System.out.print("chose friend you want to chat with (Enter username): ");
+        System.out.print("chose friend you want to chat with (Enter username, Enter\"#exit\"to get back): ");
         String friendToChat = sc.nextLine();
+        System.out.println("You are in chat with: " + friendToChat);
         return appController.getUser(friendToChat);
     }
 
@@ -149,7 +161,10 @@ public class Application {
             int choice = MenuHandler.showStartMenu();
             switch (choice) {
                 case 1 -> signUpMenu();
-                case 2 -> loginMenuHandler();
+                case 2 -> {
+                    loginMenuHandler();
+                    appController = new AppController();
+                }
                 case 3 -> {
                     break runLoop;
                 }

@@ -124,17 +124,19 @@ public class Database {
                 boolean firstRule = false;
                 boolean secondRule = false;
                 if (!checkRules.next()) {
+                    System.out.println("Test Bug 1");
                     firstRule = true;
                 }
                 checkRules = checkIfAlreadyExists.executeQuery("select from_user, to_user from requests where from_user = " + "'" + targetUser + "'" + "and to_user = " + "'" + fromUser + "'");
                 if (!checkRules.next()) {
+                    System.out.println("Test Bug 2");
                     secondRule = true;
                 }
                 if (!(firstRule & secondRule)) {
                     return ServerErrorType.Duplicate_ERROR;
                 }
                 Statement CheckIfAlreadyFriend = connection.createStatement();
-                ResultSet isFriend = checkIfAlreadyExists.executeQuery("select user_id from friends where friends_id = " + "'" + fromUser + "'");
+                ResultSet isFriend = checkIfAlreadyExists.executeQuery("select user_id from friends where friends_id = " + "'" + fromUser + "'" + "and user_id = " + "'" + targetUser + "'");
                 if(isFriend.next()){
                     return ServerErrorType.ALREADY_FRIEND;
                 }
