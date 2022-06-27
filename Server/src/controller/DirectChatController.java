@@ -4,7 +4,7 @@ import model.Chat;
 import model.Message;
 import model.User;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,7 +12,6 @@ import java.util.HashSet;
 
 public class DirectChatController implements Runnable {
 
-    //    public static HashMap<String, DirectChatController> directChatControllers = new HashMap<>();
     private Chat directChat;
     private ArrayList<Message> messages = new ArrayList<>();
     private String chatHashCode;
@@ -26,7 +25,6 @@ public class DirectChatController implements Runnable {
         this.participants = participants;
         this.chatHashCode = generateHashCode();
         directChat = new Chat(messages);
-//        directChatControllers.put(this.chatHashCode, this);
     }
 
 
@@ -44,6 +42,7 @@ public class DirectChatController implements Runnable {
 
     public synchronized void addMessage(Message message) {
         this.directChat.addMessage(message);
+        saveMessages();
         broadcastMessage(message);
     }
 
@@ -71,6 +70,34 @@ public class DirectChatController implements Runnable {
         usersInChatConnection.add(connection);
     }
 
+    public synchronized void saveMessages(){
+        try(FileOutputStream writeData = new FileOutputStream("assets/direct_chat/" + chatHashCode + ".bin");
+            ObjectOutputStream writeStream = new ObjectOutputStream(writeData)){
+            writeStream.writeObject(messages);
+            writeStream.flush();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void loadMessages(){
+        try(FileInputStream readData = new FileInputStream("assets/direct_chat/" + chatHashCode + ".bin");
+            ObjectInputStream readStream = new ObjectInputStream(readData)){
+            messages = (ArrayList<Message>) readStream.readObject();
+            for (Message message : messages)
+                System.out.println(message);
+        } catch (FileNotFoundException e) {
+            System.out.println("Here we have some bugs");
+            saveMessages();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Chat getDirectChat() {
         return directChat;
     }
@@ -81,19 +108,7 @@ public class DirectChatController implements Runnable {
 
     @Override
     public void run() {
-        int msg = 0;
         while (true) {
-//            int trueSize = directChat.getMessages().size();
-//            if (trueSize > msg) {
-//                for (int i = msg; i < trueSize; i++) {
-//                    System.out.println(directChat.getMessages().get(i).toString());
-//                }
-//                msg = trueSize;
-//            }
-//            if(directChat.getMessages().size() > 0){
-//                System.out.println(directChat.getMessages().get(0).toString());
-//
-//            }
 
         }
     }

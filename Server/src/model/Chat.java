@@ -3,6 +3,7 @@ package model;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -11,7 +12,7 @@ public class Chat implements Runnable, Serializable {
     private User currUser;
     private transient ObjectOutputStream outputStream;
     private transient ObjectInputStream inputStream;
-
+    private boolean exit = false;
     public Chat() {
         messages = new ArrayList<>();
     }
@@ -47,7 +48,12 @@ public class Chat implements Runnable, Serializable {
         String input = scanner.nextLine();
         while (!input.equals("#exit")) {
             System.out.println(input);
-            Message message = new Message(input,currUser.getUsername());
+            Message message;
+            if (input.startsWith("#file")) {
+                message = new Message(input, currUser.getUsername(), LocalDateTime.now(), true);
+            }else {
+                message = new Message(input, currUser.getUsername(), LocalDateTime.now());
+            }
             messages.add(message);
             input = scanner.nextLine();
         }

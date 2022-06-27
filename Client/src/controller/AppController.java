@@ -109,16 +109,6 @@ public class AppController {
         return answer;
     }
 
-    public void printfriendreq() {
-        try {
-            outputStream.writeUTF("#RequestList");
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-    }
-
     public HashSet<String> friendRequestList(String username) {
         try {
             outputStream.writeUTF("#RequestList");

@@ -1,14 +1,26 @@
 package model;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Message implements Serializable {
-    String authorName;
     String content;
+    String authorName;
+    LocalDateTime date;
+    boolean isFile;
 
-    public Message(String content, String authorName) {
+    public Message(String content, String authorName, LocalDateTime date) {
         this.content = content;
         this.authorName = authorName;
+        this.date = date;
+    }
+
+    public Message(String content, String authorName, LocalDateTime date, boolean isFile) {
+        this.content = content;
+        this.authorName = authorName;
+        this.date = date;
+        this.isFile = isFile;
     }
 
     public String getContent() {
@@ -21,6 +33,9 @@ public class Message implements Serializable {
 
     @Override
     public String toString() {
-        return String.format("[%s]: %s", authorName, content);
+        DateTimeFormatter formatter
+                = DateTimeFormatter.ofPattern(
+                "MMM-dd, HH:mm");
+        return String.format("[%s] %s: %s", date.format(formatter), authorName, content);
     }
 }
