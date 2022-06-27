@@ -1,9 +1,9 @@
 package model;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -14,6 +14,7 @@ public class Chat implements Runnable, Serializable {
     private transient ObjectOutputStream outputStream;
     private transient ObjectInputStream inputStream;
     private boolean exit = false;
+
     public Chat() {
         messages = new ArrayList<>();
     }
@@ -43,6 +44,27 @@ public class Chat implements Runnable, Serializable {
     }
 
 
+    public String saveFileInDownloads(Message message) {
+        try {
+            byte[] bytes = message.getFile();
+            String name = message.getFileName();
+            String path = "downloads/" + currUser.getUsername() + "/from_" + message.getAuthorName();
+            File theDir = new File(path);
+            if(!theDir.exists()){
+                theDir.mkdirs();
+            }
+            File file = new File(path + "/" + name);
+            OutputStream os = new FileOutputStream(file);
+            os.write(bytes);
+            os.close();
+            return path;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "couldn't save file.";
+        }
+
+    }
+
     @Override
     public void run() {
         Scanner scanner = new Scanner(System.in);
@@ -52,7 +74,13 @@ public class Chat implements Runnable, Serializable {
                 while (!exit) {
                     try {
                         Message msg = (Message) inputStream.readObject();
-                        System.out.println(msg.toString());
+                        if (msg.isFile()) {
+                            if(!msg.getAuthorName().equals(currUser.getUsername()))
+                                System.out.println("file saved in: " + saveFileInDownloads(msg));
+
+                        } else {
+                            System.out.println(msg);
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (ClassNotFoundException e) {
@@ -73,7 +101,7 @@ public class Chat implements Runnable, Serializable {
             }
             try {
                 outputStream.writeObject(message);
-            }catch (IOException e){
+            } catch (IOException e) {
                 e.printStackTrace();
             }
             messages.add(message);
