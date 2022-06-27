@@ -5,6 +5,7 @@ import model.Message;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.net.Socket;
 import java.util.ArrayList;
 
@@ -14,11 +15,11 @@ public class Connection {
     private Socket socket;
     private String username;
 
-    public Connection(Socket socket,ObjectOutputStream outputStream, ObjectInputStream inputStream, String username) throws IOException {
+    public Connection(Socket socket,ObjectOutputStream outputStream,ObjectInputStream inputStream, String username) throws IOException {
         this.socket = socket;
         this.username = username;
-        this.outputStream = outputStream;
-        this.inputStream = inputStream;
+        this.outputStream = outputStream; // new ObjectOutputStream(socket.getOutputStream());
+        this.inputStream = inputStream; //new ObjectInputStream(socket.getInputStream());
     }
 
     public void sendMessage(Message message) {
@@ -60,9 +61,5 @@ public class Connection {
 
     public String getUsername() {
         return username;
-    }
-
-    public boolean isGood(){
-        return socket.isConnected();
     }
 }

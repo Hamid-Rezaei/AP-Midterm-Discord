@@ -2,6 +2,8 @@ package controller;
 
 
 import Database.Database;
+import model.Chat;
+import model.Message;
 import model.User;
 
 import javax.imageio.ImageIO;
@@ -15,7 +17,8 @@ public class ServerController implements Runnable {
 
     public static ArrayList<ServerController> serverControllers = new ArrayList<>();
     // public static HashMap<String, Socket> usersSockets;
-    public static HashSet<Connection> connections = new HashSet<>();
+    public static HashMap<String, DirectChatController> directChats = new HashMap<>();
+    public static HashMap<String, Connection> connections = new HashMap<>();
 
     private Socket socket;
     private ObjectOutputStream outputStream;
@@ -106,7 +109,7 @@ public class ServerController implements Runnable {
             outputStream.reset();
             appUsername = answer.getUsername();
             Connection connection = new Connection(this.socket, outputStream, inputStream, this.appUsername);
-            connections.add(connection);
+            connections.put(appUsername, connection);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -170,29 +173,53 @@ public class ServerController implements Runnable {
         }
     }
 
+    public String directChatHashCode(String user_1, String user_2) {
+        String hash;
+        if (user_1.length() < user_2.length()) {
+            hash = user_1 + user_2;
+        } else {
+            hash = user_2 + user_1;
+        }
+        return hash;
+    }
 
     private void chatWithFriend() {
         //TODO: check if we can load direct chat controller
         try {
             User friend = (User) inputStream.readObject();
             User currentUser = (User) inputStream.readObject();
-            Connection userConnection = null;
-            Connection friendConnection = null;
-            for (Connection connection : connections) {
-                if (connection.getUsername().equals(friend.getUsername())) {
-                    friendConnection = connection;
-                }
-                if (connection.getUsername().equals(currentUser.getUsername())) {
-                    userConnection = connection;
-                }
+            String chatHash = directChatHashCode(currentUser.getUsername(), friend.getUsername());
+            DirectChatController directChatController = directChats.get(chatHash);
+            if (directChatController == null) {
+                Connection userConnection = connections.get(currentUser.getUsername());
+                Connection friendConnection = connections.get(friend.getUsername());
+
+                ArrayList<User> participants = new ArrayList<>();
+                participants.add(currentUser);
+                participants.add(friend);
+
+                HashSet<Connection> directChatConnections = new HashSet<>();
+                directChatConnections.add(userConnection);
+
+                if (friendConnection != null)
+                    directChatConnections.add(friendConnection);
+
+                directChatController = new DirectChatController(directChatConnections, participants);
+                directChats.put(directChatController.getChatHashCode(), directChatController);
             }
-            ArrayList<Connection> directChatConnections = new ArrayList<>();
-            directChatConnections.add(userConnection);
-            directChatConnections.add(friendConnection);
-            DirectChatController directChat = new DirectChatController(directChatConnections);
-            outputStream.writeUTF("Success " + directChat.getChatHashCode());
+            directChatController.addConnection(connections.get(currentUser.getUsername()));
+            new Thread(directChatController).start();
+            outputStream.writeUTF("Success");
             outputStream.flush();
-            new Thread(directChat).start();
+            outputStream.writeObject(directChatController.getDirectChat());
+            outputStream.flush();
+            directChatController.broadcastMessages(connections.get(currentUser.getUsername()));
+
+            Message message = (Message) inputStream.readObject();
+            while (!message.getContent().equals("#exit")) {
+                directChatController.addMessage(message);
+                message = (Message) inputStream.readObject();
+            }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }

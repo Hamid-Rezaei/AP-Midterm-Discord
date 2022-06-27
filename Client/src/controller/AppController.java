@@ -1,5 +1,6 @@
 package controller;
 
+import model.Chat;
 import model.User;
 
 import java.io.*;
@@ -176,7 +177,7 @@ public class AppController {
     }
 
 
-    public String requestForDirectChat(User friend) {
+    public Chat requestForDirectChat(User friend) {
         try {
             outputStream.writeUTF("#requestForDirectChat");
             outputStream.flush();
@@ -184,19 +185,24 @@ public class AppController {
             outputStream.flush();
             outputStream.writeObject(currentUser);
             outputStream.flush();
-            String[] answer = inputStream.readUTF().split(" ");
-            if (answer[0].equals("Success")) {
-                Connection currConnection = new Connection(this.socket, outputStream, inputStream, this.currentUser.getUsername());
-                DirectChatController directChatController = new DirectChatController(currConnection, answer[1]);
-                new Thread(directChatController).start();
-                return "You are in private chat with " + friend.getUsername();
+            String answer = inputStream.readUTF();
+            if (answer.equals("Success")) {
+                Chat directChat = (Chat) inputStream.readObject();
+                directChat.setCurrUser(currentUser);
+                directChat.setOutputStream(outputStream);
+                directChat.setInputStream(inputStream);
+                Thread chatThread = new Thread(directChat);
+                chatThread.start();
+                chatThread.join();
+//                new Thread(directChat).start();
+                return directChat; // "You are in private chat with " + friend.getUsername();
             } else {
-                return "Must handle.....";
+                return null;
             }
 
-        } catch (IOException e) {
+        } catch (IOException | ClassNotFoundException | InterruptedException e) {
             e.printStackTrace();
-            return "Could not open chat with " + friend.getUsername();
+            return null;//"Could not open chat with " + friend.getUsername();
         }
     }
 

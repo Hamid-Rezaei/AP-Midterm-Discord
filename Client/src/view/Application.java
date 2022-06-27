@@ -122,7 +122,8 @@ public class Application {
         HashSet<String> friends = appController.friendList(user.getUsername());
         printFriends(friends);
         User friend = getFriendForChat();
-        appController.requestForDirectChat(friend);
+        Chat directChat = appController.requestForDirectChat(friend);
+
     }
 
 

@@ -1,12 +1,18 @@
 package model;
 
-public class Message {
+import java.io.Serializable;
+
+public class Message implements Serializable {
     String authorName;
     String content;
 
     public Message(String content, String authorName) {
         this.content = content;
         this.authorName = authorName;
+    }
+
+    public String getContent() {
+        return content;
     }
 
     public String getAuthorName() {
