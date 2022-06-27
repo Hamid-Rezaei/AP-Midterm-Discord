@@ -14,11 +14,11 @@ public class Connection {
     private Socket socket;
     private String username;
 
-    public Connection(Socket socket, String username) throws IOException {
+    public Connection(Socket socket,ObjectOutputStream outputStream,ObjectInputStream inputStream, String username) throws IOException {
         this.socket = socket;
         this.username = username;
-        this.outputStream = new ObjectOutputStream(socket.getOutputStream());
-        this.inputStream = new ObjectInputStream(socket.getInputStream());
+        this.outputStream = outputStream; // new ObjectOutputStream(socket.getOutputStream());
+        this.inputStream = inputStream; //new ObjectInputStream(socket.getInputStream());
     }
 
     public void sendMessage(Message message) {

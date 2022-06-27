@@ -1,58 +1,77 @@
 package controller;
 
-import model.*;
+import model.Message;
+import model.User;
 
-import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
-
-import static view.MenuHandler.sc;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 
 public class DirectChatController implements Runnable {
 
+    //    public static HashMap<String, DirectChatController> directChatControllers = new HashMap<>();
     private ArrayList<Message> messages;
+    private int messagesSize;
     private String chatHashCode;
-    private Connection currUserConnection;
-    private String username;
+    private ArrayList<User> participants;
+    private HashSet<Connection> usersInChatConnection;
 
 
-    public DirectChatController(Connection currUserConnection, String chatHashCode) {
+    public DirectChatController(HashSet<Connection> usersInChatConnection, ArrayList<User> participants) {
         messages = new ArrayList<>();
-        this.currUserConnection = currUserConnection;
-        this.username = currUserConnection.getUsername();
-        this.chatHashCode = chatHashCode;
+        this.usersInChatConnection = usersInChatConnection;
+        this.participants = participants;
+        this.chatHashCode = generateHashCode();
+//        directChatControllers.put(this.chatHashCode, this);
     }
 
-    public void sendMessage() {
-        while (currUserConnection.isGood()) {
-            String messageToSend = sc.nextLine();
-            currUserConnection.sendMessage(new Message(messageToSend, username));
+
+    public String generateHashCode() {
+        String hash;
+        String user_1 = participants.get(0).getUsername();
+        String user_2 = participants.get(1).getUsername();
+        if (user_1.length() < user_2.length()) {
+            hash = user_1 + user_2;
+        } else {
+            hash = user_2 + user_1;
         }
+        return hash;
     }
 
-    public void listenForMessage() {
-        new Thread(new Runnable() {
+    public synchronized void addMessage(Message message) {
+        messages.add(message);
+    }
 
-            @Override
-            public void run() {
-                Message msgFromFriend;
-                while (currUserConnection.isGood()) {
+    public void broadcastMessages() {
+        for (Connection connection : usersInChatConnection) {
+            for (int i = messages.size(); i > 0; i--) {
+                //if(!message.getAuthorName().equals(connection.getUsername())){
+                //  connection.sendMessage(message);
+                // }
+                connection.sendMessage(messages.get(i - 1));
 
-                    msgFromFriend = (Message) currUserConnection.receiveMessage();
-                    messages.add(msgFromFriend);
-/*                    for (int i = 10; i >= 0; i--) {
-                        System.out.println((messages.get(messages.size() - 1 - i)));
-                    }*/
-                    System.out.println(msgFromFriend);
-                }
             }
-        }).start();
+        }
 
+    }
+
+    public void addConnection(Connection connection) {
+        usersInChatConnection.add(connection);
+    }
+
+    public String getChatHashCode() {
+        return chatHashCode;
     }
 
     @Override
     public void run() {
-        sendMessage();
-        listenForMessage();
-
+        while (true) {
+            for (Connection connection : usersInChatConnection) {
+                addMessage(connection.receiveMessage());
+                broadcastMessages();
+            }
+        }
     }
 }

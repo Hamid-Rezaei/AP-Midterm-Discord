@@ -2,6 +2,8 @@ package controller;
 
 
 import Database.Database;
+import model.Chat;
+import model.Message;
 import model.User;
 
 import javax.imageio.ImageIO;
@@ -15,7 +17,8 @@ public class ServerController implements Runnable {
 
     public static ArrayList<ServerController> serverControllers = new ArrayList<>();
     // public static HashMap<String, Socket> usersSockets;
-    public static HashSet<Connection> connections;
+    public static HashMap<String, DirectChatController> directChats = new HashMap<>();
+    public static HashMap<String, Connection> connections = new HashMap<>();
 
     private Socket socket;
     private ObjectOutputStream outputStream;
@@ -73,11 +76,6 @@ public class ServerController implements Runnable {
             byte[] avatar = new byte[avatarSize];
             inputStream.readFully(avatar, 0, avatarSize);
             int answer = Database.insertToDB(username, pass, email, phoneNum, token, avatar).getCode();
-
-            if (answer == 1) {
-                appUsername = username;
-            }
-
             outputStream.writeInt(answer);
             outputStream.flush();
 
@@ -109,7 +107,9 @@ public class ServerController implements Runnable {
             outputStream.flush();
             outputStream.write(byteAvatar, 0, byteAvatar.length);
             outputStream.reset();
-            connections.add(new Connection(this.socket, this.appUsername));
+            appUsername = answer.getUsername();
+            Connection connection = new Connection(this.socket, outputStream, inputStream, this.appUsername);
+            connections.put(appUsername, connection);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -141,13 +141,13 @@ public class ServerController implements Runnable {
 
     private void revisedFriendRequests() {
         try {
-            HashSet<String> accepted =  (HashSet<String>) inputStream.readObject();
-            HashSet<String> rejected =  (HashSet<String>) inputStream.readObject();
+            HashSet<String> accepted = (HashSet<String>) inputStream.readObject();
+            HashSet<String> rejected = (HashSet<String>) inputStream.readObject();
             String username = inputStream.readUTF();
-            String answer = Database.reviseFriendRequests(username,accepted,rejected);
+            String answer = Database.reviseFriendRequests(username, accepted, rejected);
             outputStream.writeUTF(answer);
             outputStream.flush();
-        } catch (ClassNotFoundException | IOException e){
+        } catch (ClassNotFoundException | IOException e) {
             e.printStackTrace();
         }
     }
@@ -173,10 +173,56 @@ public class ServerController implements Runnable {
         }
     }
 
+    public String directChatHashCode(String user_1, String user_2) {
+        String hash;
+        if (user_1.length() < user_2.length()) {
+            hash = user_1 + user_2;
+        } else {
+            hash = user_2 + user_1;
+        }
+        return hash;
+    }
 
     private void chatWithFriend() {
         //TODO: check if we can load direct chat controller
-        
+        try {
+            User friend = (User) inputStream.readObject();
+            User currentUser = (User) inputStream.readObject();
+            String chatHash = directChatHashCode(currentUser.getUsername(), friend.getUsername());
+            DirectChatController directChatController = directChats.get(chatHash);
+            if (directChatController == null) {
+                Connection userConnection = connections.get(currentUser.getUsername());
+                Connection friendConnection = connections.get(friend.getUsername());
+
+                ArrayList<User> participants = new ArrayList<>();
+                participants.add(currentUser);
+                participants.add(friend);
+
+                HashSet<Connection> directChatConnections = new HashSet<>();
+                directChatConnections.add(userConnection);
+
+                if (friendConnection != null)
+                    directChatConnections.add(friendConnection);
+
+                directChatController = new DirectChatController(directChatConnections, participants);
+                directChats.put(directChatController.getChatHashCode(), directChatController);
+            }
+            directChatController.addConnection(connections.get(currentUser.getUsername()));
+            new Thread(directChatController).start();
+            outputStream.writeUTF("Success");
+            outputStream.flush();
+            outputStream.writeObject(directChatController.getDirectChat());
+            outputStream.flush();
+            directChatController.broadcastMessages(connections.get(currentUser.getUsername()));
+
+            Message message = (Message) inputStream.readObject();
+            while (!message.getContent().equals("#exit")) {
+                directChatController.addMessage(message);
+                message = (Message) inputStream.readObject();
+            }
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
 
 
