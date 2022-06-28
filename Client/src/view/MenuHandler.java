@@ -131,6 +131,29 @@ public class MenuHandler {
         return returnChoice();
     }
 
+    public static int showInGuild(){
+        System.out.println("""
+                1) List Of text channel
+                2) List Of voice channel
+                3) Add member
+                4) Add text channel
+                5) Add voice channel
+                6) Delete text channel
+                7) Delete voice channel
+                8) Server setting
+                9) Back""");
+        System.out.print("> ");
+        return returnChoice();
+    }
+
+    public static int serverSetting(){
+        System.out.println("""
+                1) Changing server name
+                2) Back""");
+        System.out.print("> ");
+        return returnChoice();
+    }
+
 
     public static String getFriendName(){
         System.out.print("Enter username: ");

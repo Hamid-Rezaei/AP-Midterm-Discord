@@ -256,12 +256,6 @@ public class ServerController implements Runnable {
         }
     }
 
-    public void listOfMyOwnServer() {
-        ArrayList<Guild> guilds = allGuilds.get("HamidRezaei");
-        for (Guild guild : guilds) {
-            System.out.println(guild.getName());
-        }
-    }
 
     public void listOfUserServers() {
         ArrayList<Guild> userGuilds = new ArrayList<>();
@@ -300,7 +294,7 @@ public class ServerController implements Runnable {
 
 
     public void loadGuilds() {
-        System.out.println("load:");
+  //      System.out.println("load:");
         try {
             File theFile = new File("guilds/all_guilds.bin");
             if (!theFile.exists()) {
@@ -308,12 +302,11 @@ public class ServerController implements Runnable {
             }
             ObjectInputStream is = new ObjectInputStream(new FileInputStream("guilds/all_guilds.bin"));
             allGuilds = (HashMap<String, ArrayList<Guild>>) is.readObject();
-            for (Map.Entry<String, ArrayList<Guild>> set :
-                    allGuilds.entrySet()) {
-                System.out.println(set.getKey() + " = "
-                        + set.getValue().isEmpty());
-            }
-            //listOfMyOwnServer();
+//            for (Map.Entry<String, ArrayList<Guild>> set :
+//                    allGuilds.entrySet()) {
+//                System.out.println(set.getKey() + " = "
+//                        + set.getValue().isEmpty());
+//            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
