@@ -49,6 +49,7 @@ public class ServerController implements Runnable {
                 case "#requestForDirectChat" -> chatWithFriend();
                 case "#revisedFriendRequests" -> revisedFriendRequests();
                 case "#addGuild" -> addGuild();
+                case "#serverList" -> listOfUserServers();
             }
 
         } catch (IOException e) {
@@ -255,13 +256,33 @@ public class ServerController implements Runnable {
         }
     }
 
-    public void listOfMyOwnServer(){
+    public void listOfMyOwnServer() {
         ArrayList<Guild> guilds = allGuilds.get("HamidRezaei");
-        for(Guild guild : guilds){
+        for (Guild guild : guilds) {
             System.out.println(guild.getName());
         }
     }
 
+    public void listOfUserServers() {
+        ArrayList<Guild> userGuilds = new ArrayList<>();
+        try {
+            if(allGuilds.values().isEmpty()){
+                loadGuilds();
+            }
+            String username = inputStream.readUTF();
+            for (ArrayList<Guild> guilds : allGuilds.values()) {
+                for (Guild guild : guilds) {
+                    if(guild.hasUser(username)){
+                        userGuilds.add(guild);
+                    }
+                }
+            }
+            outputStream.writeObject(userGuilds);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void saveGuilds() {
         try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("guilds/all_guilds.bin"))) {
@@ -282,7 +303,7 @@ public class ServerController implements Runnable {
         System.out.println("load:");
         try {
             File theFile = new File("guilds/all_guilds.bin");
-            if(!theFile.exists()){
+            if (!theFile.exists()) {
                 theFile.createNewFile();
             }
             ObjectInputStream is = new ObjectInputStream(new FileInputStream("guilds/all_guilds.bin"));
@@ -292,7 +313,7 @@ public class ServerController implements Runnable {
                 System.out.println(set.getKey() + " = "
                         + set.getValue().isEmpty());
             }
-            listOfMyOwnServer();
+            //listOfMyOwnServer();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {

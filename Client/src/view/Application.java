@@ -82,6 +82,15 @@ public class Application {
         }
     }
 
+    private static void listOfAllServer() {
+        ArrayList<Guild> guilds = appController.listOfJoinedServers();
+        if(guilds != null){
+            for(Guild guild : guilds){
+                System.out.println(guild.getName());
+            }
+        }
+    }
+
     private static void friendMenuHandler() {
         int choice = showFriendMenu();
         switch (choice) {
