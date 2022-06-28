@@ -372,14 +372,13 @@ public class ServerController implements Runnable {
     }
 
     public Guild getGuild(String owner, String guildName) {
-        Guild guild = null;
         ArrayList<Guild> ownerGuilds = allGuilds.get(owner);
         for (Guild g : ownerGuilds) {
             if (g.getName().equals(guildName)) {
-                guild = g;
+                return g;
             }
         }
-        return guild;
+        return null;
     }
 
     public void getGuild() {
@@ -393,7 +392,7 @@ public class ServerController implements Runnable {
                     guild = g;
                 }
             }
-            outputStream.writeObject(guild);
+            outputStream.writeUnshared(guild);
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -489,8 +488,9 @@ public class ServerController implements Runnable {
                     }
                 }
             }
-            outputStream.writeObject(userGuilds);
+            outputStream.writeUnshared(userGuilds);
             outputStream.flush();
+            userGuilds.clear();
         } catch (IOException e) {
             e.printStackTrace();
         }
