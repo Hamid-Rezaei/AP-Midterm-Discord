@@ -53,6 +53,7 @@ public class ServerController implements Runnable {
                 case "#blockUser" -> blockUser();
                 case "#blockList" -> blockList();
                 case "#unblockUser" -> unblockUser();
+                case "#updateGuild" ->updateGuild();
             }
 
         } catch (IOException e) {
@@ -315,6 +316,10 @@ public class ServerController implements Runnable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public void updateGuild(){
+
     }
 
     public void saveGuilds() {
