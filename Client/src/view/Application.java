@@ -116,7 +116,7 @@ public class Application {
             case 1 -> {
                 ArrayList<TextChannel> textChannels = guild.getTextChannels();
                 int i = 1;
-                for(TextChannel textChannel: textChannels){
+                for (TextChannel textChannel : textChannels) {
                     System.out.println(i++ + ". " + textChannel.getName());
                 }
                 //for (TextChannel : )
@@ -128,43 +128,44 @@ public class Application {
             }
             case 3 -> {
                 System.out.println(addMemberToServer(guild));
-                guild = appController.getGuild(guild.getOwnerName(),guild.getName());
+                guild = appController.getGuild(guild.getOwnerName(), guild.getName());
                 inSelectedServer(guild);
             }
             case 4 -> {
                 addNewTextChannel(guild);
-                guild = appController.getGuild(guild.getOwnerName(),guild.getName());
+                guild = appController.getGuild(guild.getOwnerName(), guild.getName());
                 inSelectedServer(guild);
             }
 
             case 5 -> {
                 addNewVoiceChannel(guild);
-                guild = appController.getGuild(guild.getOwnerName(),guild.getName());
+                guild = appController.getGuild(guild.getOwnerName(), guild.getName());
                 inSelectedServer(guild);
             }
 
             case 6 -> {
                 //guild.removeTextChannel();
-                guild = appController.getGuild(guild.getOwnerName(),guild.getName());
+                guild = appController.getGuild(guild.getOwnerName(), guild.getName());
                 inSelectedServer(guild);
             }
 
-            case 8 ->{
+            case 8 -> {
                 System.out.println(deleteMemberFromServer(guild));
+                guild = appController.getGuild(guild.getOwnerName(), guild.getName());
                 inSelectedServer(guild);
             }
-            case 9 ->{
+            case 9 -> {
                 HashSet<GuildUser> guildUsers = guild.getGuildUsers();
                 int i = 1;
-                for(GuildUser guildUser: guildUsers){
+                for (GuildUser guildUser : guildUsers) {
                     System.out.println(i + ". " + guildUser.getUsername());
                     i++;
                 }
                 inSelectedServer(guild);
             }
-            case 10 ->{
+            case 10 -> {
                 int i = serverSetting();
-                if(i == 1){
+                if (i == 1) {
                     System.out.println("Enter new name: ");
                     String newName = sc.nextLine();
                     System.out.println(appController.changeGuildName(guild, newName));
@@ -174,7 +175,6 @@ public class Application {
             default -> serverMenuHandler();
         }
     }
-
 
 
     private static void addNewVoiceChannel(Guild guild) {
@@ -187,16 +187,15 @@ public class Application {
 
     private static String addMemberToServer(Guild guild) {
         String name = getFriendName();
-        String respond = appController.addMemberToServer(name,guild);
+        String respond = appController.addMemberToServer(name, guild);
         return respond;
     }
 
     private static String deleteMemberFromServer(Guild guild) {
         String name = getFriendName();
-        String respond = appController.deleteMemberFromServer(name,guild);
+        String respond = appController.deleteMemberFromServer(name, guild);
         return respond;
     }
-
 
 
     private static void friendMenuHandler() {
@@ -291,6 +290,7 @@ public class Application {
         if (friend == null)
             return;
         Chat directChat = appController.requestForDirectChat(friend);
+        appController.removeFromDirectChat(user,friend);
         // what's happened here with directChat...
     }
 

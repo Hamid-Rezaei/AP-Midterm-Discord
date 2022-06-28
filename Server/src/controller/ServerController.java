@@ -61,6 +61,7 @@ public class ServerController implements Runnable {
                 case "#addTextChannel" -> addTextChannel();
                 case "#removeMember" -> deleteMemberToServer();
                 case "#changeGuildName" -> changeGuildName();
+                case "#removeFromChat" -> removeFromDirectChat();
             }
 
         } catch (IOException e) {
@@ -239,6 +240,19 @@ public class ServerController implements Runnable {
                 message = (Message) inputStream.readObject();
             }
         } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void removeFromDirectChat() {
+        try {
+            String username = inputStream.readUTF();
+            String friendName = inputStream.readUTF();
+            String chatHash = directChatHashCode(username,friendName);
+            DirectChatController directChat = directChats.get(chatHash);
+            directChat.removeConnection(username);
+        } catch (IOException e){
             e.printStackTrace();
         }
     }

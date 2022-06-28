@@ -12,6 +12,8 @@ import static view.MenuHandler.sc;
 
 public class AppController {
 
+
+
     public enum ServerErrorType {
         NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4), Duplicate_ERROR(5), ALREADY_FRIEND(6), UNKNOWN_ERROR(404);
 
@@ -241,6 +243,18 @@ public class AppController {
         } catch (IOException | ClassNotFoundException | InterruptedException e) {
             e.printStackTrace();
             return null;//"Could not open chat with " + friend.getUsername();
+        }
+    }
+    public void removeFromDirectChat(User user, User friend) {
+        try{
+            outputStream.writeUTF("#removeFromChat");
+            outputStream.flush();
+            outputStream.writeUTF(user.getUsername());
+            outputStream.flush();
+            outputStream.writeUTF(friend.getUsername());
+            outputStream.flush();
+        }catch (IOException e){
+            e.printStackTrace();
         }
     }
 
