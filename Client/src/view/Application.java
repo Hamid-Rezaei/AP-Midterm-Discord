@@ -147,10 +147,11 @@ public class Application {
                     System.out.println(i + ". " + guildUser.getUsername());
                     i++;
                 }
+                inSelectedServer(guild);
             }
             case 9 ->{
                 int i = serverSetting();
-                inApplication();
+                inSelectedServer(guild);
             }
             default -> serverMenuHandler();
         }
@@ -169,10 +170,8 @@ public class Application {
 
     private static String addMemberToServer(Guild guild) {
         String name = getFriendName();
-        User user = appController.getUser(name);
-        GuildUser member = new GuildUser(user, new Role("member"));
-        guild.addUser(member);
-        return name + " added to server successfully";
+        String respond = appController.addMemberToServer(name,guild);
+        return respond;
     }
 
 
