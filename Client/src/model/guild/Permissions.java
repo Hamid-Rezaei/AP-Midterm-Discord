@@ -1,6 +1,8 @@
 package model.guild;
 
-public class Permissions {
+import java.io.Serializable;
+
+public class Permissions implements Serializable {
     private boolean CAN_CREATE_CHANNEL = false;
 
     private boolean CAN_DELETE_CHANNEL = false;

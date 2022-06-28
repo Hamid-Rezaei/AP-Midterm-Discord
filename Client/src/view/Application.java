@@ -2,6 +2,9 @@ package view;
 
 import controller.*;
 import model.*;
+import model.guild.Guild;
+import model.guild.GuildUser;
+import model.guild.Role;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -67,8 +70,14 @@ public class Application {
     private static void serverMenuHandler() {
         int choice = showServerMenu();
         switch (choice) {
-            //case 1 -> addNewServer();
-            //case 2 -> listOfAllServer();
+            case 1 -> {
+                addNewServer();
+                serverMenuHandler();
+            }
+            case 2 -> {
+                listOfAllServer();
+                serverMenuHandler();
+            }
             default -> inApplication();
         }
     }
@@ -131,7 +140,7 @@ public class Application {
         HashSet<String> friends = appController.friendList(user.getUsername());
         printFriends(friends);
         User friend = getFriendForChat();
-        if(friend == null)
+        if (friend == null)
             return;
         Chat directChat = appController.requestForDirectChat(friend);
         // what's happened here with directChat...
@@ -152,6 +161,17 @@ public class Application {
         System.out.println("You are in chat with: " + friendToChat);
         return appController.getUser(friendToChat);
     }
+
+
+    // server handling section
+
+    private static void addNewServer() {
+        System.out.print("Enter server name: ");
+        String name = sc.nextLine();
+        GuildUser owner = new GuildUser(user, new Role("owner"));
+        System.out.println(appController.addServer(new Guild(name, owner)));
+    }
+
 
     //Running Application.
 

@@ -2,6 +2,7 @@ package controller;
 
 import model.Chat;
 import model.User;
+import model.guild.Guild;
 
 import java.io.*;
 import java.net.*;
@@ -193,6 +194,20 @@ public class AppController {
         } catch (IOException | ClassNotFoundException | InterruptedException e) {
             e.printStackTrace();
             return null;//"Could not open chat with " + friend.getUsername();
+        }
+    }
+
+    public String addServer(Guild guild){
+        try {
+            outputStream.writeUTF("#addGuild");
+            outputStream.flush();
+            outputStream.writeObject(guild);
+            outputStream.flush();
+            return inputStream.readUTF();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Fail to add server.";
         }
     }
 

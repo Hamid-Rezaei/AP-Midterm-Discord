@@ -1,8 +1,9 @@
 package model.guild;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Role {
+public class Role implements Serializable {
 
     Permissions permissions;
     String roleName;
