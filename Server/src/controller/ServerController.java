@@ -25,6 +25,7 @@ public class ServerController implements Runnable {
     public static HashMap<String, ArrayList<Guild>> allGuilds = new HashMap<>();
 
     private Socket socket;
+    
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private String appUsername;
@@ -281,6 +282,7 @@ public class ServerController implements Runnable {
         }
     }
 
+
     private void blockList() {
         try {
             String username = inputStream.readUTF();
@@ -293,7 +295,7 @@ public class ServerController implements Runnable {
     }
 
     public void saveGuilds() {
-        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("guilds/all_guilds.bin"))) {
+        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("assets/guilds/all_guilds.bin"))) {
             try {
                 os.writeObject(allGuilds);
             } catch (IOException e) {
@@ -310,11 +312,11 @@ public class ServerController implements Runnable {
     public void loadGuilds() {
         //      System.out.println("load:");
         try {
-            File theFile = new File("guilds/all_guilds.bin");
+            File theFile = new File("assets/guilds/all_guilds.bin");
             if (!theFile.exists()) {
                 theFile.createNewFile();
             }
-            ObjectInputStream is = new ObjectInputStream(new FileInputStream("guilds/all_guilds.bin"));
+            ObjectInputStream is = new ObjectInputStream(new FileInputStream("assets/guilds/all_guilds.bin"));
             allGuilds = (HashMap<String, ArrayList<Guild>>) is.readObject();
 //            for (Map.Entry<String, ArrayList<Guild>> set :
 //                    allGuilds.entrySet()) {
