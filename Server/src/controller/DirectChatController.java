@@ -63,10 +63,17 @@ public class DirectChatController implements Runnable {
 
     }
 
-    public void addConnection(Connection connection) {
+    public synchronized void addConnection(Connection connection) {
         usersInChatConnection.add(connection);
     }
+    public synchronized void removeConnection(String username){
+        for(Connection connection : usersInChatConnection){
+            if(connection.getUsername().equals(username)){
+                usersInChatConnection.remove(connection);
+            }
+        }
 
+    }
     public synchronized void saveMessages() {
         try (FileOutputStream writeData = new FileOutputStream("assets/direct_chat/" + chatHashCode + ".bin");
              ObjectOutputStream writeStream = new ObjectOutputStream(writeData)) {
