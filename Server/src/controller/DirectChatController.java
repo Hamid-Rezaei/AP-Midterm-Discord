@@ -5,10 +5,7 @@ import model.Message;
 import model.User;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.*;
 
 public class DirectChatController implements Runnable {
 
@@ -111,5 +108,18 @@ public class DirectChatController implements Runnable {
         while (true) {
 
         }
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof DirectChatController)) return false;
+        DirectChatController that = (DirectChatController) o;
+        return Objects.equals(getDirectChat(), that.getDirectChat()) && Objects.equals(messages, that.messages) && Objects.equals(getChatHashCode(), that.getChatHashCode()) && Objects.equals(participants, that.participants) && Objects.equals(usersInChatConnection, that.usersInChatConnection);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getDirectChat(), messages, getChatHashCode(), participants, usersInChatConnection);
     }
 }

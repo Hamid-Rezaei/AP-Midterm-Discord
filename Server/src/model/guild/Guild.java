@@ -31,6 +31,10 @@ public class Guild implements Serializable {
         return false;
     }
 
+    public void removeMember(GuildUser guildUser){
+        guildUsers.remove(guildUser);
+    }
+
     public ArrayList<TextChannel> getTextChannels() {
         return textChannels;
     }
@@ -73,5 +77,18 @@ public class Guild implements Serializable {
 
     public void removeVoiceChannel(VoiceChannel voiceChannel) {
         voiceChannels.remove(voiceChannel);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Guild)) return false;
+        Guild guild = (Guild) o;
+        return Objects.equals(getName(), guild.getName()) && Objects.equals(owner, guild.owner) && Objects.equals(getGuildUsers(), guild.getGuildUsers()) && Objects.equals(getTextChannels(), guild.getTextChannels()) && Objects.equals(getVoiceChannels(), guild.getVoiceChannels());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), owner, getGuildUsers(), getTextChannels(), getVoiceChannels());
     }
 }

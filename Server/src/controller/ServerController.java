@@ -54,8 +54,9 @@ public class ServerController implements Runnable {
                 case "#blockUser" -> blockUser();
                 case "#blockList" -> blockList();
                 case "#unblockUser" -> unblockUser();
-                case "#updateGuild" -> updateGuild();
                 case "#addMember" -> addMemberToServer();
+                case "#removeMember" -> deleteMemberToServer();
+                case "#changeGuildName" -> changeGuildName();
             }
 
         } catch (IOException e) {
@@ -69,6 +70,7 @@ public class ServerController implements Runnable {
             }
         }
     }
+
 
 
     private void blockUser() {
@@ -325,6 +327,36 @@ public class ServerController implements Runnable {
         }
     }
 
+    private void deleteMemberToServer() {
+        try {
+            GuildUser gUser = (GuildUser) inputStream.readObject();
+            String gOwner = inputStream.readUTF();
+            String guildName = inputStream.readUTF();
+            Guild guild = getGuild(gOwner, guildName);
+            guild.removeMember(gUser);
+            saveGuilds();
+            outputStream.writeUTF(gUser.getUsername() + "remove from server successfully");
+            outputStream.flush();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void changeGuildName(){
+        try {
+            String gOwner = inputStream.readUTF();
+            String guildName = inputStream.readUTF();
+            String guildNewName = inputStream.readUTF();
+            Guild guild = getGuild(gOwner, guildName);
+            guild.setName(guildNewName);
+            saveGuilds();
+            outputStream.writeUTF("guild name change from "+ guildName+ " to " + guildNewName);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void listOfUserServers() {
         ArrayList<Guild> userGuilds = new ArrayList<>();
         try {
@@ -346,9 +378,6 @@ public class ServerController implements Runnable {
         }
     }
 
-    public void updateGuild() {
-
-    }
 
     public void saveGuilds() {
         try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("guilds/all_guilds.bin"))) {

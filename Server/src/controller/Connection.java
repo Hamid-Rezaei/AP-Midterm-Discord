@@ -7,6 +7,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class Connection {
     private ObjectOutputStream outputStream;
@@ -60,5 +61,18 @@ public class Connection {
 
     public String getUsername() {
         return username;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Connection)) return false;
+        Connection that = (Connection) o;
+        return Objects.equals(outputStream, that.outputStream) && Objects.equals(inputStream, that.inputStream) && Objects.equals(socket, that.socket) && Objects.equals(getUsername(), that.getUsername());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(outputStream, inputStream, socket, getUsername());
     }
 }
