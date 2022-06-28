@@ -47,7 +47,7 @@ public class Application {
         String password = MenuHandler.getPassword();
         user = appController.login(username, password);
         if (user == null) {
-            System.out.println("Oops! something is wrong (user is null)");
+            System.out.println("username/password is wrong");
         } else {
             System.out.println("Login Successfully.");
             inApplication();
@@ -60,8 +60,7 @@ public class Application {
             case 1 -> serverMenuHandler();
             case 2 -> friendMenuHandler();
             case 3 -> settingMenuHandler();
-            default -> {
-            }
+            default -> {}
         }
     }
 
@@ -75,7 +74,6 @@ public class Application {
             case 2 -> {
                 Guild guild = listOfAllServer();
                 inSelectedServer(guild);
-                serverMenuHandler();
             }
             default -> inApplication();
         }
@@ -93,6 +91,7 @@ public class Application {
 
 
     private static Guild listOfAllServer() {
+
         ArrayList<Guild> guilds = appController.listOfJoinedServers();
         if (guilds != null) {
             int i = 1;
@@ -102,7 +101,9 @@ public class Application {
             }
             System.out.print("Enter server number to login: ");
             int choice = Integer.parseInt(sc.nextLine());
-            return guilds.get(choice - 1);
+            Guild chosenGuild = guilds.get(choice - 1);
+            guilds.clear();
+            return chosenGuild;
         } else {
             System.out.println("You dont have any server...");
             return null;
@@ -166,11 +167,12 @@ public class Application {
             case 10 -> {
                 int i = serverSetting();
                 if (i == 1) {
-                    System.out.println("Enter new name: ");
+                    System.out.print("Enter new name: ");
                     String newName = sc.nextLine();
                     System.out.println(appController.changeGuildName(guild, newName));
+                    guild = appController.getGuild(guild.getOwnerName(), newName);
                 }
-                //TODO: inSelectedServer();
+                inSelectedServer(guild);
             }
             default -> serverMenuHandler();
         }

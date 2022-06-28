@@ -278,7 +278,7 @@ public class AppController {
             outputStream.flush();
             outputStream.writeUTF(currentUser.getUsername());
             outputStream.flush();
-            return (ArrayList<Guild>) inputStream.readObject();
+            return (ArrayList<Guild>) inputStream.readUnshared();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -293,7 +293,7 @@ public class AppController {
             outputStream.flush();
             outputStream.writeUTF(guildName);
             outputStream.flush();
-            Guild guild = (Guild) inputStream.readObject();
+            Guild guild = (Guild) inputStream.readUnshared();
             return guild;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
