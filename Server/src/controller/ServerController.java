@@ -5,8 +5,10 @@ import Database.Database;
 import model.Chat;
 import model.Message;
 import model.User;
+import model.guild.GroupChat;
 import model.guild.Guild;
 import model.guild.GuildUser;
+import model.guild.TextChannel;
 
 import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
@@ -50,12 +52,14 @@ public class ServerController implements Runnable {
                 case "#requestForDirectChat" -> chatWithFriend();
                 case "#revisedFriendRequests" -> revisedFriendRequests();
                 case "#addGuild" -> addGuild();
+                case "#getGuild" -> getGuild();
                 case "#serverList" -> listOfUserServers();
                 case "#blockUser" -> blockUser();
                 case "#blockList" -> blockList();
                 case "#unblockUser" -> unblockUser();
                 case "#updateGuild" -> updateGuild();
                 case "#addMember" -> addMemberToServer();
+                case "#addTextChannel" -> addTextChannel();
             }
 
         } catch (IOException e) {
@@ -67,43 +71,6 @@ public class ServerController implements Runnable {
             } catch (IOException err) {
                 err.printStackTrace();
             }
-        }
-    }
-
-
-    private void blockUser() {
-        try {
-            String user = inputStream.readUTF();
-            String blockTarget = inputStream.readUTF();
-            String respone = Database.blockUser(user, blockTarget);
-            outputStream.writeUTF(respone);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void unblockUser() {
-        try {
-            String user = inputStream.readUTF();
-            String unblockTarget = inputStream.readUTF();
-            String respone = Database.unblockUser(user, unblockTarget);
-            outputStream.writeUTF(respone);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void blockList() {
-        try {
-            String username = inputStream.readUTF();
-            HashSet<String> blockedList = Database.viewBlockedList(username);
-            outputStream.writeObject(blockedList);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 
@@ -274,6 +241,41 @@ public class ServerController implements Runnable {
         }
     }
 
+    private void blockUser() {
+        try {
+            String user = inputStream.readUTF();
+            String blockTarget = inputStream.readUTF();
+            String respone = Database.blockUser(user, blockTarget);
+            outputStream.writeUTF(respone);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void unblockUser() {
+        try {
+            String user = inputStream.readUTF();
+            String unblockTarget = inputStream.readUTF();
+            String respone = Database.unblockUser(user, unblockTarget);
+            outputStream.writeUTF(respone);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void blockList() {
+        try {
+            String username = inputStream.readUTF();
+            HashSet<String> blockedList = Database.viewBlockedList(username);
+            outputStream.writeObject(blockedList);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void addGuild() {
         //TODO:load
@@ -309,6 +311,24 @@ public class ServerController implements Runnable {
         }
         return guild;
     }
+    public void getGuild() {
+        Guild guild = null;
+        try {
+            String owner = inputStream.readUTF();
+            String guildName = inputStream.readUTF();
+            ArrayList<Guild> ownerGuilds = allGuilds.get(owner);
+            for (Guild g : ownerGuilds) {
+                if (g.getName().equals(guildName)) {
+                    guild = g;
+                }
+            }
+            outputStream.writeObject(guild);
+            outputStream.flush();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
 
     private void addMemberToServer() {
         try {
@@ -324,6 +344,36 @@ public class ServerController implements Runnable {
             e.printStackTrace();
         }
     }
+
+    private void addTextChannel() {
+        try {
+            String textChannelName = inputStream.readUTF();
+            String guildOwnerName = inputStream.readUTF();
+            String guildName = inputStream.readUTF();
+            Guild guild = getGuild(guildOwnerName, guildName);
+            boolean exists = false;
+            for (TextChannel textChannel : guild.getTextChannels()) {
+                if (textChannel.getName().equals(textChannelName)) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (exists) {
+                outputStream.writeUTF("this text channel already exists.");
+                outputStream.flush();
+                return;
+            }
+            GroupChat groupChat = new GroupChat();
+            TextChannel textChannel = new TextChannel(textChannelName, groupChat);
+            guild.addTextChanel(textChannel);
+            saveGuilds();
+            outputStream.writeUTF("text channel added successfully.");
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     public void listOfUserServers() {
         ArrayList<Guild> userGuilds = new ArrayList<>();

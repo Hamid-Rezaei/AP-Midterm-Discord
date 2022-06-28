@@ -115,6 +115,10 @@ public class Application {
         switch (choice) {
             case 1 -> {
                 ArrayList<TextChannel> textChannels = guild.getTextChannels();
+                int i = 1;
+                for(TextChannel textChannel: textChannels){
+                    System.out.println(i++ + ". " + textChannel.getName());
+                }
                 //for (TextChannel : )
 
             }
@@ -124,20 +128,24 @@ public class Application {
             }
             case 3 -> {
                 System.out.println(addMemberToServer(guild));
+                guild = appController.getGuild(guild.getOwnerName(),guild.getName());
                 inSelectedServer(guild);
             }
             case 4 -> {
                 addNewTextChannel(guild);
+                guild = appController.getGuild(guild.getOwnerName(),guild.getName());
                 inSelectedServer(guild);
             }
 
             case 5 -> {
                 addNewVoiceChannel(guild);
+                guild = appController.getGuild(guild.getOwnerName(),guild.getName());
                 inSelectedServer(guild);
             }
 
             case 6 -> {
                 //guild.removeTextChannel();
+                guild = appController.getGuild(guild.getOwnerName(),guild.getName());
                 inSelectedServer(guild);
             }
             case 8 ->{
@@ -161,11 +169,8 @@ public class Application {
     }
 
     private static void addNewTextChannel(Guild guild) {
-        System.out.print("Enter text channel name: ");
-        String name = sc.nextLine();
-        GroupChat groupChat = new GroupChat(guild.getGuildUsers());
-        guild.addTextChanel(new TextChannel(name, groupChat));
-        System.out.println("New text channel was added.");
+        String respone = appController.addNewTextChannel(guild);
+        System.out.println(respone);
     }
 
     private static String addMemberToServer(Guild guild) {
