@@ -234,11 +234,21 @@ public class ServerController implements Runnable {
             outputStream.writeObject(directChatController.getDirectChat());
             outputStream.flush();
             directChatController.broadcastMessages(connections.get(currentUser.getUsername()));
-
-            Message message = (Message) inputStream.readObject();
-            while (!message.getContent().equals("#exit")) {
-                directChatController.addMessage(message);
-                message = (Message) inputStream.readObject();
+            Message message = null;
+            boolean inChat = true;
+            while (inChat) {
+                Object obj =  inputStream.readObject();
+                if(obj instanceof Message){
+                    message = (Message) obj;
+                    if(message.getContent().equals("#exit")){
+                        directChatController.broadcastExitMessage("you exited direct chat.",connections.get(currentUser.getUsername()));
+                        directChatController.removeConnection(currentUser.getUsername());
+                        break;
+                    }
+                    directChatController.addMessage(message);
+                } else {
+                    inChat = false;
+                }
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

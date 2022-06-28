@@ -30,6 +30,14 @@ public class Connection {
             e.printStackTrace();
         }
     }
+    public void sendMessage(String message) {
+        try {
+            outputStream.writeObject(message);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
 
     public Message receiveMessage() {
