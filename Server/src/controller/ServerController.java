@@ -5,6 +5,7 @@ import Database.Database;
 import model.Chat;
 import model.Message;
 import model.User;
+import model.guild.Guild;
 
 import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
@@ -18,6 +19,7 @@ public class ServerController implements Runnable {
     public static ArrayList<ServerController> serverControllers = new ArrayList<>();
     public static HashMap<String, DirectChatController> directChats = new HashMap<>();
     public static HashMap<String, Connection> connections = new HashMap<>();
+    public static HashMap<String, ArrayList<Guild>> allGuilds = new HashMap<>();
 
     private Socket socket;
     private ObjectOutputStream outputStream;
@@ -46,6 +48,7 @@ public class ServerController implements Runnable {
                 case "#getUser" -> getUserWithUsername();
                 case "#requestForDirectChat" -> chatWithFriend();
                 case "#revisedFriendRequests" -> revisedFriendRequests();
+                case "#addGuild" -> addGuild();
             }
 
         } catch (IOException e) {
@@ -182,7 +185,7 @@ public class ServerController implements Runnable {
         return hash;
     }
 
-    private DirectChatController getDirChatController(User currentUser, User friend ){
+    private DirectChatController getDirChatController(User currentUser, User friend) {
         String chatHash = directChatHashCode(currentUser.getUsername(), friend.getUsername());
         DirectChatController directChatController = directChats.get(chatHash);
         if (directChatController == null) {
@@ -228,6 +231,76 @@ public class ServerController implements Runnable {
     }
 
 
+    public void addGuild() {
+        //TODO:load
+        loadGuilds();
+        try {
+            Guild guild = (Guild) inputStream.readObject();
+            String name = guild.getOwnerName();
+            ArrayList<Guild> guilds = allGuilds.get(name);
+            if (guilds == null) {
+                guilds = new ArrayList<>();
+            }
+            guilds.add(guild);
+            allGuilds.put(name, guilds);
+            //TODO:save
+            saveGuilds();
+            outputStream.writeUTF("Success");
+            outputStream.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void listOfMyOwnServer(){
+        ArrayList<Guild> guilds = allGuilds.get("HamidRezaei");
+        for(Guild guild : guilds){
+            System.out.println(guild.getName());
+        }
+    }
+
+
+    public void saveGuilds() {
+        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("guilds/all_guilds.bin"))) {
+            try {
+                os.writeObject(allGuilds);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void loadGuilds() {
+        System.out.println("load:");
+        try {
+            File theFile = new File("guilds/all_guilds.bin");
+            if(!theFile.exists()){
+                theFile.createNewFile();
+            }
+            ObjectInputStream is = new ObjectInputStream(new FileInputStream("guilds/all_guilds.bin"));
+            allGuilds = (HashMap<String, ArrayList<Guild>>) is.readObject();
+            for (Map.Entry<String, ArrayList<Guild>> set :
+                    allGuilds.entrySet()) {
+                System.out.println(set.getKey() + " = "
+                        + set.getValue().isEmpty());
+            }
+            listOfMyOwnServer();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void run() {
