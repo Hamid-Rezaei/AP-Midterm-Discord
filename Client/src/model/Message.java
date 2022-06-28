@@ -72,6 +72,16 @@ public class Message implements Serializable {
 
     }
 
+    public void setReaction(String type, String name){
+        Reaction reaction = new Reaction();
+        switch (type){
+            case "like" -> reaction.setLikeReact();
+            case "dislike" -> reaction.setDisLikeReact();
+            case "smile" -> reaction.setSmileReact();
+        }
+        addReaction(reaction, name);
+    }
+
 
     public void addReaction(Reaction reaction, String name) {
         ArrayList<String> names = reactions.get(reaction);
