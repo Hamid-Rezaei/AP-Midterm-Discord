@@ -25,7 +25,7 @@ public class ServerController implements Runnable {
     public static HashMap<String, ArrayList<Guild>> allGuilds = new HashMap<>();
 
     private Socket socket;
-    
+
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private String appUsername;
@@ -76,7 +76,6 @@ public class ServerController implements Runnable {
             }
         }
     }
-
 
 
     public void signUp() {
@@ -183,7 +182,7 @@ public class ServerController implements Runnable {
     private void getUserWithUsername() {
         try {
             String username = inputStream.readUTF();
-            outputStream.writeObject(Database.retrieveFromDB(username));
+            outputStream.writeUnshared(Database.retrieveFromDB(username));
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -205,7 +204,6 @@ public class ServerController implements Runnable {
         DirectChatController directChatController = directChats.get(chatHash);
         if (directChatController == null) {
             Connection userConnection = connections.get(currentUser.getUsername());
-
             ArrayList<User> participants = new ArrayList<>();
             participants.add(currentUser);
             participants.add(friend);
@@ -228,7 +226,8 @@ public class ServerController implements Runnable {
             User friend = (User) inputStream.readObject();
             User currentUser = (User) inputStream.readObject();
             DirectChatController directChatController = getDirChatController(currentUser, friend);
-            new Thread(directChatController).start();
+            Thread directChat = new Thread(directChatController, directChatController.getChatHashCode());
+            directChat.start();
             outputStream.writeUTF("Success");
             outputStream.flush();
             outputStream.writeObject(directChatController.getDirectChat());
@@ -237,11 +236,11 @@ public class ServerController implements Runnable {
             Message message = null;
             boolean inChat = true;
             while (inChat) {
-                Object obj =  inputStream.readObject();
-                if(obj instanceof Message){
+                Object obj = inputStream.readObject();
+                if (obj instanceof Message) {
                     message = (Message) obj;
-                    if(message.getContent().equals("#exit")){
-                        directChatController.broadcastExitMessage("you exited direct chat.",connections.get(currentUser.getUsername()));
+                    if (message.getContent().equals("#exit")) {
+                        directChatController.broadcastExitMessage("you exited direct chat.", connections.get(currentUser.getUsername()));
                         directChatController.removeConnection(currentUser.getUsername());
                         break;
                     }
@@ -249,6 +248,9 @@ public class ServerController implements Runnable {
                 } else {
                     inChat = false;
                 }
+            }
+            if(directChatController.numOfUsersInChat() == 0){
+                directChat.stop();
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -260,10 +262,13 @@ public class ServerController implements Runnable {
         try {
             String username = inputStream.readUTF();
             String friendName = inputStream.readUTF();
-            String chatHash = directChatHashCode(username,friendName);
+            String chatHash = directChatHashCode(username, friendName);
             DirectChatController directChat = directChats.get(chatHash);
             directChat.removeConnection(username);
-        } catch (IOException e){
+            if(directChat.numOfUsersInChat() == 0){
+                directChats.remove(directChat.getChatHashCode());
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -390,7 +395,7 @@ public class ServerController implements Runnable {
             }
             outputStream.writeObject(guild);
             outputStream.flush();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
@@ -439,6 +444,7 @@ public class ServerController implements Runnable {
             e.printStackTrace();
         }
     }
+
     private void deleteMemberToServer() {
         try {
             GuildUser gUser = (GuildUser) inputStream.readObject();
@@ -454,7 +460,7 @@ public class ServerController implements Runnable {
         }
     }
 
-    public void changeGuildName(){
+    public void changeGuildName() {
         try {
             String gOwner = inputStream.readUTF();
             String guildName = inputStream.readUTF();
@@ -462,7 +468,7 @@ public class ServerController implements Runnable {
             Guild guild = getGuild(gOwner, guildName);
             guild.setName(guildNewName);
             saveGuilds();
-            outputStream.writeUTF("guild name change from "+ guildName+ " to " + guildNewName);
+            outputStream.writeUTF("guild name change from " + guildName + " to " + guildNewName);
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -489,7 +495,6 @@ public class ServerController implements Runnable {
             e.printStackTrace();
         }
     }
-
 
 
     @Override

@@ -43,6 +43,9 @@ public class DirectChatController implements Runnable {
         broadcastMessage(message);
     }
 
+    public int numOfUsersInChat(){
+        return usersInChatConnection.size();
+    }
     public void broadcastMessage(Message message) {
         for (Connection connection : usersInChatConnection) {
             connection.sendMessage(message);
