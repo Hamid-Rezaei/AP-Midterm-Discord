@@ -51,6 +51,10 @@ public class Guild implements Serializable {
         return owner.getUsername();
     }
 
+    public HashSet<GuildUser> getGuildUsers() {
+        return guildUsers;
+    }
+
     public void addUser(GuildUser user) {
         guildUsers.add(user);
     }

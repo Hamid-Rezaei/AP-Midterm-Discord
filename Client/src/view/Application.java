@@ -139,6 +139,10 @@ public class Application {
                 //guild.removeTextChannel();
                 inSelectedServer(guild);
             }
+            case 8 ->{
+                int i = serverSetting();
+                inApplication();
+            }
             default -> serverMenuHandler();
         }
     }
@@ -149,7 +153,7 @@ public class Application {
     private static void addNewTextChannel(Guild guild) {
         System.out.print("Enter text channel name: ");
         String name = sc.nextLine();
-        GroupChat groupChat = new GroupChat();
+        GroupChat groupChat = new GroupChat(guild.getGuildUsers());
         guild.addTextChanel(new TextChannel(name, groupChat));
         System.out.println("New text channel was added.");
     }
