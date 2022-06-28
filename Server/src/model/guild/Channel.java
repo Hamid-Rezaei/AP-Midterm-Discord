@@ -1,4 +1,6 @@
 package model.guild;
 
-public abstract class Channel {
+import java.io.Serializable;
+
+public abstract class Channel implements Serializable {
 }

@@ -1,24 +1,24 @@
 package model.guild;
 
 
-import model.user.User;
+
+
+import model.User;
 
 import java.awt.image.BufferedImage;
+import java.io.Serializable;
 
-public class GuildUser extends User {
+public class GuildUser extends User implements Serializable {
 
+    private Role role;
 
-    Role role;
-    /**
-     * Instantiates a new User.
-     *
-     * @param username    the username
-     * @param password    the password
-     * @param email       the email
-     * @param phoneNumber the phone number
-     */
-    public GuildUser(String username, String password, String email, String phoneNumber, BufferedImage avatar) {
-        super(username, password, email, phoneNumber,avatar);
+    public GuildUser(User user, Role role) {
+        super(user.getUsername(), user.getPassword(), user.getEmail(), user.getPhoneNumber(), user.getToken(), user.getAvatar());
+
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     public void setRole(Role role) {
