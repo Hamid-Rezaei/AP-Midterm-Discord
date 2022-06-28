@@ -88,7 +88,7 @@ public class Database {
             if (!resultSet.next()) {
                 return null;
             }
-            User user =  createUser(resultSet);
+            User user = createUser(resultSet);
             connection.close();
             return user;
         } catch (Exception e) {
@@ -124,12 +124,10 @@ public class Database {
                 boolean firstRule = false;
                 boolean secondRule = false;
                 if (!checkRules.next()) {
-                    System.out.println("Test Bug 1");
                     firstRule = true;
                 }
                 checkRules = checkIfAlreadyExists.executeQuery("select from_user, to_user from requests where from_user = " + "'" + targetUser + "'" + "and to_user = " + "'" + fromUser + "'");
                 if (!checkRules.next()) {
-                    System.out.println("Test Bug 2");
                     secondRule = true;
                 }
                 if (!(firstRule & secondRule)) {
@@ -137,7 +135,7 @@ public class Database {
                 }
                 Statement CheckIfAlreadyFriend = connection.createStatement();
                 ResultSet isFriend = checkIfAlreadyExists.executeQuery("select user_id from friends where friends_id = " + "'" + fromUser + "'" + "and user_id = " + "'" + targetUser + "'");
-                if(isFriend.next()){
+                if (isFriend.next()) {
                     return ServerErrorType.ALREADY_FRIEND;
                 }
             }
@@ -156,7 +154,6 @@ public class Database {
             return ServerErrorType.DATABASE_ERROR;
         }
     }
-
 
     public static HashSet<String> viewFriendRequestList(String targetUser) {
         HashSet<String> reqList = new HashSet<>();
@@ -217,5 +214,70 @@ public class Database {
             return "something went wrong.";
         }
     }
+
+    public static String blockUser(String user, String blockTarget) {
+        try {
+            Connection connection = connectToDB();
+            Statement checkIfAlreadyBlocked = connection.createStatement();
+            ResultSet checkRules = checkIfAlreadyBlocked.executeQuery("select blocker, blocked_person from blocked_users" +
+                    " where blocker = " + "'" + user + "'" + "and blocked_person = " + "'" + blockTarget + "'");
+            if (!checkRules.next()) {
+                PreparedStatement preparedStatement = connection.prepareStatement("insert into blocked_users (blocker,blocked_person) values(?,?)");
+                preparedStatement.setString(1, user);
+                preparedStatement.setString(2, blockTarget);
+                preparedStatement.execute();
+                Statement statement = connection.createStatement();
+                statement.execute("DELETE from friends" + " where user_id = " + "'" + user + "'" + "and friends_id = " + "'" + blockTarget + "'");
+                connection.close();
+                return "user successfully blocked.";
+            } else {
+                connection.close();
+                return "user is already blocked.";
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "couldn't block user.";
+        }
+
+    }
+
+    public static String unblockUser(String user, String unblockTarget) {
+        try {
+            Connection connection = connectToDB();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select blocked_person from blocked_users where  blocker = " + "'" + user + "'" + "and blocked_person = " + "'" + unblockTarget + "'");
+            if(!resultSet.next()){
+                return "this person isn't blocked.";
+            }
+            statement.execute("delete from blocked_users where blocker = " + "'" + user + "'" + "and blocked_person = " + "'" + unblockTarget + "'");
+            connection.close();
+            return "successfully unblocked user.";
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return "something went wrong while unblocking user.";
+        }
+
+    }
+
+    public static HashSet<String> viewBlockedList(String username) {
+        HashSet<String> blockedList = new HashSet<>();
+        try {
+            Connection connection = connectToDB();
+            Statement statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery("select blocked_person from blocked_users where blocker = " + "'" + username + "'");
+
+            while (resultSet.next()) {
+                blockedList.add(resultSet.getString(1));
+            }
+            connection.close();
+            return blockedList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return blockedList;
+
+    }
 }
+
+
 
