@@ -3,6 +3,8 @@ package model;
 import java.io.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Message implements Serializable {
     private String content;
@@ -11,17 +13,20 @@ public class Message implements Serializable {
     private boolean isFile;
     private int fileSize;
     private byte[] file;
+    private HashMap<Reaction, ArrayList<String>> reactions;
 
     public Message(String content, String authorName, LocalDateTime date) {
         this.content = content;
         this.authorName = authorName;
         this.date = date;
+        this.reactions = new HashMap<>();
     }
 
     public Message(String content, String authorName, LocalDateTime date, boolean isFile) {
         this.content = content;
         this.authorName = authorName;
         this.date = date;
+        this.reactions = new HashMap<>();
         this.isFile = isFile;
         loadFile(getPath());
     }
@@ -42,16 +47,16 @@ public class Message implements Serializable {
         return isFile;
     }
 
-    public String getPath(){
+    public String getPath() {
         // file>path
         String[] parts = this.content.split(">");
         String path = parts[1];
         return path;
     }
 
-    public String getFileName(){
+    public String getFileName() {
         String[] parts = getPath().split("[/\\\\]");
-        return parts[parts.length-1];
+        return parts[parts.length - 1];
     }
 
     public void loadFile(String path) {
@@ -68,11 +73,31 @@ public class Message implements Serializable {
     }
 
 
+    public void addReaction(Reaction reaction, String name) {
+        ArrayList<String> names = reactions.get(reaction);
+        if (names == null) {
+            names = new ArrayList<>();
+        }
+        names.add(name);
+        reactions.put(reaction, names);
+    }
+
+
     @Override
     public String toString() {
         DateTimeFormatter formatter
                 = DateTimeFormatter.ofPattern(
                 "MMM-dd, HH:mm");
-        return String.format("[%s] %s: %s", date.format(formatter), authorName, content);
+        StringBuilder stb = new StringBuilder();
+        stb.append(String.format("[%s] %s: %s\n", date.format(formatter), authorName, content));
+        for (Reaction reaction : reactions.keySet()) {
+            StringBuilder tmp = new StringBuilder(reaction.getEmoji() + " -> ");
+            for(String name : reactions.get(reaction)) {
+                tmp.append(name).append(" ");
+            }
+            tmp.append("\n");
+            stb.append(tmp);
+        }
+        return stb.toString();
     }
 }
