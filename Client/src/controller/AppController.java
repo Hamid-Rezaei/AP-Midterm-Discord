@@ -3,6 +3,8 @@ package controller;
 import model.Chat;
 import model.User;
 import model.guild.Guild;
+import model.guild.GuildUser;
+import model.guild.Role;
 
 import java.io.*;
 import java.net.*;
@@ -267,6 +269,26 @@ public class AppController {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public String addMemberToServer(String name,Guild guild) {
+        try {
+            User user = getUser(name);
+            GuildUser member = new GuildUser(user, new Role("member"));
+            outputStream.writeUTF("#addMember");
+            outputStream.flush();
+            outputStream.writeObject(member);
+            outputStream.flush();
+            outputStream.writeUTF(guild.getOwnerName());
+            outputStream.flush();
+            outputStream.writeUTF(guild.getName());
+            outputStream.flush();
+            String respond = inputStream.readUTF();
+            return respond;
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+        return "something went wrong while adding member to server.";
     }
 
     public String parseError(int errorCode) {

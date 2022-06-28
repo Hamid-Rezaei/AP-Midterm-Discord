@@ -6,6 +6,7 @@ import model.Chat;
 import model.Message;
 import model.User;
 import model.guild.Guild;
+import model.guild.GuildUser;
 
 import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
@@ -53,7 +54,8 @@ public class ServerController implements Runnable {
                 case "#blockUser" -> blockUser();
                 case "#blockList" -> blockList();
                 case "#unblockUser" -> unblockUser();
-                case "#updateGuild" ->updateGuild();
+                case "#updateGuild" -> updateGuild();
+                case "#addMember" -> addMemberToServer();
             }
 
         } catch (IOException e) {
@@ -67,6 +69,7 @@ public class ServerController implements Runnable {
             }
         }
     }
+
 
     private void blockUser() {
         try {
@@ -96,9 +99,9 @@ public class ServerController implements Runnable {
     private void blockList() {
         try {
             String username = inputStream.readUTF();
-           HashSet<String> blockedList =  Database.viewBlockedList(username);
-           outputStream.writeObject(blockedList);
-           outputStream.flush();
+            HashSet<String> blockedList = Database.viewBlockedList(username);
+            outputStream.writeObject(blockedList);
+            outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -296,6 +299,31 @@ public class ServerController implements Runnable {
         }
     }
 
+    public Guild getGuild(String owner, String guildName) {
+        Guild guild = null;
+        ArrayList<Guild> ownerGuilds = allGuilds.get(owner);
+        for (Guild g : ownerGuilds) {
+            if (g.getName().equals(guildName)) {
+                guild = g;
+            }
+        }
+        return guild;
+    }
+
+    private void addMemberToServer() {
+        try {
+            GuildUser gUser = (GuildUser) inputStream.readObject();
+            String gOwner = inputStream.readUTF();
+            String guildName = inputStream.readUTF();
+            Guild guild = getGuild(gOwner, guildName);
+            guild.addUser(gUser);
+            saveGuilds();
+            outputStream.writeUTF(gUser.getUsername() + " added to server successfully");
+            outputStream.flush();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void listOfUserServers() {
         ArrayList<Guild> userGuilds = new ArrayList<>();
@@ -318,7 +346,7 @@ public class ServerController implements Runnable {
         }
     }
 
-    public void updateGuild(){
+    public void updateGuild() {
 
     }
 
@@ -338,7 +366,7 @@ public class ServerController implements Runnable {
 
 
     public void loadGuilds() {
-  //      System.out.println("load:");
+        //      System.out.println("load:");
         try {
             File theFile = new File("guilds/all_guilds.bin");
             if (!theFile.exists()) {
