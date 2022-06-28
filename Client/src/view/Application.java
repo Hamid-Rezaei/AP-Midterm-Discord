@@ -84,8 +84,8 @@ public class Application {
 
     private static void listOfAllServer() {
         ArrayList<Guild> guilds = appController.listOfJoinedServers();
-        if(guilds != null){
-            for(Guild guild : guilds){
+        if (guilds != null) {
+            for (Guild guild : guilds) {
                 System.out.println(guild.getName());
             }
         }
@@ -106,8 +106,39 @@ public class Application {
                 listOfFriends();
                 friendMenuHandler();
             }
+            case 4 -> {
+                blockUser();
+                friendMenuHandler();
+            }
+            case 5 -> {
+                showBlockList();
+                friendMenuHandler();
+            }
             default -> inApplication();
         }
+    }
+
+    private static void blockUser() {
+        System.out.print("enter username of the person you want to block:");
+        String username = sc.nextLine();
+        System.out.println(appController.blockUser(username));
+    }
+
+    private static void showBlockList() {
+        HashSet<String> blockedList = appController.blockedList();
+        if (blockedList == null) {
+            System.out.println("something went wrong while retrieving blocked list.");
+        } else {
+            for (String user : blockedList) {
+                System.out.println(user);
+            }
+            System.out.print("Enter username of the person you want to unblock(if none, just press enter.): ");
+            String unblockTarget = sc.nextLine();
+            if (unblockTarget.length() > 0) {
+                System.out.println(appController.unblockUser(unblockTarget));
+            }
+        }
+
     }
 
     private static void settingMenuHandler() {

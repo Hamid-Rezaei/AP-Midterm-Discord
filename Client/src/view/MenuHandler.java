@@ -116,7 +116,9 @@ public class MenuHandler {
                 1) Send friend request
                 2) List of friend request
                 3) List of friends
-                4) Back""");
+                4) Block a user
+                5) Blocked list
+                6) Back""");
         System.out.print("> ");
         return returnChoice();
     }

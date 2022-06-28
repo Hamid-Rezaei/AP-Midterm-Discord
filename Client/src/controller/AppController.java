@@ -167,6 +167,51 @@ public class AppController {
         }
     }
 
+    public String blockUser(String username) {
+        try {
+            outputStream.writeUTF("#blockUser");
+            outputStream.writeUTF(currentUser.getUsername());
+            outputStream.flush();
+            outputStream.writeUTF(username);
+            outputStream.flush();
+            String dbResponse = inputStream.readUTF();
+            return dbResponse;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "something went wrong while blocking user.";
+        }
+    }
+
+    public String unblockUser(String unblockTarget) {
+        try {
+            outputStream.writeUTF("#unblockUser");
+            outputStream.flush();
+            outputStream.writeUTF(currentUser.getUsername());
+            outputStream.flush();
+            outputStream.writeUTF(unblockTarget);
+            outputStream.flush();
+            String respone = inputStream.readUTF();
+            return respone;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "something went wrong while unblocking user.";
+        }
+    }
+
+
+    public HashSet<String> blockedList() {
+        try{
+            outputStream.writeUTF("#blockList");
+            outputStream.flush();
+            outputStream.writeUTF(currentUser.getUsername());
+            outputStream.flush();
+            HashSet<String> blockedList = (HashSet<String>) inputStream.readObject();
+            return blockedList;
+        }catch (IOException | ClassNotFoundException e ){
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public Chat requestForDirectChat(User friend) {
         try {
@@ -197,7 +242,7 @@ public class AppController {
         }
     }
 
-    public String addServer(Guild guild){
+    public String addServer(Guild guild) {
         try {
             outputStream.writeUTF("#addGuild");
             outputStream.flush();
@@ -211,18 +256,19 @@ public class AppController {
         }
     }
 
-    public ArrayList<Guild> listOfJoinedServers(){
+    public ArrayList<Guild> listOfJoinedServers() {
         try {
             outputStream.writeUTF("#serverList");
             outputStream.flush();
             outputStream.writeUTF(currentUser.getUsername());
             outputStream.flush();
             return (ArrayList<Guild>) inputStream.readObject();
-        } catch (IOException | ClassNotFoundException e){
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
     }
+
     public String parseError(int errorCode) {
         String error;
         switch (errorCode) {

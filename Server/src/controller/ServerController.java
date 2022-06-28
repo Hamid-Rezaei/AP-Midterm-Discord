@@ -50,6 +50,9 @@ public class ServerController implements Runnable {
                 case "#revisedFriendRequests" -> revisedFriendRequests();
                 case "#addGuild" -> addGuild();
                 case "#serverList" -> listOfUserServers();
+                case "#blockUser" -> blockUser();
+                case "#blockList" -> blockList();
+                case "#unblockUser" -> unblockUser();
             }
 
         } catch (IOException e) {
@@ -61,6 +64,42 @@ public class ServerController implements Runnable {
             } catch (IOException err) {
                 err.printStackTrace();
             }
+        }
+    }
+
+    private void blockUser() {
+        try {
+            String user = inputStream.readUTF();
+            String blockTarget = inputStream.readUTF();
+            String respone = Database.blockUser(user, blockTarget);
+            outputStream.writeUTF(respone);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void unblockUser() {
+        try {
+            String user = inputStream.readUTF();
+            String unblockTarget = inputStream.readUTF();
+            String respone = Database.unblockUser(user, unblockTarget);
+            outputStream.writeUTF(respone);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    private void blockList() {
+        try {
+            String username = inputStream.readUTF();
+           HashSet<String> blockedList =  Database.viewBlockedList(username);
+           outputStream.writeObject(blockedList);
+           outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 
@@ -266,13 +305,13 @@ public class ServerController implements Runnable {
     public void listOfUserServers() {
         ArrayList<Guild> userGuilds = new ArrayList<>();
         try {
-            if(allGuilds.values().isEmpty()){
+            if (allGuilds.values().isEmpty()) {
                 loadGuilds();
             }
             String username = inputStream.readUTF();
             for (ArrayList<Guild> guilds : allGuilds.values()) {
                 for (Guild guild : guilds) {
-                    if(guild.hasUser(username)){
+                    if (guild.hasUser(username)) {
                         userGuilds.add(guild);
                     }
                 }
