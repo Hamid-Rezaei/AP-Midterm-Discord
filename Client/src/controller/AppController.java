@@ -2,13 +2,13 @@ package controller;
 
 import model.Chat;
 import model.User;
-import model.guild.Guild;
-import model.guild.GuildUser;
-import model.guild.Role;
+import model.guild.*;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
+import static view.MenuHandler.sc;
 
 public class AppController {
 
@@ -271,6 +271,22 @@ public class AppController {
         return null;
     }
 
+    public Guild getGuild(String owner, String guildName) {
+        try {
+            outputStream.writeUTF("#getGuild");
+            outputStream.flush();
+            outputStream.writeUTF(owner);
+            outputStream.flush();
+            outputStream.writeUTF(guildName);
+            outputStream.flush();
+            Guild guild = (Guild) inputStream.readObject();
+            return guild;
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public String addMemberToServer(String name, Guild guild) {
         try {
             User user = getUser(name);
@@ -291,6 +307,28 @@ public class AppController {
         return "something went wrong while adding member to server.";
     }
 
+    public String addNewTextChannel(Guild guild) {
+        String response = null;
+        try {
+            System.out.print("Enter text channel name: ");
+            String name = sc.nextLine();
+            outputStream.writeUTF("#addTextChannel");
+            outputStream.flush();
+            outputStream.writeUTF(name);
+            outputStream.flush();
+            outputStream.writeUTF(guild.getOwnerName());
+            outputStream.flush();
+            outputStream.writeUTF(guild.getName());
+            outputStream.flush();
+            response = inputStream.readUTF();
+        } catch (IOException e) {
+            e.printStackTrace();
+            response = "something went wrong while adding text channel";
+        }
+        return response;
+    }
+
+    //TODO : check if this function works
     public String deleteMemberFromServer(String name, Guild guild) {
         try {
             User user = getUser(name);
@@ -298,11 +336,6 @@ public class AppController {
             outputStream.writeUTF("#removeMember");
             outputStream.flush();
             outputStream.writeObject(member);
-            outputStream.flush();
-            outputStream.writeUTF(guild.getOwnerName());
-            outputStream.flush();
-            outputStream.writeUTF(guild.getName());
-            outputStream.flush();
             String respond = inputStream.readUTF();
             return respond;
         } catch (IOException e) {

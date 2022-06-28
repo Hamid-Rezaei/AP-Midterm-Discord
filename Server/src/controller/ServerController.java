@@ -5,8 +5,10 @@ import Database.Database;
 import model.Chat;
 import model.Message;
 import model.User;
+import model.guild.GroupChat;
 import model.guild.Guild;
 import model.guild.GuildUser;
+import model.guild.TextChannel;
 
 import javax.imageio.ImageIO;
 import javax.xml.crypto.Data;
@@ -50,11 +52,13 @@ public class ServerController implements Runnable {
                 case "#requestForDirectChat" -> chatWithFriend();
                 case "#revisedFriendRequests" -> revisedFriendRequests();
                 case "#addGuild" -> addGuild();
+                case "#getGuild" -> getGuild();
                 case "#serverList" -> listOfUserServers();
                 case "#blockUser" -> blockUser();
                 case "#blockList" -> blockList();
                 case "#unblockUser" -> unblockUser();
                 case "#addMember" -> addMemberToServer();
+                case "#addTextChannel" -> addTextChannel();
                 case "#removeMember" -> deleteMemberToServer();
                 case "#changeGuildName" -> changeGuildName();
             }
@@ -71,43 +75,6 @@ public class ServerController implements Runnable {
         }
     }
 
-
-
-    private void blockUser() {
-        try {
-            String user = inputStream.readUTF();
-            String blockTarget = inputStream.readUTF();
-            String respone = Database.blockUser(user, blockTarget);
-            outputStream.writeUTF(respone);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void unblockUser() {
-        try {
-            String user = inputStream.readUTF();
-            String unblockTarget = inputStream.readUTF();
-            String respone = Database.unblockUser(user, unblockTarget);
-            outputStream.writeUTF(respone);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    private void blockList() {
-        try {
-            String username = inputStream.readUTF();
-            HashSet<String> blockedList = Database.viewBlockedList(username);
-            outputStream.writeObject(blockedList);
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
 
     public void signUp() {
@@ -276,6 +243,78 @@ public class ServerController implements Runnable {
         }
     }
 
+    private void blockUser() {
+        try {
+            String user = inputStream.readUTF();
+            String blockTarget = inputStream.readUTF();
+            String respone = Database.blockUser(user, blockTarget);
+            outputStream.writeUTF(respone);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void unblockUser() {
+        try {
+            String user = inputStream.readUTF();
+            String unblockTarget = inputStream.readUTF();
+            String respone = Database.unblockUser(user, unblockTarget);
+            outputStream.writeUTF(respone);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void blockList() {
+        try {
+            String username = inputStream.readUTF();
+            HashSet<String> blockedList = Database.viewBlockedList(username);
+            outputStream.writeObject(blockedList);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveGuilds() {
+        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("guilds/all_guilds.bin"))) {
+            try {
+                os.writeObject(allGuilds);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void loadGuilds() {
+        //      System.out.println("load:");
+        try {
+            File theFile = new File("guilds/all_guilds.bin");
+            if (!theFile.exists()) {
+                theFile.createNewFile();
+            }
+            ObjectInputStream is = new ObjectInputStream(new FileInputStream("guilds/all_guilds.bin"));
+            allGuilds = (HashMap<String, ArrayList<Guild>>) is.readObject();
+//            for (Map.Entry<String, ArrayList<Guild>> set :
+//                    allGuilds.entrySet()) {
+//                System.out.println(set.getKey() + " = "
+//                        + set.getValue().isEmpty());
+//            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void addGuild() {
         //TODO:load
@@ -312,6 +351,25 @@ public class ServerController implements Runnable {
         return guild;
     }
 
+    public void getGuild() {
+        Guild guild = null;
+        try {
+            String owner = inputStream.readUTF();
+            String guildName = inputStream.readUTF();
+            ArrayList<Guild> ownerGuilds = allGuilds.get(owner);
+            for (Guild g : ownerGuilds) {
+                if (g.getName().equals(guildName)) {
+                    guild = g;
+                }
+            }
+            outputStream.writeObject(guild);
+            outputStream.flush();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
+
     private void addMemberToServer() {
         try {
             GuildUser gUser = (GuildUser) inputStream.readObject();
@@ -327,6 +385,34 @@ public class ServerController implements Runnable {
         }
     }
 
+    private void addTextChannel() {
+        try {
+            String textChannelName = inputStream.readUTF();
+            String guildOwnerName = inputStream.readUTF();
+            String guildName = inputStream.readUTF();
+            Guild guild = getGuild(guildOwnerName, guildName);
+            boolean exists = false;
+            for (TextChannel textChannel : guild.getTextChannels()) {
+                if (textChannel.getName().equals(textChannelName)) {
+                    exists = true;
+                    break;
+                }
+            }
+            if (exists) {
+                outputStream.writeUTF("this text channel already exists.");
+                outputStream.flush();
+                return;
+            }
+            GroupChat groupChat = new GroupChat();
+            TextChannel textChannel = new TextChannel(textChannelName, groupChat);
+            guild.addTextChanel(textChannel);
+            saveGuilds();
+            outputStream.writeUTF("text channel added successfully.");
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private void deleteMemberToServer() {
         try {
             GuildUser gUser = (GuildUser) inputStream.readObject();
@@ -379,43 +465,6 @@ public class ServerController implements Runnable {
     }
 
 
-    public void saveGuilds() {
-        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("guilds/all_guilds.bin"))) {
-            try {
-                os.writeObject(allGuilds);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public void loadGuilds() {
-        //      System.out.println("load:");
-        try {
-            File theFile = new File("guilds/all_guilds.bin");
-            if (!theFile.exists()) {
-                theFile.createNewFile();
-            }
-            ObjectInputStream is = new ObjectInputStream(new FileInputStream("guilds/all_guilds.bin"));
-            allGuilds = (HashMap<String, ArrayList<Guild>>) is.readObject();
-//            for (Map.Entry<String, ArrayList<Guild>> set :
-//                    allGuilds.entrySet()) {
-//                System.out.println(set.getKey() + " = "
-//                        + set.getValue().isEmpty());
-//            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void run() {
