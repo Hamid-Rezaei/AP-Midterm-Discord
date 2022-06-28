@@ -11,5 +11,11 @@ public abstract class Channel implements Serializable {
         this.groupChat = groupChat;
     }
 
+    public String getName() {
+        return name;
+    }
 
+    public GroupChat getGroupChat() {
+        return groupChat;
+    }
 }

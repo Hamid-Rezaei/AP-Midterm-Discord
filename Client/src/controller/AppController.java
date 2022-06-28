@@ -2,13 +2,13 @@ package controller;
 
 import model.Chat;
 import model.User;
-import model.guild.Guild;
-import model.guild.GuildUser;
-import model.guild.Role;
+import model.guild.*;
 
 import java.io.*;
 import java.net.*;
 import java.util.*;
+
+import static view.MenuHandler.sc;
 
 public class AppController {
 
@@ -202,14 +202,14 @@ public class AppController {
 
 
     public HashSet<String> blockedList() {
-        try{
+        try {
             outputStream.writeUTF("#blockList");
             outputStream.flush();
             outputStream.writeUTF(currentUser.getUsername());
             outputStream.flush();
             HashSet<String> blockedList = (HashSet<String>) inputStream.readObject();
             return blockedList;
-        }catch (IOException | ClassNotFoundException e ){
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return null;
@@ -271,7 +271,22 @@ public class AppController {
         return null;
     }
 
-    public String addMemberToServer(String name,Guild guild) {
+    public Guild getGuild(String owner,String guildName){
+        try{
+            outputStream.writeUTF("#getGuild");
+            outputStream.flush();
+            outputStream.writeUTF(owner);
+            outputStream.flush();
+            outputStream.writeUTF(guildName);
+            outputStream.flush();
+            Guild guild = (Guild) inputStream.readObject();
+            return guild;
+        }catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+    public String addMemberToServer(String name, Guild guild) {
         try {
             User user = getUser(name);
             GuildUser member = new GuildUser(user, new Role("member"));
@@ -285,10 +300,31 @@ public class AppController {
             outputStream.flush();
             String respond = inputStream.readUTF();
             return respond;
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return "something went wrong while adding member to server.";
+    }
+
+    public String addNewTextChannel(Guild guild) {
+        String response;
+        try {
+            System.out.print("Enter text channel name: ");
+            String name = sc.nextLine();
+            outputStream.writeUTF("#addTextChannel");
+            outputStream.flush();
+            outputStream.writeUTF(name);
+            outputStream.flush();
+            outputStream.writeUTF(guild.getOwnerName());
+            outputStream.flush();
+            outputStream.writeUTF(guild.getName());
+            outputStream.flush();
+            response = inputStream.readUTF();
+        } catch (IOException e){
+            e.printStackTrace();
+            response = "something went wrong while adding text channel";
+        }
+        return response;
     }
 
     public String parseError(int errorCode) {
