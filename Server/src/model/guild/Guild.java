@@ -31,6 +31,18 @@ public class Guild implements Serializable {
         return false;
     }
 
+    public ArrayList<TextChannel> getTextChannels() {
+        return textChannels;
+    }
+
+    public ArrayList<VoiceChannel> getVoiceChannels() {
+        return voiceChannels;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getName() {
         return name;
     }
@@ -49,5 +61,13 @@ public class Guild implements Serializable {
 
     public void addVoiceChannel(VoiceChannel voiceChannel) {
         voiceChannels.add(voiceChannel);
+    }
+
+    public void removeTextChannel(TextChannel textChannel){
+        textChannels.remove(textChannel);
+    }
+
+    public void removeVoiceChannel(VoiceChannel voiceChannel) {
+        voiceChannels.remove(voiceChannel);
     }
 }

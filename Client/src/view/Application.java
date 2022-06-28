@@ -2,9 +2,7 @@ package view;
 
 import controller.*;
 import model.*;
-import model.guild.Guild;
-import model.guild.GuildUser;
-import model.guild.Role;
+import model.guild.*;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -75,21 +73,95 @@ public class Application {
                 serverMenuHandler();
             }
             case 2 -> {
-                listOfAllServer();
+                Guild guild = listOfAllServer();
+                inSelectedServer(guild);
                 serverMenuHandler();
             }
             default -> inApplication();
         }
     }
 
-    private static void listOfAllServer() {
+
+    // server handling section
+
+    private static void addNewServer() {
+        System.out.print("Enter server name: ");
+        String name = sc.nextLine();
+        GuildUser owner = new GuildUser(user, new Role("owner"));
+        System.out.println(appController.addServer(new Guild(name, owner)));
+    }
+
+
+    private static Guild listOfAllServer() {
         ArrayList<Guild> guilds = appController.listOfJoinedServers();
         if (guilds != null) {
+            int i = 1;
             for (Guild guild : guilds) {
-                System.out.println(guild.getName());
+                System.out.println(i + ". " + guild.getName());
             }
+            System.out.print("Enter server number to login: ");
+            int choice = Integer.parseInt(sc.nextLine());
+            return guilds.get(choice - 1);
+        } else {
+            System.out.println("You dont have any server...");
+            return null;
+        }
+
+    }
+
+    private static void inSelectedServer(Guild guild) {
+        int choice = showInGuild();
+        switch (choice) {
+            case 1 -> {
+                ArrayList<TextChannel> textChannels = guild.getTextChannels();
+                //for (TextChannel : )
+
+            }
+            case 2 -> {
+                ArrayList<VoiceChannel> voiceChannels = guild.getVoiceChannels();
+                inSelectedServer(guild);
+            }
+            case 3 -> {
+                System.out.println(addMemberToServer(guild));
+                inSelectedServer(guild);
+            }
+            case 4 -> {
+                addNewTextChannel(guild);
+                inSelectedServer(guild);
+            }
+
+            case 5 -> {
+                addNewVoiceChannel(guild);
+                inSelectedServer(guild);
+            }
+
+            case 6 -> {
+                //guild.removeTextChannel();
+                inSelectedServer(guild);
+            }
+            default -> serverMenuHandler();
         }
     }
+
+    private static void addNewVoiceChannel(Guild guild) {
+    }
+
+    private static void addNewTextChannel(Guild guild) {
+        System.out.print("Enter text channel name: ");
+        String name = sc.nextLine();
+        GroupChat groupChat = new GroupChat();
+        guild.addTextChanel(new TextChannel(name, groupChat));
+        System.out.println("New text channel was added.");
+    }
+
+    private static String addMemberToServer(Guild guild) {
+        String name = getFriendName();
+        User user = appController.getUser(name);
+        GuildUser member = new GuildUser(user, new Role("member"));
+        guild.addUser(member);
+        return name + " added to server successfully";
+    }
+
 
     private static void friendMenuHandler() {
         int choice = showFriendMenu();
@@ -151,7 +223,7 @@ public class Application {
     }
 
 
-    //Required methods for parts of friendMenuHandler and serverMenuHandler.
+    //Required methods for parts of friendMenuHandler.
 
     private static void listOfFriendRequests() {
         HashSet<String> friendRequests = appController.friendRequestList(user.getUsername());
@@ -200,16 +272,6 @@ public class Application {
         String friendToChat = sc.nextLine();
         System.out.println("You are in chat with: " + friendToChat);
         return appController.getUser(friendToChat);
-    }
-
-
-    // server handling section
-
-    private static void addNewServer() {
-        System.out.print("Enter server name: ");
-        String name = sc.nextLine();
-        GuildUser owner = new GuildUser(user, new Role("owner"));
-        System.out.println(appController.addServer(new Guild(name, owner)));
     }
 
 
