@@ -148,7 +148,12 @@ public class Application {
                 guild = appController.getGuild(guild.getOwnerName(),guild.getName());
                 inSelectedServer(guild);
             }
+
             case 8 ->{
+                System.out.println(deleteMemberFromServer(guild));
+                inSelectedServer(guild);
+            }
+            case 9 ->{
                 HashSet<GuildUser> guildUsers = guild.getGuildUsers();
                 int i = 1;
                 for(GuildUser guildUser: guildUsers){
@@ -157,13 +162,20 @@ public class Application {
                 }
                 inSelectedServer(guild);
             }
-            case 9 ->{
+            case 10 ->{
                 int i = serverSetting();
-                inSelectedServer(guild);
+                if(i == 1){
+                    System.out.println("Enter new name: ");
+                    String newName = sc.nextLine();
+                    System.out.println(appController.changeGuildName(guild, newName));
+                }
+                //TODO: inSelectedServer();
             }
             default -> serverMenuHandler();
         }
     }
+
+
 
     private static void addNewVoiceChannel(Guild guild) {
     }
@@ -178,6 +190,13 @@ public class Application {
         String respond = appController.addMemberToServer(name,guild);
         return respond;
     }
+
+    private static String deleteMemberFromServer(Guild guild) {
+        String name = getFriendName();
+        String respond = appController.deleteMemberFromServer(name,guild);
+        return respond;
+    }
+
 
 
     private static void friendMenuHandler() {

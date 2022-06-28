@@ -57,9 +57,10 @@ public class ServerController implements Runnable {
                 case "#blockUser" -> blockUser();
                 case "#blockList" -> blockList();
                 case "#unblockUser" -> unblockUser();
-                case "#updateGuild" -> updateGuild();
                 case "#addMember" -> addMemberToServer();
                 case "#addTextChannel" -> addTextChannel();
+                case "#removeMember" -> deleteMemberToServer();
+                case "#changeGuildName" -> changeGuildName();
             }
 
         } catch (IOException e) {
@@ -73,6 +74,7 @@ public class ServerController implements Runnable {
             }
         }
     }
+
 
 
     public void signUp() {
@@ -276,6 +278,43 @@ public class ServerController implements Runnable {
         }
     }
 
+    public void saveGuilds() {
+        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("guilds/all_guilds.bin"))) {
+            try {
+                os.writeObject(allGuilds);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void loadGuilds() {
+        //      System.out.println("load:");
+        try {
+            File theFile = new File("guilds/all_guilds.bin");
+            if (!theFile.exists()) {
+                theFile.createNewFile();
+            }
+            ObjectInputStream is = new ObjectInputStream(new FileInputStream("guilds/all_guilds.bin"));
+            allGuilds = (HashMap<String, ArrayList<Guild>>) is.readObject();
+//            for (Map.Entry<String, ArrayList<Guild>> set :
+//                    allGuilds.entrySet()) {
+//                System.out.println(set.getKey() + " = "
+//                        + set.getValue().isEmpty());
+//            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void addGuild() {
         //TODO:load
@@ -311,6 +350,7 @@ public class ServerController implements Runnable {
         }
         return guild;
     }
+
     public void getGuild() {
         Guild guild = null;
         try {
@@ -373,7 +413,35 @@ public class ServerController implements Runnable {
             e.printStackTrace();
         }
     }
+    private void deleteMemberToServer() {
+        try {
+            GuildUser gUser = (GuildUser) inputStream.readObject();
+            String gOwner = inputStream.readUTF();
+            String guildName = inputStream.readUTF();
+            Guild guild = getGuild(gOwner, guildName);
+            guild.removeMember(gUser);
+            saveGuilds();
+            outputStream.writeUTF(gUser.getUsername() + "remove from server successfully");
+            outputStream.flush();
+        } catch (IOException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void changeGuildName(){
+        try {
+            String gOwner = inputStream.readUTF();
+            String guildName = inputStream.readUTF();
+            String guildNewName = inputStream.readUTF();
+            Guild guild = getGuild(gOwner, guildName);
+            guild.setName(guildNewName);
+            saveGuilds();
+            outputStream.writeUTF("guild name change from "+ guildName+ " to " + guildNewName);
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void listOfUserServers() {
         ArrayList<Guild> userGuilds = new ArrayList<>();
@@ -396,47 +464,7 @@ public class ServerController implements Runnable {
         }
     }
 
-    public void updateGuild() {
 
-    }
-
-    public void saveGuilds() {
-        try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("guilds/all_guilds.bin"))) {
-            try {
-                os.writeObject(allGuilds);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public void loadGuilds() {
-        //      System.out.println("load:");
-        try {
-            File theFile = new File("guilds/all_guilds.bin");
-            if (!theFile.exists()) {
-                theFile.createNewFile();
-            }
-            ObjectInputStream is = new ObjectInputStream(new FileInputStream("guilds/all_guilds.bin"));
-            allGuilds = (HashMap<String, ArrayList<Guild>>) is.readObject();
-//            for (Map.Entry<String, ArrayList<Guild>> set :
-//                    allGuilds.entrySet()) {
-//                System.out.println(set.getKey() + " = "
-//                        + set.getValue().isEmpty());
-//            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-    }
 
     @Override
     public void run() {
