@@ -43,9 +43,19 @@ public class DirectChatController implements Runnable {
         broadcastMessage(message);
     }
 
+    public int numOfUsersInChat(){
+        return usersInChatConnection.size();
+    }
     public void broadcastMessage(Message message) {
         for (Connection connection : usersInChatConnection) {
             connection.sendMessage(message);
+        }
+    }
+    public void broadcastExitMessage(String message, Connection userConnection) {
+        for (Connection connection : usersInChatConnection) {
+            if(connection.getUsername().equals(userConnection.getUsername())){
+                connection.sendMessage(message);
+            }
         }
     }
 
@@ -67,9 +77,11 @@ public class DirectChatController implements Runnable {
         usersInChatConnection.add(connection);
     }
     public synchronized void removeConnection(String username){
-        for(Connection connection : usersInChatConnection){
+        Iterator<Connection> it = usersInChatConnection.iterator();
+        while(it.hasNext()){
+            Connection connection = it.next();
             if(connection.getUsername().equals(username)){
-                usersInChatConnection.remove(connection);
+                it.remove();
             }
         }
 
@@ -92,7 +104,6 @@ public class DirectChatController implements Runnable {
             ObjectInputStream readStream = new ObjectInputStream(readData);
             messages = (ArrayList<Message>) readStream.readObject();
         } catch (FileNotFoundException e) {
-            System.out.println("Here we have some bugs");
             saveMessages();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
