@@ -211,6 +211,18 @@ public class AppController {
         }
     }
 
+    public ArrayList<Guild> listOfJoinedServers(){
+        try {
+            outputStream.writeUTF("#serverList");
+            outputStream.flush();
+            outputStream.writeUTF(currentUser.getUsername());
+            outputStream.flush();
+            return (ArrayList<Guild>) inputStream.readObject();
+        } catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        return null;
+    }
     public String parseError(int errorCode) {
         String error;
         switch (errorCode) {
