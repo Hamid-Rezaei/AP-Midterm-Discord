@@ -98,6 +98,7 @@ public class Application {
             int i = 1;
             for (Guild guild : guilds) {
                 System.out.println(i + ". " + guild.getName());
+                i++;
             }
             System.out.print("Enter server number to login: ");
             int choice = Integer.parseInt(sc.nextLine());
@@ -140,6 +141,14 @@ public class Application {
                 inSelectedServer(guild);
             }
             case 8 ->{
+                HashSet<GuildUser> guildUsers = guild.getGuildUsers();
+                int i = 1;
+                for(GuildUser guildUser: guildUsers){
+                    System.out.println(i + ". " + guildUser.getUsername());
+                    i++;
+                }
+            }
+            case 9 ->{
                 int i = serverSetting();
                 inApplication();
             }

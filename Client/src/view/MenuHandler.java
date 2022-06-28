@@ -142,8 +142,9 @@ public class MenuHandler {
                 5) Add voice channel
                 6) Delete text channel
                 7) Delete voice channel
-                8) Server setting
-                9) Back""");
+                8) List of members
+                9) Server setting
+                10) Back""");
         System.out.print("> ");
         return returnChoice();
     }
