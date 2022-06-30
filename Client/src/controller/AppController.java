@@ -151,7 +151,7 @@ public class AppController {
             outputStream.writeUTF(username);
             outputStream.flush();
             return (HashSet<String>) inputStream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
+        } catch (IOException | ClassNotFoundException | ClassCastException e) {
             e.printStackTrace();
             return null;
         }
@@ -163,7 +163,7 @@ public class AppController {
             outputStream.flush();
             outputStream.writeUTF(username);
             outputStream.flush();
-            return (User) inputStream.readObject();
+            return (User) inputStream.readUnshared();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
             return null;
@@ -216,7 +216,7 @@ public class AppController {
         return null;
     }
 
-    public Chat requestForDirectChat(User friend) {
+    public void requestForDirectChat(User friend) {
         try {
             outputStream.writeUTF("#requestForDirectChat");
             outputStream.flush();
@@ -233,15 +233,12 @@ public class AppController {
                 Thread chatThread = new Thread(directChat);
                 chatThread.start();
                 chatThread.join();
-//                new Thread(directChat).start();
-                return directChat; // "You are in private chat with " + friend.getUsername();
-            } else {
-                return null;
+//                new Thread(directChat).start();// "You are in private chat with " + friend.getUsername();
             }
 
         } catch (IOException | ClassNotFoundException | InterruptedException e) {
             e.printStackTrace();
-            return null;//"Could not open chat with " + friend.getUsername();
+            return;//"Could not open chat with " + friend.getUsername();
         }
     }
 

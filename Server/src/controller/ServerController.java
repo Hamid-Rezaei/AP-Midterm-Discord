@@ -76,9 +76,6 @@ public class ServerController implements Runnable {
         }
     }
 
-
-
-
     public void signUp() {
         try {
             String[] parts = inputStream.readUTF().split(" ");
@@ -183,7 +180,7 @@ public class ServerController implements Runnable {
     private void getUserWithUsername() {
         try {
             String username = inputStream.readUTF();
-            outputStream.writeObject(Database.retrieveFromDB(username));
+            outputStream.writeUnshared(Database.retrieveFromDB(username));
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -205,7 +202,6 @@ public class ServerController implements Runnable {
         DirectChatController directChatController = directChats.get(chatHash);
         if (directChatController == null) {
             Connection userConnection = connections.get(currentUser.getUsername());
-
             ArrayList<User> participants = new ArrayList<>();
             participants.add(currentUser);
             participants.add(friend);
@@ -228,17 +224,31 @@ public class ServerController implements Runnable {
             User friend = (User) inputStream.readObject();
             User currentUser = (User) inputStream.readObject();
             DirectChatController directChatController = getDirChatController(currentUser, friend);
-            new Thread(directChatController).start();
+            Thread directChat = new Thread(directChatController, directChatController.getChatHashCode());
+            directChat.start();
             outputStream.writeUTF("Success");
             outputStream.flush();
             outputStream.writeObject(directChatController.getDirectChat());
             outputStream.flush();
             directChatController.broadcastMessages(connections.get(currentUser.getUsername()));
-
-            Message message = (Message) inputStream.readObject();
-            while (!message.getContent().equals("#exit")) {
-                directChatController.addMessage(message);
-                message = (Message) inputStream.readObject();
+            Message message = null;
+            boolean inChat = true;
+            while (inChat) {
+                Object obj = inputStream.readObject();
+                if (obj instanceof Message) {
+                    message = (Message) obj;
+                    if (message.getContent().equals("#exit")) {
+                        directChatController.broadcastExitMessage("you exited direct chat.", connections.get(currentUser.getUsername()));
+                        directChatController.removeConnection(currentUser.getUsername());
+                        break;
+                    }
+                    directChatController.addMessage(message);
+                } else {
+                    inChat = false;
+                }
+            }
+            if(directChatController.numOfUsersInChat() == 0){
+                directChat.stop();
             }
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
@@ -285,6 +295,9 @@ public class ServerController implements Runnable {
             String chatHash = directChatHashCode(username, friendName);
             DirectChatController directChat = directChats.get(chatHash);
             directChat.removeConnection(username);
+            if(directChat.numOfUsersInChat() == 0){
+                directChats.remove(directChat.getChatHashCode());
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

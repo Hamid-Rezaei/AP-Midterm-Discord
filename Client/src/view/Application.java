@@ -295,10 +295,12 @@ public class Application {
         HashSet<String> friends = appController.friendList(user.getUsername());
         printFriends(friends);
         User friend = getFriendForChat();
-        if (friend == null)
+        if (friend == null) {
+            System.out.println("friend is null!");
             return;
-        Chat directChat = appController.requestForDirectChat(friend);
-        appController.removeFromDirectChat(user,friend);
+        }
+        appController.requestForDirectChat(friend);
+        appController.removeFromDirectChat(user, friend);
         // what's happened here with directChat...
     }
 

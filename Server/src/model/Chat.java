@@ -74,8 +74,8 @@ public class Chat implements Runnable, Serializable {
         Thread snedMsg = new Thread(new Runnable() {
             @Override
             public void run() {
-                input = scanner.nextLine();
                 while (!input.equals("#exit")) {
+                    input = scanner.nextLine();
                     Message message;
                     if (input.startsWith("#file")) {
                         message = new Message(input, currUser.getUsername(), LocalDateTime.now(), true);
@@ -88,6 +88,7 @@ public class Chat implements Runnable, Serializable {
                         e.printStackTrace();
                     }
                     input = scanner.nextLine();
+                    messages.add(message);
                 }
             }
         });
@@ -95,12 +96,16 @@ public class Chat implements Runnable, Serializable {
 
         while (!input.equals("#exit")) {
             try {
-                Message msg = (Message) inputStream.readObject();
-                if (msg.isFile()) {
-                    if (!msg.getAuthorName().equals(currUser.getUsername()))
-                        System.out.println("file saved in: " + saveFileInDownloads(msg));
-                } else {
-                    System.out.println(msg);
+                Object message = inputStream.readObject();
+                if (message instanceof Message msg) {
+                    if (msg.isFile()) {
+                        if (!msg.getAuthorName().equals(currUser.getUsername()))
+                            System.out.println("file saved in: " + saveFileInDownloads(msg));
+                    } else {
+                        System.out.println(msg);
+                    }
+                } else{
+                    System.out.println(message.toString());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
