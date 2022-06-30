@@ -16,6 +16,7 @@ public class Chat implements Runnable, Serializable {
     private transient ObjectInputStream inputStream;
     private volatile boolean exit = false;
     String input = "";
+
     public Chat() {
         messages = new ArrayList<>();
     }
@@ -86,7 +87,6 @@ public class Chat implements Runnable, Serializable {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    messages.add(message);
                     input = scanner.nextLine();
                 }
             }

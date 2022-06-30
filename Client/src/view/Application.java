@@ -60,7 +60,8 @@ public class Application {
             case 1 -> serverMenuHandler();
             case 2 -> friendMenuHandler();
             case 3 -> settingMenuHandler();
-            default -> {}
+            case 4 -> {}
+            default -> inApplication();
         }
     }
 
@@ -100,7 +101,7 @@ public class Application {
                 i++;
             }
             System.out.print("Enter server number to login: ");
-            int choice = Integer.parseInt(sc.nextLine());
+            int choice = Integer.parseInt(sc.nextLine()); // TODO: catch invalid input exception
             Guild chosenGuild = guilds.get(choice - 1);
             guilds.clear();
             return chosenGuild;
@@ -117,9 +118,13 @@ public class Application {
             case 1 -> {
                 ArrayList<TextChannel> textChannels = guild.getTextChannels();
                 int i = 1;
+                System.out.println("enter number of textChannel you want to enter :");
                 for (TextChannel textChannel : textChannels) {
                     System.out.println(i++ + ". " + textChannel.getName());
                 }
+                int tChoice = returnChoice() - 1;
+                TextChannel textChannel = textChannels.get(tChoice);
+                appController.requestForGroupChat(guild,textChannel);
                 //for (TextChannel : )
 
             }
@@ -170,6 +175,7 @@ public class Application {
                     System.out.print("Enter new name: ");
                     String newName = sc.nextLine();
                     System.out.println(appController.changeGuildName(guild, newName));
+                    guild.setName(newName);
                     guild = appController.getGuild(guild.getOwnerName(), newName);
                 }
                 inSelectedServer(guild);

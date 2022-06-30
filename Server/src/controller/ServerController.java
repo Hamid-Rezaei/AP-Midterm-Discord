@@ -2,7 +2,6 @@ package controller;
 
 
 import Database.Database;
-import model.Chat;
 import model.Message;
 import model.User;
 import model.guild.GroupChat;
@@ -11,7 +10,6 @@ import model.guild.GuildUser;
 import model.guild.TextChannel;
 
 import javax.imageio.ImageIO;
-import javax.xml.crypto.Data;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
@@ -25,7 +23,7 @@ public class ServerController implements Runnable {
     public static HashMap<String, ArrayList<Guild>> allGuilds = new HashMap<>();
 
     private Socket socket;
-    
+
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
     private String appUsername;
@@ -63,6 +61,7 @@ public class ServerController implements Runnable {
                 case "#removeMember" -> deleteMemberToServer();
                 case "#changeGuildName" -> changeGuildName();
                 case "#removeFromChat" -> removeFromDirectChat();
+                case "#getTextChannel" -> getTextChannel();
             }
 
         } catch (IOException e) {
@@ -76,6 +75,7 @@ public class ServerController implements Runnable {
             }
         }
     }
+
 
 
 
@@ -245,15 +245,47 @@ public class ServerController implements Runnable {
         }
     }
 
+    private void getTextChannel() {
+        try {
+            String owner = inputStream.readUTF();
+            String guildName = inputStream.readUTF();
+            Guild guild = getGuild(owner,guildName);
+            String textChannelName = inputStream.readUTF();
+            ArrayList<TextChannel> textChannels = guild.getTextChannels();
+            TextChannel textChannel = null;
+            for(TextChannel t : textChannels){
+                if(t.getName().equals(textChannelName)){
+                    textChannel = t;
+                    break;
+                }
+            }
+            if(textChannel != null) {
+                outputStream.writeUTF("success.");
+                outputStream.flush();
+                textChannel.addUser(connections.get(appUsername));
+                Message message = (Message) inputStream.readObject();
+                while (!message.getContent().equals("#exit")) {
+                    textChannel.addMessage(message);
+                    message = (Message) inputStream.readObject();
+                }
+            } else {
+                outputStream.writeUTF("failed.");
+                outputStream.flush();
+            }
+        }catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
+    }
+
 
     private void removeFromDirectChat() {
         try {
             String username = inputStream.readUTF();
             String friendName = inputStream.readUTF();
-            String chatHash = directChatHashCode(username,friendName);
+            String chatHash = directChatHashCode(username, friendName);
             DirectChatController directChat = directChats.get(chatHash);
             directChat.removeConnection(username);
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -366,23 +398,27 @@ public class ServerController implements Runnable {
         return null;
     }
 
-    public void getGuild() {
+    public Guild getGuild() {
         Guild guild = null;
         try {
-            String owner = inputStream.readUTF();
+            //String owner = inputStream.readUTF();
             String guildName = inputStream.readUTF();
-            ArrayList<Guild> ownerGuilds = allGuilds.get(owner);
-            for (Guild g : ownerGuilds) {
-                if (g.getName().equals(guildName)) {
-                    guild = g;
+            Collection<ArrayList<Guild>> allGuild = allGuilds.values();
+            for (ArrayList<Guild> guilds : allGuild) {
+                for (Guild g : guilds) {
+                    if (g.getName().equals(guildName)) {
+                        guild = g;
+                        break;
+                    }
                 }
             }
             outputStream.writeUnshared(guild);
             outputStream.flush();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
+        return guild;
     }
 
     private void addMemberToServer() {
@@ -419,7 +455,7 @@ public class ServerController implements Runnable {
                 return;
             }
             GroupChat groupChat = new GroupChat();
-            TextChannel textChannel = new TextChannel(textChannelName, groupChat);
+            TextChannel textChannel = new TextChannel(textChannelName, groupChat, guildName);
             guild.addTextChanel(textChannel);
             saveGuilds();
             outputStream.writeUTF("text channel added successfully.");
@@ -428,6 +464,7 @@ public class ServerController implements Runnable {
             e.printStackTrace();
         }
     }
+
     private void deleteMemberToServer() {
         try {
             GuildUser gUser = (GuildUser) inputStream.readObject();
@@ -443,15 +480,17 @@ public class ServerController implements Runnable {
         }
     }
 
-    public void changeGuildName(){
+    public void changeGuildName() {
         try {
             String gOwner = inputStream.readUTF();
             String guildName = inputStream.readUTF();
             String guildNewName = inputStream.readUTF();
-            Guild guild = getGuild(gOwner, guildName);
-            guild.setName(guildNewName);
+            Guild renamedGuild = getGuild(gOwner, guildName);
+            allGuilds.get(gOwner).remove(renamedGuild);
+            renamedGuild.setName(guildNewName);
+            allGuilds.get(gOwner).add(renamedGuild);
             saveGuilds();
-            outputStream.writeUTF("guild name change from "+ guildName+ " to " + guildNewName);
+            outputStream.writeUTF("guild name change from " + guildName + " to " + guildNewName);
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();
@@ -474,12 +513,12 @@ public class ServerController implements Runnable {
             }
             outputStream.writeUnshared(userGuilds);
             outputStream.flush();
+            outputStream.reset();
             userGuilds.clear();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
 
     @Override

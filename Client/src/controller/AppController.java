@@ -13,7 +13,6 @@ import static view.MenuHandler.sc;
 public class AppController {
 
 
-
     public enum ServerErrorType {
         NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4), Duplicate_ERROR(5), ALREADY_FRIEND(6), UNKNOWN_ERROR(404);
 
@@ -245,15 +244,16 @@ public class AppController {
             return null;//"Could not open chat with " + friend.getUsername();
         }
     }
+
     public void removeFromDirectChat(User user, User friend) {
-        try{
+        try {
             outputStream.writeUTF("#removeFromChat");
             outputStream.flush();
             outputStream.writeUTF(user.getUsername());
             outputStream.flush();
             outputStream.writeUTF(friend.getUsername());
             outputStream.flush();
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -278,7 +278,8 @@ public class AppController {
             outputStream.flush();
             outputStream.writeUTF(currentUser.getUsername());
             outputStream.flush();
-            return (ArrayList<Guild>) inputStream.readUnshared();
+            ArrayList<Guild> guilds = (ArrayList<Guild>) inputStream.readUnshared();
+            return guilds;
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -289,8 +290,8 @@ public class AppController {
         try {
             outputStream.writeUTF("#getGuild");
             outputStream.flush();
-            outputStream.writeUTF(owner);
-            outputStream.flush();
+//            outputStream.writeUTF(owner);
+//            outputStream.flush();
             outputStream.writeUTF(guildName);
             outputStream.flush();
             Guild guild = (Guild) inputStream.readUnshared();
@@ -340,6 +341,33 @@ public class AppController {
             response = "something went wrong while adding text channel";
         }
         return response;
+    }
+
+    public void requestForGroupChat(Guild guild,TextChannel textChannel) {
+        try {
+            outputStream.writeUTF("#getTextChannel");
+            outputStream.flush();
+            outputStream.writeUTF(guild.getOwnerName());
+            outputStream.flush();
+            outputStream.writeUTF(guild.getName());
+            outputStream.flush();
+            outputStream.writeUTF(textChannel.getName());
+            outputStream.flush();
+            String answer = inputStream.readUTF();
+            if(answer.equals("success.")){
+                Chat groupChat = new Chat();
+                groupChat.setOutputStream(outputStream);
+                groupChat.setInputStream(inputStream);
+                groupChat.setCurrUser(currentUser);
+                Thread groupChatThread = new Thread(groupChat);
+                groupChatThread.start();
+                groupChatThread.join();
+            } else{
+                System.out.println("something went wrong while requesting for group chat.");
+            }
+        } catch (IOException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     //TODO : check if this function works

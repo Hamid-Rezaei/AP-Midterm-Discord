@@ -66,6 +66,7 @@ public class DirectChatController implements Runnable {
     public synchronized void addConnection(Connection connection) {
         usersInChatConnection.add(connection);
     }
+
     public synchronized void removeConnection(String username){
         for(Connection connection : usersInChatConnection){
             if(connection.getUsername().equals(username)){
@@ -75,6 +76,10 @@ public class DirectChatController implements Runnable {
 
     }
     public synchronized void saveMessages() {
+        File theDir = new File("assets/direct_chat");
+        if (!theDir.exists()) {
+            theDir.mkdirs();
+        }
         try (FileOutputStream writeData = new FileOutputStream("assets/direct_chat/" + chatHashCode + ".bin");
              ObjectOutputStream writeStream = new ObjectOutputStream(writeData)) {
             writeStream.writeObject(messages);
@@ -92,7 +97,7 @@ public class DirectChatController implements Runnable {
             ObjectInputStream readStream = new ObjectInputStream(readData);
             messages = (ArrayList<Message>) readStream.readObject();
         } catch (FileNotFoundException e) {
-            System.out.println("Here we have some bugs");
+            //System.out.println("Here we have some bugs");
             saveMessages();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
