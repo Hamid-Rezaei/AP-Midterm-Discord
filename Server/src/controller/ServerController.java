@@ -76,6 +76,30 @@ public class ServerController implements Runnable {
         }
     }
 
+    private void pinMessage(String chatHashCode, int messageIndex) {
+        try {
+            DirectChatController directChat = directChats.get(chatHashCode);
+            directChat.pinMessage(messageIndex);
+            outputStream.writeUTF("Message pinned successfully.");
+            outputStream.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showPinnedMessages() {
+        try {
+            String username = inputStream.readUTF();
+            String friendName = inputStream.readUTF();
+            String chatHash = directChatHashCode(username, friendName);
+            DirectChatController directChat = directChats.get(chatHash);
+            directChat.showPinnedMessages(connections.get(username));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
     public void signUp() {
         try {
             String[] parts = inputStream.readUTF().split(" ");
@@ -241,13 +265,21 @@ public class ServerController implements Runnable {
                         directChatController.broadcastExitMessage("you exited direct chat.", connections.get(currentUser.getUsername()));
                         directChatController.removeConnection(currentUser.getUsername());
                         break;
+                    } else if (message.getContent().split(">")[0].equals("#pin")) {
+                        int index = Integer.parseInt(message.getContent().split(">")[1]);
+                        directChatController.pinMessage(index);
+                        directChatController.broadcastExitMessage("message pinned successfully.",connections.get(currentUser.getUsername()));
+                    } else if (message.getContent().equals("#pins")) {
+                        directChatController.showPinnedMessages(connections.get(currentUser.getUsername()));
+                    } else {
+                        directChatController.addMessage(message);
                     }
-                    directChatController.addMessage(message);
+
                 } else {
                     inChat = false;
                 }
             }
-            if(directChatController.numOfUsersInChat() == 0){
+            if (directChatController.numOfUsersInChat() == 0) {
                 directChat.stop();
             }
         } catch (IOException | ClassNotFoundException e) {
@@ -259,17 +291,17 @@ public class ServerController implements Runnable {
         try {
             String owner = inputStream.readUTF();
             String guildName = inputStream.readUTF();
-            Guild guild = getGuild(owner,guildName);
+            Guild guild = getGuild(owner, guildName);
             String textChannelName = inputStream.readUTF();
             ArrayList<TextChannel> textChannels = guild.getTextChannels();
             TextChannel textChannel = null;
-            for(TextChannel t : textChannels){
-                if(t.getName().equals(textChannelName)){
+            for (TextChannel t : textChannels) {
+                if (t.getName().equals(textChannelName)) {
                     textChannel = t;
                     break;
                 }
             }
-            if(textChannel != null) {
+            if (textChannel != null) {
                 outputStream.writeUTF("success.");
                 outputStream.flush();
                 textChannel.addUser(connections.get(appUsername));
@@ -282,7 +314,7 @@ public class ServerController implements Runnable {
                 outputStream.writeUTF("failed.");
                 outputStream.flush();
             }
-        }catch (IOException | ClassNotFoundException e){
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
@@ -295,7 +327,7 @@ public class ServerController implements Runnable {
             String chatHash = directChatHashCode(username, friendName);
             DirectChatController directChat = directChats.get(chatHash);
             directChat.removeConnection(username);
-            if(directChat.numOfUsersInChat() == 0){
+            if (directChat.numOfUsersInChat() == 0) {
                 directChats.remove(directChat.getChatHashCode());
             }
         } catch (IOException e) {

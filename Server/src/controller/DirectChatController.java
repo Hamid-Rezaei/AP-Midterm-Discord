@@ -14,7 +14,7 @@ public class DirectChatController implements Runnable {
     private String chatHashCode;
     private ArrayList<User> participants;
     private HashSet<Connection> usersInChatConnection;
-
+    private ArrayList<Message> pinnedMessages = new ArrayList<>();
 
     public DirectChatController(HashSet<Connection> usersInChatConnection, ArrayList<User> participants) {
         directChat = new Chat();
@@ -43,17 +43,19 @@ public class DirectChatController implements Runnable {
         broadcastMessage(message);
     }
 
-    public int numOfUsersInChat(){
+    public int numOfUsersInChat() {
         return usersInChatConnection.size();
     }
+
     public void broadcastMessage(Message message) {
         for (Connection connection : usersInChatConnection) {
             connection.sendMessage(message);
         }
     }
+
     public void broadcastExitMessage(String message, Connection userConnection) {
         for (Connection connection : usersInChatConnection) {
-            if(connection.getUsername().equals(userConnection.getUsername())){
+            if (connection.getUsername().equals(userConnection.getUsername())) {
                 connection.sendMessage(message);
             }
         }
@@ -62,31 +64,43 @@ public class DirectChatController implements Runnable {
     public synchronized void broadcastMessages(Connection connection) {
         if (this.messages.size() > 6) {
             for (int i = messages.size() - 6; i < messages.size(); i++) {
-                connection.sendMessage(messages.get(i));
+                connection.sendMessage((i + 1) + ". " + messages.get(i).toString());
             }
         } else {
             for (int i = 0; i < messages.size(); i++) {
-                connection.sendMessage(messages.get(i));
+                connection.sendMessage((i + 1) + ". " + messages.get(i).toString());
 
             }
         }
 
+    }
+
+    public synchronized void pinMessage(int index) {
+        pinnedMessages.add(messages.get(index - 1));
+        saveMessages();
+    }
+
+    public synchronized void showPinnedMessages(Connection connection) {
+        for (int i = 0; i < pinnedMessages.size(); i++) {
+            connection.sendMessage(pinnedMessages.get(i));
+        }
     }
 
     public synchronized void addConnection(Connection connection) {
         usersInChatConnection.add(connection);
     }
 
-    public synchronized void removeConnection(String username){
+    public synchronized void removeConnection(String username) {
         Iterator<Connection> it = usersInChatConnection.iterator();
-        while(it.hasNext()){
+        while (it.hasNext()) {
             Connection connection = it.next();
-            if(connection.getUsername().equals(username)){
+            if (connection.getUsername().equals(username)) {
                 it.remove();
             }
         }
 
     }
+
     public synchronized void saveMessages() {
         File theDir = new File("assets/direct_chat");
         if (!theDir.exists()) {
@@ -96,6 +110,14 @@ public class DirectChatController implements Runnable {
              ObjectOutputStream writeStream = new ObjectOutputStream(writeData)) {
             writeStream.writeObject(messages);
             writeStream.flush();
+            writeStream.close();
+            writeData.close();
+            FileOutputStream pinnedData = new FileOutputStream("assets/direct_chat/" + chatHashCode + "-" + "pin.bin");
+            ObjectOutputStream write = new ObjectOutputStream(pinnedData);
+            write.writeObject(pinnedMessages);
+            write.flush();
+            write.close();
+            pinnedData.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -108,6 +130,9 @@ public class DirectChatController implements Runnable {
             FileInputStream readData = new FileInputStream("assets/direct_chat/" + chatHashCode + ".bin");
             ObjectInputStream readStream = new ObjectInputStream(readData);
             messages = (ArrayList<Message>) readStream.readObject();
+            FileInputStream pinData = new FileInputStream("assets/direct_chat/" + chatHashCode + "-" + "pin.bin");
+            ObjectInputStream readPinned = new ObjectInputStream(pinData);
+            pinnedMessages = (ArrayList<Message>) readPinned.readObject();
         } catch (FileNotFoundException e) {
             //System.out.println("Here we have some bugs");
             saveMessages();
