@@ -34,6 +34,9 @@ public class Guild implements Serializable {
     public void removeMember(GuildUser guildUser){
         guildUsers.remove(guildUser);
     }
+    public void removeMember(String guildUser){
+        guildUsers.removeIf(guildUser1 -> guildUser1.getUsername().equals(guildUser));
+        }
 
     public ArrayList<TextChannel> getTextChannels() {
         return textChannels;

@@ -10,8 +10,32 @@ public enum Status {
         this.color = color;
     }
 
+    public String toString(Status status) {
+        if (status.equals(ONLINE)) {
+            return "online";
+        } else if (status.equals(IDLE)) {
+            return "idle";
+        } else if (status.equals(DO_NOT_DISTURB)) {
+            return "do not disturb";
+        } else {
+            return "offline";
+        }
+    }
+
     @Override
     public String toString() {
         return color;
+    }
+
+    public static Status makeStatus(String status) {
+        if (status.equals("online")) {
+            return ONLINE;
+        } else if (status.equals("idle")) {
+            return IDLE;
+        } else if (status.equals("do not disturb")) {
+            return DO_NOT_DISTURB;
+        } else {
+            return INVISIBLE;
+        }
     }
 }

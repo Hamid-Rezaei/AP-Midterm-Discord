@@ -11,12 +11,14 @@ public class TextChannel extends Channel {
     ArrayList<Message> messages;
     transient HashSet<Connection> usersInChat;
     String guildName;
+    ArrayList<Message> pinnedMessages;
 
     public TextChannel(String name, GroupChat groupChat, String guildName) {
         super(name, groupChat);
         messages = new ArrayList<>();
         this.guildName = guildName;
         usersInChat = new HashSet<>();
+        pinnedMessages = new ArrayList<>();
     }
 
     public synchronized void addMessage(Message message) {
@@ -44,9 +46,27 @@ public class TextChannel extends Channel {
         }
 
     }
+    public void broadcastExitMessage(String message, Connection userConnection) {
+        for (Connection connection : usersInChat) {
+            if (connection.getUsername().equals(userConnection.getUsername())) {
+                connection.sendMessage(message);
+            }
+        }
+    }
+
+    public synchronized void pinMessage(int index) {
+        pinnedMessages.add(messages.get(index - 1));
+        saveMessages();
+    }
+
+    public synchronized void showPinnedMessages(Connection connection) {
+        for (int i = 0; i < pinnedMessages.size(); i++) {
+            connection.sendMessage(pinnedMessages.get(i));
+        }
+    }
 
     public void addUser(Connection user) {
-        if(usersInChat == null){
+        if (usersInChat == null) {
             usersInChat = new HashSet<>();
         }
         usersInChat.add(user);
@@ -66,6 +86,14 @@ public class TextChannel extends Channel {
              ObjectOutputStream writeStream = new ObjectOutputStream(writeData)) {
             writeStream.writeObject(messages);
             writeStream.flush();
+            writeStream.close();
+            writeData.close();
+            FileOutputStream pinnedData = new FileOutputStream("assets/guilds/" + guildName + "/textchannels/" + this.name + "-" + "pin.bin");
+            ObjectOutputStream write = new ObjectOutputStream(pinnedData);
+            write.writeObject(pinnedMessages);
+            write.flush();
+            write.close();
+            pinnedData.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -78,6 +106,9 @@ public class TextChannel extends Channel {
             FileInputStream readData = new FileInputStream("assets/guilds/" + guildName + "/textchannels/" + this.name + ".bin");
             ObjectInputStream readStream = new ObjectInputStream(readData);
             messages = (ArrayList<Message>) readStream.readObject();
+            FileInputStream pinData = new FileInputStream("assets/guilds/" + guildName + "/textchannels/" + this.name + "-" + "pin.bin");
+            ObjectInputStream readPinned = new ObjectInputStream(pinData);
+            pinnedMessages = (ArrayList<Message>) readPinned.readObject();
         } catch (FileNotFoundException e) {
             System.out.println("Here we have some bugs");
             saveMessages();
@@ -87,6 +118,5 @@ public class TextChannel extends Channel {
             e.printStackTrace();
         }
     }
-
 
 }

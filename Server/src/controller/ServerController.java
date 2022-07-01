@@ -3,6 +3,7 @@ package controller;
 
 import Database.Database;
 import model.Message;
+import model.Status;
 import model.User;
 import model.guild.GroupChat;
 import model.guild.Guild;
@@ -10,6 +11,7 @@ import model.guild.GuildUser;
 import model.guild.TextChannel;
 
 import javax.imageio.ImageIO;
+import javax.xml.crypto.Data;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.*;
@@ -62,10 +64,17 @@ public class ServerController implements Runnable {
                 case "#changeGuildName" -> changeGuildName();
                 case "#removeFromChat" -> removeFromDirectChat();
                 case "#getTextChannel" -> getTextChannel();
+                case "#updateUser" -> updateUser();
+                case "#setStatus" -> changeStatus();
             }
 
         } catch (IOException e) {
             System.out.println("A user disconnected.");
+            if(appUsername != null){
+                User user = Database.retrieveFromDB(appUsername);
+                user.setStatus(Status.INVISIBLE);
+                Database.updateUser(user);
+            }
             try {
                 inputStream.close();
                 outputStream.close();
@@ -73,6 +82,21 @@ public class ServerController implements Runnable {
             } catch (IOException err) {
                 err.printStackTrace();
             }
+        }
+    }
+
+    private void changeStatus() {
+        try {
+            String username = inputStream.readUTF();
+            String statusName = inputStream.readUTF();
+            Status stauts = Status.makeStatus(statusName);
+            User user = Database.retrieveFromDB(username);
+            user.setStatus(stauts);
+            Database.updateUser(user);
+            outputStream.writeUTF("your new status is: " + stauts.toString(stauts));
+            outputStream.flush();
+        } catch (IOException e){
+            e.printStackTrace();
         }
     }
 
@@ -136,7 +160,8 @@ public class ServerController implements Runnable {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             ImageIO.write(userAvatar, "png", baos);
             byte[] byteAvatar = baos.toByteArray();
-
+            answer.setStatus(Status.ONLINE);
+            Database.updateUser(answer);
             outputStream.writeObject(answer);
             outputStream.flush();
 
@@ -153,7 +178,21 @@ public class ServerController implements Runnable {
         }
 
     }
-
+    public void updateUser(){
+        try {
+            User user = (User) inputStream.readObject();
+            boolean updated = Database.updateUser(user);
+            if(updated){
+                outputStream.writeUTF("success.");
+                outputStream.flush();
+            } else {
+                outputStream.writeUTF("failed.");
+                outputStream.flush();
+            }
+        } catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
+    }
     public void friendRequest() {
         try {
             String fromUser = inputStream.readUTF();
@@ -305,10 +344,29 @@ public class ServerController implements Runnable {
                 outputStream.writeUTF("success.");
                 outputStream.flush();
                 textChannel.addUser(connections.get(appUsername));
-                Message message = (Message) inputStream.readObject();
-                while (!message.getContent().equals("#exit")) {
-                    textChannel.addMessage(message);
-                    message = (Message) inputStream.readObject();
+                Message message = null;
+                boolean inChat = true;
+                while (inChat) {
+                    Object obj = inputStream.readObject();
+                    if (obj instanceof Message) {
+                        message = (Message) obj;
+                        if (message.getContent().equals("#exit")) {
+                            textChannel.broadcastExitMessage("you exited text channel.", connections.get(appUsername));
+                            textChannel.removeUser(connections.get(appUsername));
+                            break;
+                        } else if (message.getContent().split(">")[0].equals("#pin")) {
+                            int index = Integer.parseInt(message.getContent().split(">")[1]);
+                            textChannel.pinMessage(index);
+                            textChannel.broadcastExitMessage("message pinned successfully.",connections.get(appUsername));
+                        } else if (message.getContent().equals("#pins")) {
+                            textChannel.showPinnedMessages(connections.get(appUsername));
+                        } else {
+                            textChannel.addMessage(message);
+                        }
+
+                    } else {
+                        inChat = false;
+                    }
                 }
             } else {
                 outputStream.writeUTF("failed.");
@@ -403,7 +461,11 @@ public class ServerController implements Runnable {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            e.printStackTrace();
+            if(e instanceof EOFException){
+                System.out.println("all_guilds.bin is empty");
+            } else  {
+                e.printStackTrace();
+            }
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
@@ -457,6 +519,7 @@ public class ServerController implements Runnable {
                     }
                 }
             }
+            outputStream.reset();
             outputStream.writeUnshared(guild);
             outputStream.flush();
         } catch (IOException e) {
@@ -516,9 +579,9 @@ public class ServerController implements Runnable {
             String gOwner = inputStream.readUTF();
             String guildName = inputStream.readUTF();
             Guild guild = getGuild(gOwner, guildName);
-            guild.removeMember(gUser);
+            guild.removeMember(gUser.getUsername());
             saveGuilds();
-            outputStream.writeUTF(gUser.getUsername() + "remove from server successfully");
+            outputStream.writeUTF(gUser.getUsername() + " removed from server successfully");
             outputStream.flush();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();

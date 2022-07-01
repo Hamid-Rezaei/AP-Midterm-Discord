@@ -40,6 +40,17 @@ public class User implements Serializable {
         this.avatar = avatar;
     }
 
+    public User(String username, String password, String email, String phoneNumber, String token, BufferedImage avatar,Status status) {
+        this.username = username;
+        this.password = password;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+        this.status = status;
+        this.token = token;
+        friends = new ArrayList<>();
+        this.avatar = avatar;
+    }
+
     public BufferedImage getAvatar() {
         return avatar;
     }

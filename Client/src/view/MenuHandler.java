@@ -95,7 +95,8 @@ public class MenuHandler {
                 1) Severs
                 2) Friends
                 3) Settings
-                4) Back""");
+                4) change Status
+                5) Back""");
         System.out.print("> ");
         return returnChoice();
     }

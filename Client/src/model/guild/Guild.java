@@ -31,8 +31,12 @@ public class Guild implements Serializable {
         return false;
     }
 
-    public void removeMember(GuildUser guildUser){
+    public void removeMember(GuildUser guildUser) {
         guildUsers.remove(guildUser);
+    }
+
+    public void removeMember(String guildUser) {
+        guildUsers.removeIf(guildUser1 -> guildUser1.getUsername().equals(guildUser));
     }
 
     public ArrayList<TextChannel> getTextChannels() {
@@ -71,7 +75,7 @@ public class Guild implements Serializable {
         voiceChannels.add(voiceChannel);
     }
 
-    public void removeTextChannel(TextChannel textChannel){
+    public void removeTextChannel(TextChannel textChannel) {
         textChannels.remove(textChannel);
     }
 

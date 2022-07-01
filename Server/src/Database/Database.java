@@ -1,6 +1,7 @@
 package Database;
 
 import controller.ServerErrorType;
+import model.Status;
 import model.User;
 
 import javax.imageio.ImageIO;
@@ -110,8 +111,24 @@ public class Database {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return new User(username, password, email, phoneNumber, uId, avatar);
+        String strStatus = resultSet.getString("status");
+        Status status = null;
+        switch (strStatus) {
+            case "online" -> {
+                status = Status.ONLINE;
+            }
+            case "offline" -> {
+                status = Status.INVISIBLE;
+            }
+            case "idle" -> {
+                status = Status.IDLE;
+            }
+            case "do not disturb" -> {
+                status = Status.DO_NOT_DISTURB;
+            }
+            default -> status = Status.INVISIBLE;
+        }
+        return new User(username, password, email, phoneNumber, uId, avatar, status);
 
     }
 
@@ -179,7 +196,7 @@ public class Database {
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select friends_id from friends where user_id = " + "'" + username + "'");
             while (resultSet.next()) {
-                friendList.add(resultSet.getString(1));
+                friendList.add(retrieveFromDB(resultSet.getString(1)).toString());
             }
 
             connection.close();
@@ -246,7 +263,7 @@ public class Database {
             Connection connection = connectToDB();
             Statement statement = connection.createStatement();
             ResultSet resultSet = statement.executeQuery("select blocked_person from blocked_users where  blocker = " + "'" + user + "'" + "and blocked_person = " + "'" + unblockTarget + "'");
-            if(!resultSet.next()){
+            if (!resultSet.next()) {
                 return "this person isn't blocked.";
             }
             statement.execute("delete from blocked_users where blocker = " + "'" + user + "'" + "and blocked_person = " + "'" + unblockTarget + "'");
@@ -275,6 +292,22 @@ public class Database {
             e.printStackTrace();
         }
         return blockedList;
+
+    }
+
+    public static boolean updateUser(User user) {
+        Connection connection = connectToDB();
+        try {
+            Statement statement = connection.createStatement();
+            Status userStatus = user.getStatus();
+            String status = userStatus.toString(userStatus);
+            statement.execute("UPDATE Users SET password = " + "'" + user.getPassword() + "'" + ", status = " + "'" + status + "'" + "WHERE userName = " + "'" + user.getUsername() + "';");
+            connection.close();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
 
     }
 }

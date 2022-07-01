@@ -13,6 +13,8 @@ import static view.MenuHandler.sc;
 public class AppController {
 
 
+
+
     public enum ServerErrorType {
         NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4), Duplicate_ERROR(5), ALREADY_FRIEND(6), UNKNOWN_ERROR(404);
 
@@ -91,7 +93,21 @@ public class AppController {
         }
     }
 
-
+    public String setStatus(String status,String username) {
+        try{
+            outputStream.writeUTF("#setStatus");
+            outputStream.flush();
+            outputStream.writeUTF(username);
+            outputStream.flush();
+            outputStream.writeUTF(status);
+            outputStream.flush();
+            String respond = inputStream.readUTF();
+            return respond;
+        }catch (IOException e){
+            e.printStackTrace();
+            return "couldn't change status.";
+        }
+    }
     public String friendRequest(String username, String targetUser) {
         String answer;
         int answerCode;
@@ -340,7 +356,7 @@ public class AppController {
         return response;
     }
 
-    public void requestForGroupChat(Guild guild,TextChannel textChannel) {
+    public void requestForGroupChat(Guild guild, TextChannel textChannel) {
         try {
             outputStream.writeUTF("#getTextChannel");
             outputStream.flush();
@@ -351,7 +367,8 @@ public class AppController {
             outputStream.writeUTF(textChannel.getName());
             outputStream.flush();
             String answer = inputStream.readUTF();
-            if(answer.equals("success.")){
+            if (answer.equals("success.")) {
+
                 Chat groupChat = new Chat();
                 groupChat.setOutputStream(outputStream);
                 groupChat.setInputStream(inputStream);
@@ -359,7 +376,7 @@ public class AppController {
                 Thread groupChatThread = new Thread(groupChat);
                 groupChatThread.start();
                 groupChatThread.join();
-            } else{
+            } else {
                 System.out.println("something went wrong while requesting for group chat.");
             }
         } catch (IOException | InterruptedException e) {
@@ -375,12 +392,36 @@ public class AppController {
             outputStream.writeUTF("#removeMember");
             outputStream.flush();
             outputStream.writeObject(member);
+            outputStream.flush();
+            outputStream.writeUTF(guild.getOwnerName());
+            outputStream.flush();
+            outputStream.writeUTF(guild.getName());
+            outputStream.flush();
             String respond = inputStream.readUTF();
             return respond;
         } catch (IOException e) {
             e.printStackTrace();
         }
         return "something went wrong while removing member from server.";
+    }
+
+    public boolean updateUser(User user) {
+        try {
+            outputStream.writeUTF("#updateUser");
+            outputStream.flush();
+            outputStream.writeObject(user);
+            outputStream.flush();
+            String respone = inputStream.readUTF();
+            if(respone.equals("success.")){
+                return true;
+            } else{
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
     }
 
     public String changeGuildName(Guild guild, String newName) {

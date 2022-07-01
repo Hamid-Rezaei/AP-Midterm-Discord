@@ -47,7 +47,7 @@ public class DirectChatController implements Runnable {
         return usersInChatConnection.size();
     }
 
-    public void broadcastMessage(Message message) {
+    public void broadcastMessage(Message message) { //TODO : print index of message before it.
         for (Connection connection : usersInChatConnection) {
             connection.sendMessage(message);
         }

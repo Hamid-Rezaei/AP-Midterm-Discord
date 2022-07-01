@@ -62,9 +62,27 @@ public class Application {
             case 2 -> friendMenuHandler();
             case 3 -> settingMenuHandler();
             case 4 -> {
+                statusMenuHandler();
             }
             default -> inApplication();
         }
+    }
+
+    private static void statusMenuHandler() {
+        ArrayList<String> statusList = new ArrayList<>(Arrays.asList("online", "offline", "idle", "do not disturb"));
+        System.out.println("enter number of your new status: ");
+        int i = 1;
+        for (String status : statusList) {
+            System.out.println(i++ + ". " + status);
+        }
+        int choice = returnChoice() - 1;
+        if (!(choice >= 0 && choice <= 3)) {
+            System.out.println("invalid number.");
+        } else {
+            String respond = appController.setStatus(statusList.get(choice),user.getUsername());
+            System.out.println(respond);
+        }
+        inApplication();
     }
 
 
@@ -77,7 +95,10 @@ public class Application {
             }
             case 2 -> {
                 Guild guild = listOfAllServer();
-                inSelectedServer(guild);
+                if (guild != null)
+                    inSelectedServer(guild);
+                else
+                    serverMenuHandler();
             }
             default -> inApplication();
         }
@@ -104,10 +125,15 @@ public class Application {
                 i++;
             }
             System.out.print("Enter server number to login: ");
-            int choice = Integer.parseInt(sc.nextLine()); // TODO: catch invalid input exception
-            Guild chosenGuild = guilds.get(choice - 1);
-            guilds.clear();
-            return chosenGuild;
+            try {
+                int choice = Integer.parseInt(sc.nextLine()); // TODO: catch invalid input exception
+                Guild chosenGuild = guilds.get(choice - 1);
+                guilds.clear();
+                return chosenGuild;
+            } catch (NumberFormatException e) {
+                System.out.println("invalid input.");
+                return null;
+            }
         } else {
             System.out.println("You dont have any server...");
             return null;
@@ -122,6 +148,8 @@ public class Application {
                 listOfTextChannel(guild);
                 //TODO: end chat in text channel
                 //TODO: inSelectedServer(guild);
+                guild = appController.getGuild(guild.getOwnerName(), guild.getName());
+                inSelectedServer(guild);
             }
             case 2 -> {
                 ArrayList<VoiceChannel> voiceChannels = guild.getVoiceChannels();
@@ -188,6 +216,7 @@ public class Application {
         }
         int tChoice = returnChoice() - 1;
         TextChannel textChannel = textChannels.get(tChoice);
+        System.out.println("you entered " + textChannel.getName());
         appController.requestForGroupChat(guild, textChannel);
     }
 
@@ -267,7 +296,9 @@ public class Application {
         int choice = showSettingMenu();
         switch (choice) {
             case 1 -> {
-                changePass();
+                boolean isChanged = changePass();
+                if (isChanged)
+                    break;
                 settingMenuHandler();
             }
             case 2 -> {
@@ -290,15 +321,23 @@ public class Application {
         }
     }
 
-    private static void changePass() {
+    private static boolean changePass() {
         String pass = getPassword();
-        if(Authentication.checkValidPass(pass)){
+        if (Authentication.checkValidPass(pass)) {
             user.setPassword(pass);
-            //System.out.println(appController.updateUser());
-        }else{
+            boolean updated = appController.updateUser(user);
+            if (updated) {
+                System.out.println("Password changed successfully. please login again");
+                return true;
+            } else {
+                System.out.println("couldn't change your password");
+            }
+
+        } else {
             System.out.println("Oops, password is not valid");
             changePass();
         }
+        return false;
     }
 
 
@@ -335,6 +374,7 @@ public class Application {
             System.out.println("friend is null!");
             return;
         }
+        System.out.println("You are in chat with: " + friend.getUsername());
         appController.requestForDirectChat(friend);
         appController.removeFromDirectChat(user, friend);
         // what's happened here with directChat...
@@ -352,7 +392,6 @@ public class Application {
     private static User getFriendForChat() {
         System.out.print("chose friend you want to chat with (Enter username, Enter\"#exit\"to get back): ");
         String friendToChat = sc.nextLine();
-        System.out.println("You are in chat with: " + friendToChat);
         return appController.getUser(friendToChat);
     }
 
