@@ -4,6 +4,8 @@ package controller;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static controller.Handler.matchedInput;
+
 abstract class Handler {
     protected Handler nextHandler;
 
@@ -12,7 +14,7 @@ abstract class Handler {
     }
 
 
-    public boolean matchedInput(String regex, String input) {
+    public static boolean matchedInput(String regex, String input) {
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(input);
         return matcher.find();
@@ -81,4 +83,8 @@ public class Authentication {
         return usernameHandler.handle(username, password, email);
     }
 
+    public static boolean checkValidPass(String password) {
+        String passwordRegex = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d+]{8,}$";
+        return matchedInput(passwordRegex, password);
+    }
 }
