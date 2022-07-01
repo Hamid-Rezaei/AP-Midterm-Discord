@@ -1,6 +1,5 @@
 package model;
 
-import model.*;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -8,7 +7,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.*;
-
 
 
 public class User implements Serializable {
@@ -31,7 +29,7 @@ public class User implements Serializable {
      * @param email       the email
      * @param phoneNumber the phone number
      */
-    public User(String username, String password, String email, String phoneNumber, String token,BufferedImage avatar) {
+    public User(String username, String password, String email, String phoneNumber, String token, BufferedImage avatar) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -56,6 +54,10 @@ public class User implements Serializable {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public String getPassword() {
@@ -89,8 +91,7 @@ public class User implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof User)) return false;
-        User user = (User) o;
+        if (!(o instanceof User user)) return false;
         return Objects.equals(getUsername(), user.getUsername()) && Objects.equals(getPassword(), user.getPassword()) && Objects.equals(getEmail(), user.getEmail()) && Objects.equals(getPhoneNumber(), user.getPhoneNumber()) && getStatus() == user.getStatus() && Objects.equals(getToken(), user.getToken()) && Objects.equals(getAvatar(), user.getAvatar()) && Objects.equals(friends, user.friends) && Objects.equals(friendRequests, user.friendRequests);
     }
 

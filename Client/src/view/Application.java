@@ -4,6 +4,7 @@ import controller.*;
 import model.*;
 import model.guild.*;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,10 +61,12 @@ public class Application {
             case 1 -> serverMenuHandler();
             case 2 -> friendMenuHandler();
             case 3 -> settingMenuHandler();
-            case 4 -> {}
+            case 4 -> {
+            }
             default -> inApplication();
         }
     }
+
 
     private static void serverMenuHandler() {
         int choice = showServerMenu();
@@ -116,17 +119,9 @@ public class Application {
         int choice = showInGuild();
         switch (choice) {
             case 1 -> {
-                ArrayList<TextChannel> textChannels = guild.getTextChannels();
-                int i = 1;
-                System.out.println("enter number of textChannel you want to enter :");
-                for (TextChannel textChannel : textChannels) {
-                    System.out.println(i++ + ". " + textChannel.getName());
-                }
-                int tChoice = returnChoice() - 1;
-                TextChannel textChannel = textChannels.get(tChoice);
-                appController.requestForGroupChat(guild,textChannel);
-                //for (TextChannel : )
-
+                listOfTextChannel(guild);
+                //TODO: end chat in text channel
+                //TODO: inSelectedServer(guild);
             }
             case 2 -> {
                 ArrayList<VoiceChannel> voiceChannels = guild.getVoiceChannels();
@@ -182,6 +177,18 @@ public class Application {
             }
             default -> serverMenuHandler();
         }
+    }
+
+    private static void listOfTextChannel(Guild guild) {
+        ArrayList<TextChannel> textChannels = guild.getTextChannels();
+        int i = 1;
+        System.out.println("enter number of textChannel you want to enter :");
+        for (TextChannel textChannel : textChannels) {
+            System.out.println(i++ + ". " + textChannel.getName());
+        }
+        int tChoice = returnChoice() - 1;
+        TextChannel textChannel = textChannels.get(tChoice);
+        appController.requestForGroupChat(guild, textChannel);
     }
 
 
@@ -259,9 +266,38 @@ public class Application {
     private static void settingMenuHandler() {
         int choice = showSettingMenu();
         switch (choice) {
-            //case 1 -> changePass();
-            //case 2 -> changeAvatar();
+            case 1 -> {
+                changePass();
+                settingMenuHandler();
+            }
+            case 2 -> {
+                changeAvatar();
+                settingMenuHandler();
+            }
             default -> inApplication();
+        }
+    }
+
+    private static void changeAvatar() {
+        try {
+            InputStream img = getAvatar();
+            assert img != null;
+            user.setAvatar(img.readAllBytes());
+            //TODO: System.out.println(appController.updateUser());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void changePass() {
+        String pass = getPassword();
+        if(Authentication.checkValidPass(pass)){
+            user.setPassword(pass);
+            //System.out.println(appController.updateUser());
+        }else{
+            System.out.println("Oops, password is not valid");
+            changePass();
         }
     }
 
