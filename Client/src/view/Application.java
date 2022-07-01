@@ -217,6 +217,13 @@ public class Application {
         int tChoice = returnChoice() - 1;
         TextChannel textChannel = textChannels.get(tChoice);
         System.out.println("you entered " + textChannel.getName());
+        System.out.println("commands : ");
+        System.out.println("""
+                #exit : exit chat
+                #pin>(msg index) : to pin message with given index
+                #pins : show all pinned messages
+                #file>(path to file): send a file
+                """);
         appController.requestForGroupChat(guild, textChannel);
     }
 
@@ -375,6 +382,13 @@ public class Application {
             return;
         }
         System.out.println("You are in chat with: " + friend.getUsername());
+        System.out.println("commands : ");
+        System.out.println("""
+                #exit : exit chat
+                #pin>(msg index) : to pin message with given index
+                #pins : show all pinned messages
+                #file>(path to file): send a file
+                """);
         appController.requestForDirectChat(friend);
         appController.removeFromDirectChat(user, friend);
         // what's happened here with directChat...
