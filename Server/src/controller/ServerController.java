@@ -70,7 +70,7 @@ public class ServerController implements Runnable {
 
         } catch (IOException e) {
             System.out.println("A user disconnected.");
-            if(appUsername != null){
+            if (appUsername != null) {
                 User user = Database.retrieveFromDB(appUsername);
                 user.setStatus(Status.INVISIBLE);
                 Database.updateUser(user);
@@ -95,7 +95,7 @@ public class ServerController implements Runnable {
             Database.updateUser(user);
             outputStream.writeUTF("your new status is: " + stauts.toString(stauts));
             outputStream.flush();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -178,21 +178,23 @@ public class ServerController implements Runnable {
         }
 
     }
-    public void updateUser(){
+
+    public void updateUser() {
         try {
             User user = (User) inputStream.readObject();
             boolean updated = Database.updateUser(user);
-            if(updated){
+            if (updated) {
                 outputStream.writeUTF("success.");
                 outputStream.flush();
             } else {
                 outputStream.writeUTF("failed.");
                 outputStream.flush();
             }
-        } catch (IOException | ClassNotFoundException e){
+        } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
+
     public void friendRequest() {
         try {
             String fromUser = inputStream.readUTF();
@@ -307,9 +309,15 @@ public class ServerController implements Runnable {
                     } else if (message.getContent().split(">")[0].equals("#pin")) {
                         int index = Integer.parseInt(message.getContent().split(">")[1]);
                         directChatController.pinMessage(index);
-                        directChatController.broadcastExitMessage("message pinned successfully.",connections.get(currentUser.getUsername()));
+                        directChatController.broadcastExitMessage("message pinned successfully.", connections.get(currentUser.getUsername()));
                     } else if (message.getContent().equals("#pins")) {
                         directChatController.showPinnedMessages(connections.get(currentUser.getUsername()));
+                    } else if (message.getContent().split(">")[0].equals("#react")) {
+                        int index = Integer.parseInt(message.getContent().split(">")[1]) - 1;
+                        String reactionType = message.getContent().split(">")[2].toLowerCase();
+                        String reactor = message.getAuthorName();
+                        directChatController.reactToMessage(index, reactionType, reactor);
+                        directChatController.broadcastExitMessage("reacted to message with reaction of " + reactionType, connections.get(currentUser.getUsername()));
                     } else {
                         directChatController.addMessage(message);
                     }
@@ -357,9 +365,15 @@ public class ServerController implements Runnable {
                         } else if (message.getContent().split(">")[0].equals("#pin")) {
                             int index = Integer.parseInt(message.getContent().split(">")[1]);
                             textChannel.pinMessage(index);
-                            textChannel.broadcastExitMessage("message pinned successfully.",connections.get(appUsername));
+                            textChannel.broadcastExitMessage("message pinned successfully.", connections.get(appUsername));
                         } else if (message.getContent().equals("#pins")) {
                             textChannel.showPinnedMessages(connections.get(appUsername));
+                        } else if (message.getContent().split(">")[0].equals("#react")) {
+                            int index = Integer.parseInt(message.getContent().split(">")[1]) - 1;
+                            String reactionType = message.getContent().split(">")[2].toLowerCase();
+                            String reactor = message.getAuthorName();
+                            textChannel.reactToMessage(index,reactionType,reactor);
+                            textChannel.broadcastExitMessage("reacted to message with reaction of " + reactionType, connections.get(appUsername));
                         } else {
                             textChannel.addMessage(message);
                         }
@@ -461,9 +475,9 @@ public class ServerController implements Runnable {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
-            if(e instanceof EOFException){
+            if (e instanceof EOFException) {
                 System.out.println("all_guilds.bin is empty");
-            } else  {
+            } else {
                 e.printStackTrace();
             }
         } catch (ClassNotFoundException e) {
@@ -519,6 +533,11 @@ public class ServerController implements Runnable {
                     }
                 }
             }
+            if (guild != null) {
+                for (GuildUser guildUser : guild.getGuildUsers()) {
+                    guildUser.setStatus(Database.retrieveFromDB(guildUser.getUsername()).getStatus());
+                }
+            }
             outputStream.reset();
             outputStream.writeUnshared(guild);
             outputStream.flush();
@@ -562,8 +581,8 @@ public class ServerController implements Runnable {
                 outputStream.flush();
                 return;
             }
-            GroupChat groupChat = new GroupChat();
-            TextChannel textChannel = new TextChannel(textChannelName, groupChat, guildName);
+            //GroupChat groupChat = new GroupChat();groupChat
+            TextChannel textChannel = new TextChannel(textChannelName, guildName);
             guild.addTextChanel(textChannel);
             saveGuilds();
             outputStream.writeUTF("text channel added successfully.");

@@ -26,12 +26,12 @@ public class GroupChat implements Serializable {
     }
     public void sendMessage(Message message){
         for(Connection user: usersInChat){
-            user.sendMessage(message);
+            user.sendMessage(message.toString());
         }
     }
     public void broadcastMessage(Message message) {
         for (Connection connection : usersInChat) {
-            connection.sendMessage(message);
+            connection.sendMessage(message.toString());
         }
     }
 

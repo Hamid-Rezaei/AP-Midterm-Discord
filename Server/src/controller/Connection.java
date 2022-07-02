@@ -22,9 +22,12 @@ public class Connection {
         this.inputStream = inputStream; //new ObjectInputStream(socket.getInputStream());
     }
 
-    public void sendMessage(Message message) {//TODO: print idnex of message.
+    public void sendMessage(Message message, int index) {//TODO: print idnex of message.
         try {
             outputStream.writeObject(message);
+            outputStream.flush();
+            Integer ind = index;
+            outputStream.writeObject(ind);
             outputStream.flush();
         } catch (IOException e) {
             e.printStackTrace();

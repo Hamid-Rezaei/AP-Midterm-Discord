@@ -64,6 +64,7 @@ public class Application {
             case 4 -> {
                 statusMenuHandler();
             }
+            case 5 -> {}
             default -> inApplication();
         }
     }
@@ -184,10 +185,11 @@ public class Application {
                 inSelectedServer(guild);
             }
             case 9 -> {
+                guild = appController.getGuild(guild.getOwnerName(),guild.getName());
                 HashSet<GuildUser> guildUsers = guild.getGuildUsers();
                 int i = 1;
                 for (GuildUser guildUser : guildUsers) {
-                    System.out.println(i + ". " + guildUser.getUsername());
+                    System.out.println(i + ". " + guildUser.toString());
                     i++;
                 }
                 inSelectedServer(guild);
@@ -223,6 +225,7 @@ public class Application {
                 #pin>(msg index) : to pin message with given index
                 #pins : show all pinned messages
                 #file>(path to file): send a file
+                #react>(msg index)>reaction(like-dislike-smile)
                 """);
         appController.requestForGroupChat(guild, textChannel);
     }
@@ -388,6 +391,7 @@ public class Application {
                 #pin>(msg index) : to pin message with given index
                 #pins : show all pinned messages
                 #file>(path to file): send a file
+                #react>(msg index)>reaction(like-dislike-smile)
                 """);
         appController.requestForDirectChat(friend);
         appController.removeFromDirectChat(user, friend);

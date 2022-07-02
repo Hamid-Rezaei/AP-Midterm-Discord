@@ -20,6 +20,14 @@ public class TextChannel extends Channel {
         usersInChat = new HashSet<>();
         pinnedMessages = new ArrayList<>();
     }
+    public TextChannel(String name, String guildName) {
+        super(name);
+        messages = new ArrayList<>();
+        this.guildName = guildName;
+        usersInChat = new HashSet<>();
+        pinnedMessages = new ArrayList<>();
+    }
+
 
     public synchronized void addMessage(Message message) {
         this.messages.add(message);
@@ -27,25 +35,31 @@ public class TextChannel extends Channel {
         broadcastMessage(message);
     }
 
+    public int getMessageIndex(Message message) {
+        return messages.indexOf(message);
+    }
+
     public void broadcastMessage(Message message) {
+        int index = getMessageIndex(message);
         for (Connection connection : usersInChat) {
-            connection.sendMessage(message);
+            connection.sendMessage(message, index + 1);
         }
     }
 
     public synchronized void broadcastMessages(Connection connection) {
         if (this.messages.size() > 15) {
             for (int i = messages.size() - 15; i < messages.size(); i++) {
-                connection.sendMessage(messages.get(i));
+                connection.sendMessage(messages.get(i), i + 1);
             }
         } else {
             for (int i = 0; i < messages.size(); i++) {
-                connection.sendMessage(messages.get(i));
+                connection.sendMessage(messages.get(i), i + 1);
 
             }
         }
 
     }
+
     public void broadcastExitMessage(String message, Connection userConnection) {
         for (Connection connection : usersInChat) {
             if (connection.getUsername().equals(userConnection.getUsername())) {
@@ -61,7 +75,7 @@ public class TextChannel extends Channel {
 
     public synchronized void showPinnedMessages(Connection connection) {
         for (int i = 0; i < pinnedMessages.size(); i++) {
-            connection.sendMessage(pinnedMessages.get(i));
+            connection.sendMessage(pinnedMessages.get(i), i + 1);
         }
     }
 
@@ -119,4 +133,8 @@ public class TextChannel extends Channel {
         }
     }
 
+    public void reactToMessage(int index, String reactionType, String reactor) {
+        messages.get(index).setReaction(reactionType,reactor);
+        saveMessages();
+    }
 }

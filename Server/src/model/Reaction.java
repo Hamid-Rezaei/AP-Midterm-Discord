@@ -1,16 +1,19 @@
 package model;
 
-public class Reaction {
+import java.io.Serializable;
+
+public class Reaction implements Serializable {
     String emoji;
 
-    public void setLikeReact(){
+    public void setLikeReact() {
         emoji = "like";
     }
 
-    public void setDisLikeReact(){
+    public void setDisLikeReact() {
         emoji = "dislike";
     }
-    public void setSmileReact(){
+
+    public void setSmileReact() {
         emoji = "smile";
     }
 

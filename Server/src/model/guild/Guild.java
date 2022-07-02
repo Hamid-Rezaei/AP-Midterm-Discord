@@ -94,4 +94,5 @@ public class Guild implements Serializable {
     public int hashCode() {
         return Objects.hash(getName(), owner, getGuildUsers(), getTextChannels(), getVoiceChannels());
     }
+
 }

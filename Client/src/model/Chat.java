@@ -101,7 +101,9 @@ public class Chat implements Runnable, Serializable {
                         if (!msg.getAuthorName().equals(currUser.getUsername()))
                             System.out.println("file saved in: " + saveFileInDownloads(msg));
                     } else {
-                        System.out.println(msg);
+                        Object index = inputStream.readObject();
+                        int ind = Integer.valueOf(index.toString());
+                        System.out.println(ind + ". " + msg);
                     }
                 } else{
                     System.out.println(message.toString());

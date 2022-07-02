@@ -47,9 +47,18 @@ public class DirectChatController implements Runnable {
         return usersInChatConnection.size();
     }
 
+    public int getMessageIndex(Message message){
+        for(int i = 0; i< messages.size();i++){
+            if(messages.get(i).equals(message)){
+                return i + 1;
+            }
+        }
+        return 0;
+    }
     public void broadcastMessage(Message message) { //TODO : print index of message before it.
+        int index = messages.indexOf(message);
         for (Connection connection : usersInChatConnection) {
-            connection.sendMessage(message);
+            connection.sendMessage(message,index + 1);
         }
     }
 
@@ -82,7 +91,7 @@ public class DirectChatController implements Runnable {
 
     public synchronized void showPinnedMessages(Connection connection) {
         for (int i = 0; i < pinnedMessages.size(); i++) {
-            connection.sendMessage(pinnedMessages.get(i));
+            connection.sendMessage(pinnedMessages.get(i), (i + 1));
         }
     }
 
@@ -170,5 +179,10 @@ public class DirectChatController implements Runnable {
     @Override
     public int hashCode() {
         return Objects.hash(getDirectChat(), messages, getChatHashCode(), participants, usersInChatConnection);
+    }
+
+    public void reactToMessage(int index, String reactionType, String reactor) {
+        messages.get(index).setReaction(reactionType,reactor);
+        saveMessages();
     }
 }

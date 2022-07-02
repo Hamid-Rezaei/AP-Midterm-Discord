@@ -14,7 +14,6 @@ public class GuildUser extends User implements Serializable {
 
     public GuildUser(User user, Role role) {
         super(user.getUsername(), user.getPassword(), user.getEmail(), user.getPhoneNumber(), user.getToken(), user.getAvatar());
-
     }
 
     public Role getRole() {
@@ -23,5 +22,10 @@ public class GuildUser extends User implements Serializable {
 
     public void setRole(Role role) {
         this.role = role;
+    }
+
+    @Override
+    public String toString(){
+        return super.toString();
     }
 }
