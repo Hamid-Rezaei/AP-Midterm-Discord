@@ -154,7 +154,8 @@ public class MenuHandler {
     public static int serverSetting(){
         System.out.println("""
                 1) Changing server name
-                2) Back""");
+                2) delete server
+                3) Back""");
         System.out.print("> ");
         return returnChoice();
     }

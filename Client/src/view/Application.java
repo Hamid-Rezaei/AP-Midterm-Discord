@@ -147,8 +147,6 @@ public class Application {
         switch (choice) {
             case 1 -> {
                 listOfTextChannel(guild);
-                //TODO: end chat in text channel
-                //TODO: inSelectedServer(guild);
                 guild = appController.getGuild(guild.getOwnerName(), guild.getName());
                 inSelectedServer(guild);
             }
@@ -174,7 +172,8 @@ public class Application {
             }
 
             case 6 -> {
-                //guild.removeTextChannel();
+                deleteTextChannel(guild);
+                //TODO: update guild from server side.
                 guild = appController.getGuild(guild.getOwnerName(), guild.getName());
                 inSelectedServer(guild);
             }
@@ -195,18 +194,49 @@ public class Application {
                 inSelectedServer(guild);
             }
             case 10 -> {
-                int i = serverSetting();
-                if (i == 1) {
-                    System.out.print("Enter new name: ");
-                    String newName = sc.nextLine();
-                    System.out.println(appController.changeGuildName(guild, newName));
-                    guild.setName(newName);
-                    guild = appController.getGuild(guild.getOwnerName(), newName);
-                }
-                inSelectedServer(guild);
+                serverSettingHandler(guild);
             }
             default -> serverMenuHandler();
         }
+    }
+
+    private static void serverSettingHandler(Guild guild){
+        int i = serverSetting();
+        switch (i){
+            case 1->{
+                System.out.print("Enter new name: ");
+                String newName = sc.nextLine();
+                System.out.println(appController.changeGuildName(guild, newName));
+                guild.setName(newName);
+                guild = appController.getGuild(guild.getOwnerName(), newName);
+                inSelectedServer(guild);
+            }
+            case 2 ->{
+                System.out.print("Are you sure you want to delete this server? (y/n)");
+                String response = sc.nextLine();
+                if(response.equalsIgnoreCase("y")){
+                    if(user.getUsername().equals(guild.getOwnerName()))
+                        System.out.println(appController.deleteGuild(guild, guild.getOwnerName()));
+                    else
+                        System.out.println("Only the owner can delete server.");
+                    inApplication();
+                }else {
+                    serverSettingHandler(guild);
+                }
+            }
+            default -> {inSelectedServer(guild);}
+        }
+    }
+
+    private static void deleteTextChannel(Guild guild){
+        ArrayList<TextChannel> textChannels = guild.getTextChannels();
+        int i = 1;
+        System.out.println("enter number of textChannel you want to delete :");
+        for (TextChannel textChannel : textChannels) {
+            System.out.println(i++ + ". " + textChannel.getName());
+        }
+        int tChoice = returnChoice() - 1;
+        guild.removeTextChannel(textChannels.get(tChoice));
     }
 
     private static void listOfTextChannel(Guild guild) {

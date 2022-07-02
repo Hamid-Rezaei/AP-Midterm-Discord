@@ -66,6 +66,7 @@ public class ServerController implements Runnable {
                 case "#getTextChannel" -> getTextChannel();
                 case "#updateUser" -> updateUser();
                 case "#setStatus" -> changeStatus();
+                case "#deleteGuild" -> deleteGuild();
             }
 
         } catch (IOException e) {
@@ -82,6 +83,24 @@ public class ServerController implements Runnable {
             } catch (IOException err) {
                 err.printStackTrace();
             }
+        }
+    }
+
+    private void deleteGuild() {
+        try {
+            String gOwner = inputStream.readUTF();
+            Guild targetGuild = (Guild) inputStream.readObject();
+            ArrayList<Guild> guilds = allGuilds.get(gOwner);
+            guilds.remove(targetGuild);
+            allGuilds.put(gOwner, guilds);
+            saveGuilds();
+            outputStream.writeUTF("Guild deleted successfully.");
+            outputStream.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
         }
     }
 
