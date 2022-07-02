@@ -6,6 +6,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * The type Message.
+ */
 public class Message implements Serializable {
     private String content;
     private String authorName;
@@ -15,6 +18,13 @@ public class Message implements Serializable {
     private byte[] file;
     private HashMap<Reaction, ArrayList<String>> reactions;
 
+    /**
+     * Instantiates a new Message.
+     *
+     * @param content    the content
+     * @param authorName the author name
+     * @param date       the date
+     */
     public Message(String content, String authorName, LocalDateTime date) {
         this.content = content;
         this.authorName = authorName;
@@ -22,6 +32,14 @@ public class Message implements Serializable {
         this.reactions = new HashMap<>();
     }
 
+    /**
+     * Instantiates a new Message.
+     *
+     * @param content    the content
+     * @param authorName the author name
+     * @param date       the date
+     * @param isFile     the is file
+     */
     public Message(String content, String authorName, LocalDateTime date, boolean isFile) {
         this.content = content;
         this.authorName = authorName;
@@ -31,22 +49,47 @@ public class Message implements Serializable {
         loadFile(getPath());
     }
 
+    /**
+     * Gets content.
+     *
+     * @return the content
+     */
     public String getContent() {
         return content;
     }
 
+    /**
+     * Gets author name.
+     *
+     * @return the author name
+     */
     public String getAuthorName() {
         return authorName;
     }
 
+    /**
+     * Get file byte [ ].
+     *
+     * @return the byte [ ]
+     */
     public byte[] getFile() {
         return file;
     }
 
+    /**
+     * Is file boolean.
+     *
+     * @return the boolean
+     */
     public boolean isFile() {
         return isFile;
     }
 
+    /**
+     * Gets path.
+     *
+     * @return the path
+     */
     public String getPath() {
         // file>path
         String[] parts = this.content.split(">");
@@ -54,11 +97,21 @@ public class Message implements Serializable {
         return path;
     }
 
+    /**
+     * Gets file name.
+     *
+     * @return the file name
+     */
     public String getFileName() {
         String[] parts = getPath().split("[/\\\\]");
         return parts[parts.length - 1];
     }
 
+    /**
+     * Load file.
+     *
+     * @param path the path
+     */
     public void loadFile(String path) {
         try {
             InputStream input = new FileInputStream(path);
@@ -72,6 +125,12 @@ public class Message implements Serializable {
 
     }
 
+    /**
+     * Set reaction.
+     *
+     * @param type the type
+     * @param name the name
+     */
     public void setReaction(String type, String name){
         Reaction reaction = new Reaction();
         switch (type){
@@ -83,6 +142,12 @@ public class Message implements Serializable {
     }
 
 
+    /**
+     * Add reaction.
+     *
+     * @param reaction the reaction
+     * @param name     the name
+     */
     public void addReaction(Reaction reaction, String name) {
         ArrayList<String> names = reactions.get(reaction);
         if (names == null) {

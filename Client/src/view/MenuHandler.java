@@ -13,9 +13,17 @@ import java.util.Scanner;
  */
 public class MenuHandler {
 
+    /**
+     * The constant sc.
+     */
     public static Scanner sc = new Scanner(System.in);
 
 
+    /**
+     * Return choice int.
+     *
+     * @return the int
+     */
     public static int returnChoice() {
         int choice;
         try {
@@ -26,6 +34,11 @@ public class MenuHandler {
         return choice;
     }
 
+    /**
+     * Gets username.
+     *
+     * @return the username
+     */
     public static String getUsername() {
         System.out.print("Enter Username: ");
         String username = sc.nextLine();
@@ -45,12 +58,22 @@ public class MenuHandler {
     }
 
 
+    /**
+     * Gets email.
+     *
+     * @return the email
+     */
     public static String getEmail() {
         System.out.print("Enter Email: ");
         String email = sc.nextLine();
         return email;
     }
 
+    /**
+     * Get phone number.
+     *
+     * @return the string
+     */
     public static String getPhoneNumber(){
         System.out.print("Enter Phone number(optional): ");
         String phoneNumber = sc.nextLine();
@@ -62,6 +85,8 @@ public class MenuHandler {
 
     /**
      * Gets avatar.
+     *
+     * @return the avatar
      */
     public static FileInputStream getAvatar()   {
         System.out.print("Enter image address:");
@@ -82,6 +107,11 @@ public class MenuHandler {
         }
     }
 
+    /**
+     * Show start menu.
+     *
+     * @return the int
+     */
     public static int showStartMenu() {
         System.out.println("""
                 1) Signup
@@ -91,6 +121,11 @@ public class MenuHandler {
         return returnChoice();
     }
 
+    /**
+     * In app menu.
+     *
+     * @return the int
+     */
     public static int inAppMenu() {
         System.out.println("""
                 1) Severs
@@ -103,6 +138,11 @@ public class MenuHandler {
     }
 
 
+    /**
+     * Show server menu.
+     *
+     * @return the int
+     */
     public static int showServerMenu() {
         System.out.println("""
                 1) Add new server
@@ -113,6 +153,11 @@ public class MenuHandler {
     }
 
 
+    /**
+     * Show friend menu.
+     *
+     * @return the int
+     */
     public static int showFriendMenu() {
         System.out.println("""
                 1) Send friend request
@@ -126,6 +171,11 @@ public class MenuHandler {
     }
 
 
+    /**
+     * Show setting menu.
+     *
+     * @return the int
+     */
     public static int showSettingMenu() {
         System.out.println("""
                 1) Change password
@@ -135,6 +185,11 @@ public class MenuHandler {
         return returnChoice();
     }
 
+    /**
+     * Show in guild.
+     *
+     * @return the int
+     */
     public static int showInGuild(){
         System.out.println("""
                 1) List Of text channel
@@ -152,6 +207,11 @@ public class MenuHandler {
         return returnChoice();
     }
 
+    /**
+     * Server setting.
+     *
+     * @return the int
+     */
     public static int serverSetting(){
         System.out.println("""
                 1) Changing server name
@@ -162,6 +222,11 @@ public class MenuHandler {
     }
 
 
+    /**
+     * Get friend name.
+     *
+     * @return the string
+     */
     public static String getFriendName(){
         System.out.print("Enter username: ");
         return sc.nextLine();

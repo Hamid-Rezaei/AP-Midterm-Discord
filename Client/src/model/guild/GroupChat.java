@@ -11,24 +11,56 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 
+/**
+ * The type Group chat.
+ */
 public class GroupChat implements Serializable {
+    /**
+     * The Users in chat.
+     */
     transient HashSet<Connection> usersInChat;
+
+    /**
+     * Instantiates a new Group chat.
+     */
     public GroupChat() {
         usersInChat = new HashSet<>();
     }
 
+    /**
+     * Instantiates a new Group chat.
+     *
+     * @param usersInChat the users in chat
+     */
     public GroupChat(HashSet<Connection> usersInChat) {
         this.usersInChat = usersInChat;
     }
 
+    /**
+     * Add message.
+     *
+     * @param message the message
+     */
     public void addMessage(Message message){
         sendMessage(message);
     }
+
+    /**
+     * Send message.
+     *
+     * @param message the message
+     */
     public void sendMessage(Message message){
         for(Connection user: usersInChat){
             user.sendMessage(message.toString());
         }
     }
+
+    /**
+     * Broadcast message.
+     *
+     * @param message the message
+     */
     public void broadcastMessage(Message message) {
         for (Connection connection : usersInChat) {
             connection.sendMessage(message.toString());
@@ -36,11 +68,21 @@ public class GroupChat implements Serializable {
     }
 
 
+    /**
+     * Add user.
+     *
+     * @param user the user
+     */
     public void addUser(Connection user) {
         usersInChat.add(user);
 
     }
 
+    /**
+     * Remove user.
+     *
+     * @param user the user
+     */
     public void removeUser(Connection user) {
         usersInChat.remove(user);
     }
@@ -48,31 +90,3 @@ public class GroupChat implements Serializable {
 
 }
 
-//import java.io.Serializable;
-//import java.util.ArrayList;
-//import java.util.HashSet;
-//
-//public class GroupChat implements Serializable {
-//    ArrayList<Message> messages;
-//    HashSet<GuildUser> usersInChat;
-//
-//    public GroupChat() {
-//        messages = new ArrayList<>();
-//        usersInChat = new HashSet<>();
-//    }
-//
-//    public GroupChat(HashSet<GuildUser> usersInChat) {
-//        this.messages = new ArrayList<>();
-//        this.usersInChat = usersInChat;
-//    }
-//
-//    public void addUser(GuildUser user) {
-//        usersInChat.add(user);
-//    }
-//
-//    public void removeUser(GuildUser user) {
-//        usersInChat.add(user);
-//    }
-//
-//
-//}

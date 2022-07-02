@@ -12,7 +12,15 @@ import java.io.IOException;
 import java.sql.*;
 import java.util.HashSet;
 
+/**
+ * The type Database.
+ */
 public class Database {
+    /**
+     * Connect to db.
+     *
+     * @return the connection
+     */
     public static Connection connectToDB() {
         try {
             return DriverManager.getConnection("jdbc:mysql://localhost:3306/discord", "root", "177013");
@@ -23,6 +31,17 @@ public class Database {
 
     }
 
+    /**
+     * Insert a user into db.
+     *
+     * @param username    the username
+     * @param password    the password
+     * @param email       the email
+     * @param phoneNumber the phone number
+     * @param token       the token
+     * @param avatar      the avatar
+     * @return the server error type
+     */
     public static ServerErrorType insertToDB(String username, String password, String email, String phoneNumber, String token, byte[] avatar) {
 
         try {
@@ -59,6 +78,13 @@ public class Database {
     }
 
 
+    /**
+     * Retrieve user from db .
+     *
+     * @param username the username
+     * @param password the password
+     * @return the user
+     */
     public static User retrieveFromDB(String username, String password) {
         try {
             Connection connection = connectToDB();
@@ -82,6 +108,12 @@ public class Database {
         return null;
     }
 
+    /**
+     * Retrieve user from db with only username.
+     *
+     * @param username the username
+     * @return the user
+     */
     public static User retrieveFromDB(String username) {
         try {
 
@@ -101,6 +133,13 @@ public class Database {
     }
 
 
+    /**
+     * Create user.
+     *
+     * @param resultSet the result set
+     * @return the user
+     * @throws SQLException the sql exception
+     */
     public static User createUser(ResultSet resultSet) throws SQLException {
         String username = resultSet.getString("userName");
         String password = resultSet.getString("password");
@@ -130,6 +169,13 @@ public class Database {
 
     }
 
+    /**
+     * Send friend request.
+     *
+     * @param fromUser   the from user
+     * @param targetUser the target user
+     * @return the server error type
+     */
     public static ServerErrorType sendFriendRequest(String fromUser, String targetUser) {
         try {
             Connection connection = connectToDB();
@@ -170,6 +216,12 @@ public class Database {
         }
     }
 
+    /**
+     * retrieve friend request list.
+     *
+     * @param targetUser the target user
+     * @return friend request list
+     */
     public static HashSet<String> viewFriendRequestList(String targetUser) {
         HashSet<String> reqList = new HashSet<>();
         try {
@@ -186,6 +238,12 @@ public class Database {
         return reqList;
     }
 
+    /**
+     * retrieve friend list from db.
+     *
+     * @param username the username
+     * @return friend list
+     */
     public static HashSet<String> viewFriendList(String username) {
         HashSet<String> friendList = new HashSet<>();
         try {
@@ -204,6 +262,14 @@ public class Database {
         return friendList;
     }
 
+    /**
+     * updates friend requests list.
+     *
+     * @param username the username
+     * @param accepted the accepted in list
+     * @param rejected the rejected in list
+     * @return query result
+     */
     public static String reviseFriendRequests(String username, HashSet<String> accepted, HashSet<String> rejected) {
         try {
             Connection connection = connectToDB();
@@ -230,6 +296,13 @@ public class Database {
         }
     }
 
+    /**
+     * Block user.
+     *
+     * @param user        the user
+     * @param blockTarget the block target
+     * @return result of query
+     */
     public static String blockUser(String user, String blockTarget) {
         try {
             Connection connection = connectToDB();
@@ -256,6 +329,13 @@ public class Database {
 
     }
 
+    /**
+     * Unblock user in db.
+     *
+     * @param user          the user
+     * @param unblockTarget the unblock target
+     * @return result of query
+     */
     public static String unblockUser(String user, String unblockTarget) {
         try {
             Connection connection = connectToDB();
@@ -274,6 +354,12 @@ public class Database {
 
     }
 
+    /**
+     * retrieve block list from db.
+     *
+     * @param username the username
+     * @return the block list hash set
+     */
     public static HashSet<String> viewBlockedList(String username) {
         HashSet<String> blockedList = new HashSet<>();
         try {
@@ -293,6 +379,12 @@ public class Database {
 
     }
 
+    /**
+     * Update user in db.
+     *
+     * @param user the user
+     * @return the boolean
+     */
     public static boolean updateUser(User user) {
         Connection connection = connectToDB();
         try {
@@ -305,7 +397,6 @@ public class Database {
             statement.setBytes(3, byteArr);
             statement.setString(4, user.getUsername());
             statement.executeUpdate();
-//          statement.execute("UPDATE Users SET password = " + "'" + user.getPassword() + "'" + ", status = " + "'" + status + "'"  + " WHERE userName = " + "'" + user.getUsername() + "';");
             connection.close();
             return true;
         } catch (SQLException e) {

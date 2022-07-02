@@ -17,11 +17,26 @@ import java.io.*;
 import java.net.*;
 import java.util.*;
 
+/**
+ * The type Server controller.
+ */
 public class ServerController implements Runnable {
 
+    /**
+     * The constant serverControllers.
+     */
     public static ArrayList<ServerController> serverControllers = new ArrayList<>();
+    /**
+     * The constant directChats.
+     */
     public static HashMap<String, DirectChatController> directChats = new HashMap<>();
+    /**
+     * The constant connections.
+     */
     public static HashMap<String, Connection> connections = new HashMap<>();
+    /**
+     * The constant allGuilds.
+     */
     public static HashMap<String, ArrayList<Guild>> allGuilds = new HashMap<>();
 
     private Socket socket;
@@ -32,6 +47,12 @@ public class ServerController implements Runnable {
 
     private String userToken;
 
+    /**
+     * Instantiates a new Server controller.
+     *
+     * @param socket the socket
+     * @throws IOException the io exception
+     */
     public ServerController(Socket socket) throws IOException {
         this.socket = socket;
         this.outputStream = new ObjectOutputStream(socket.getOutputStream());
@@ -40,6 +61,9 @@ public class ServerController implements Runnable {
     }
 
 
+    /**
+     * calls the function that matches with given input from user service.
+     */
     public void getService() {
         try {
             String task = inputStream.readUTF();
@@ -87,6 +111,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * deletes a text channel in a guild
+     */
     private void deleteTextChannel() {
         try {
             String gOwner = inputStream.readUTF();
@@ -101,6 +128,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * deletes a guild
+     */
     private void deleteGuild() {
         try {
             String gOwner = inputStream.readUTF();
@@ -119,6 +149,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * changes a user status
+     */
     private void changeStatus() {
         try {
             String username = inputStream.readUTF();
@@ -134,30 +167,10 @@ public class ServerController implements Runnable {
         }
     }
 
-    private void pinMessage(String chatHashCode, int messageIndex) {
-        try {
-            DirectChatController directChat = directChats.get(chatHashCode);
-            directChat.pinMessage(messageIndex);
-            outputStream.writeUTF("Message pinned successfully.");
-            outputStream.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    private void showPinnedMessages() {
-        try {
-            String username = inputStream.readUTF();
-            String friendName = inputStream.readUTF();
-            String chatHash = directChatHashCode(username, friendName);
-            DirectChatController directChat = directChats.get(chatHash);
-            directChat.showPinnedMessages(connections.get(username));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
+    /**
+     * Sign up.
+     */
     public void signUp() {
         try {
             String[] parts = inputStream.readUTF().split(" ");
@@ -180,6 +193,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * Login.
+     */
     public void login() {
         try {
             String[] parts = inputStream.readUTF().split(" ");
@@ -210,6 +226,9 @@ public class ServerController implements Runnable {
 
     }
 
+    /**
+     * Update user.
+     */
     public void updateUser() {
         try {
             User user = (User) inputStream.readObject();
@@ -226,6 +245,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * sends friend request.
+     */
     public void friendRequest() {
         try {
             String fromUser = inputStream.readUTF();
@@ -238,6 +260,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * sends list of friend requests
+     */
     private void friendRequestList() {
         try {
             String username = inputStream.readUTF();
@@ -249,6 +274,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * updates friend requests list
+     */
     private void revisedFriendRequests() {
         try {
             HashSet<String> accepted = (HashSet<String>) inputStream.readObject();
@@ -262,6 +290,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * sends Friend list.
+     */
     public void friendList() {
         try {
             String username = inputStream.readUTF();
@@ -273,6 +304,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * returns a user with just username
+     */
     private void getUserWithUsername() {
         try {
             String username = inputStream.readUTF();
@@ -283,6 +317,13 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * Direct chat hash code string.
+     *
+     * @param user_1 the user 1
+     * @param user_2 the user 2
+     * @return the string
+     */
     public String directChatHashCode(String user_1, String user_2) {
         String hash;
         if (user_1.length() < user_2.length()) {
@@ -293,6 +334,12 @@ public class ServerController implements Runnable {
         return hash;
     }
 
+    /**
+     * creates/gets a direct chat between two friends
+     * @param currentUser user that wants to enter a direct chat
+     * @param friend second user of the direct chat
+     * @return direct chat
+     */
     private DirectChatController getDirChatController(User currentUser, User friend) {
         String chatHash = directChatHashCode(currentUser.getUsername(), friend.getUsername());
         DirectChatController directChatController = directChats.get(chatHash);
@@ -314,8 +361,10 @@ public class ServerController implements Runnable {
         return directChatController;
     }
 
+    /**
+     * handles Direct chat with a friend
+     */
     private void chatWithFriend() {
-        //TODO: check if we can load direct chat controller
         try {
             User friend = (User) inputStream.readObject();
             User currentUser = (User) inputStream.readObject();
@@ -369,6 +418,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * handles group chat in a text channel.
+     */
     private void getTextChannel() {
         try {
             String owner = inputStream.readUTF();
@@ -431,7 +483,9 @@ public class ServerController implements Runnable {
         }
     }
 
-
+    /**
+     *  removes a user from direct chat whenever user input is #exit
+     */
     private void removeFromDirectChat() {
         try {
             String username = inputStream.readUTF();
@@ -447,6 +501,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * blocks a user
+     */
     private void blockUser() {
         try {
             String user = inputStream.readUTF();
@@ -459,6 +516,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * unblocks a user
+     */
     private void unblockUser() {
         try {
             String user = inputStream.readUTF();
@@ -471,7 +531,9 @@ public class ServerController implements Runnable {
         }
     }
 
-
+    /**
+     * sends block list of a user
+     */
     private void blockList() {
         try {
             String username = inputStream.readUTF();
@@ -483,6 +545,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * Save guilds.
+     */
     public void saveGuilds() {
         try (ObjectOutputStream os = new ObjectOutputStream(new FileOutputStream("assets/guilds/all_guilds.bin"))) {
             try {
@@ -498,6 +563,9 @@ public class ServerController implements Runnable {
     }
 
 
+    /**
+     * Load guilds.
+     */
     public void loadGuilds() {
         //      System.out.println("load:");
         try {
@@ -525,8 +593,10 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * Add guild.
+     */
     public void addGuild() {
-        //TODO:load
         loadGuilds();
         try {
             Guild guild = (Guild) inputStream.readObject();
@@ -537,7 +607,6 @@ public class ServerController implements Runnable {
             }
             guilds.add(guild);
             allGuilds.put(name, guilds);
-            //TODO:save
             saveGuilds();
             outputStream.writeUTF("Success");
             outputStream.flush();
@@ -549,6 +618,13 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * Gets guild.
+     *
+     * @param owner     the owner
+     * @param guildName the guild name
+     * @return the guild
+     */
     public Guild getGuild(String owner, String guildName) {
         ArrayList<Guild> ownerGuilds = allGuilds.get(owner);
         for (Guild g : ownerGuilds) {
@@ -559,6 +635,11 @@ public class ServerController implements Runnable {
         return null;
     }
 
+    /**
+     * Gets guild.
+     *
+     * @return the guild
+     */
     public Guild getGuild() {
         Guild guild = null;
         try {
@@ -588,6 +669,9 @@ public class ServerController implements Runnable {
         return guild;
     }
 
+    /**
+     * adds a member to server
+     */
     private void addMemberToServer() {
         try {
             GuildUser gUser = (GuildUser) inputStream.readObject();
@@ -603,6 +687,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * adds a text channel to server
+     */
     private void addTextChannel() {
         try {
             String textChannelName = inputStream.readUTF();
@@ -647,6 +734,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * Change guild name.
+     */
     public void changeGuildName() {
         try {
             String gOwner = inputStream.readUTF();
@@ -664,6 +754,9 @@ public class ServerController implements Runnable {
         }
     }
 
+    /**
+     * List of user servers.
+     */
     public void listOfUserServers() {
         ArrayList<Guild> userGuilds = new ArrayList<>();
         try {

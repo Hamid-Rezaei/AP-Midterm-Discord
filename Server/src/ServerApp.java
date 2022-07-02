@@ -3,13 +3,24 @@ import controller.ServerController;
 import java.io.*;
 import java.net.*;
 
+/**
+ * The type Server app.
+ */
 public class ServerApp {
     private final ServerSocket serverSocket;
 
+    /**
+     * Instantiates a new Server app.
+     *
+     * @param serverSocket the server socket
+     */
     public ServerApp(ServerSocket serverSocket) {
         this.serverSocket = serverSocket;
     }
 
+    /**
+     * Start server.
+     */
     public void startServer() {
         try {
 
@@ -26,7 +37,9 @@ public class ServerApp {
     }
 
 
-    // Close the server socket gracefully.
+    /**
+     * Close server socket.
+     */
     public void closeServerSocket() {
         try {
             if (serverSocket != null) {

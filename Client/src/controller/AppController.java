@@ -10,11 +10,44 @@ import java.util.*;
 
 import static view.MenuHandler.sc;
 
+/**
+ * The type App controller.
+ */
 public class AppController {
 
 
+    /**
+     * The enum Server error type.
+     */
     public enum ServerErrorType {
-        NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4), Duplicate_ERROR(5), ALREADY_FRIEND(6), UNKNOWN_ERROR(404);
+        /**
+         * No error server error type.
+         */
+        NO_ERROR(1),
+        /**
+         * User already exists server error type.
+         */
+        USER_ALREADY_EXISTS(2),
+        /**
+         * Server connection failed server error type.
+         */
+        SERVER_CONNECTION_FAILED(3),
+        /**
+         * Database error server error type.
+         */
+        DATABASE_ERROR(4),
+        /**
+         * Duplicate error server error type.
+         */
+        Duplicate_ERROR(5),
+        /**
+         * Already friend server error type.
+         */
+        ALREADY_FRIEND(6),
+        /**
+         * Unknown error server error type.
+         */
+        UNKNOWN_ERROR(404);
 
         private int code;
 
@@ -28,6 +61,9 @@ public class AppController {
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
 
+    /**
+     * Instantiates a new App controller.
+     */
     public AppController() {
         setupConnection();
     }
@@ -45,6 +81,16 @@ public class AppController {
     }
 
 
+    /**
+     * Sign up.
+     *
+     * @param username the username
+     * @param password the password
+     * @param email    the email
+     * @param phoneNum the phone num
+     * @param avatar   the avatar
+     * @return the string
+     */
     public String signUp(String username, String password, String email, String phoneNum, InputStream avatar) {
 
         try {
@@ -65,6 +111,13 @@ public class AppController {
     }
 
 
+    /**
+     * Login user.
+     *
+     * @param username the username
+     * @param password the password
+     * @return the user
+     */
     public User login(String username, String password) {
         try {
             outputStream.writeUTF("#login");
@@ -91,6 +144,13 @@ public class AppController {
         }
     }
 
+    /**
+     * Sets status.
+     *
+     * @param status   the status
+     * @param username the username
+     * @return the status
+     */
     public String setStatus(String status, String username) {
         try {
             outputStream.writeUTF("#setStatus");
@@ -107,6 +167,13 @@ public class AppController {
         }
     }
 
+    /**
+     * Friend request.
+     *
+     * @param username   the username
+     * @param targetUser the target user
+     * @return the string
+     */
     public String friendRequest(String username, String targetUser) {
         String answer;
         int answerCode;
@@ -128,6 +195,12 @@ public class AppController {
         return answer;
     }
 
+    /**
+     * Friend request list hash set.
+     *
+     * @param username the username
+     * @return the hash set
+     */
     public HashSet<String> friendRequestList(String username) {
         try {
             outputStream.writeUTF("#RequestList");
@@ -141,6 +214,14 @@ public class AppController {
         }
     }
 
+    /**
+     * Revised friend requests.
+     *
+     * @param username the username
+     * @param accepted the accepted
+     * @param rejected the rejected
+     * @return the string
+     */
     public String revisedFriendRequests(String username, HashSet<String> accepted, HashSet<String> rejected) {
         try {
             outputStream.writeUTF("#revisedFriendRequests");
@@ -159,6 +240,12 @@ public class AppController {
         }
     }
 
+    /**
+     * Friend list hash set.
+     *
+     * @param username the username
+     * @return the hash set
+     */
     public HashSet<String> friendList(String username) {
         try {
             outputStream.writeUTF("#FriendList");
@@ -172,6 +259,12 @@ public class AppController {
         }
     }
 
+    /**
+     * Gets user.
+     *
+     * @param username the username
+     * @return the user
+     */
     public User getUser(String username) {
         try {
             outputStream.writeUTF("#getUser");
@@ -185,6 +278,12 @@ public class AppController {
         }
     }
 
+    /**
+     * Block user.
+     *
+     * @param username the username
+     * @return the string
+     */
     public String blockUser(String username) {
         try {
             outputStream.writeUTF("#blockUser");
@@ -200,6 +299,12 @@ public class AppController {
         }
     }
 
+    /**
+     * Unblock user.
+     *
+     * @param unblockTarget the unblock target
+     * @return the string
+     */
     public String unblockUser(String unblockTarget) {
         try {
             outputStream.writeUTF("#unblockUser");
@@ -217,6 +322,11 @@ public class AppController {
     }
 
 
+    /**
+     * Blocked list hash set.
+     *
+     * @return the hash set
+     */
     public HashSet<String> blockedList() {
         try {
             outputStream.writeUTF("#blockList");
@@ -231,6 +341,11 @@ public class AppController {
         return null;
     }
 
+    /**
+     * Request for direct chat.
+     *
+     * @param friend the friend
+     */
     public void requestForDirectChat(User friend) {
         try {
             outputStream.writeUTF("#requestForDirectChat");
@@ -257,6 +372,12 @@ public class AppController {
         }
     }
 
+    /**
+     * Remove from direct chat.
+     *
+     * @param user   the user
+     * @param friend the friend
+     */
     public void removeFromDirectChat(User user, User friend) {
         try {
             outputStream.writeUTF("#removeFromChat");
@@ -270,6 +391,12 @@ public class AppController {
         }
     }
 
+    /**
+     * Add server.
+     *
+     * @param guild the guild
+     * @return the string
+     */
     public String addServer(Guild guild) {
         try {
             outputStream.writeUTF("#addGuild");
@@ -284,6 +411,11 @@ public class AppController {
         }
     }
 
+    /**
+     * List of joined servers array list.
+     *
+     * @return the array list
+     */
     public ArrayList<Guild> listOfJoinedServers() {
         try {
             outputStream.writeUTF("#serverList");
@@ -298,6 +430,13 @@ public class AppController {
         return null;
     }
 
+    /**
+     * Gets guild.
+     *
+     * @param owner     the owner
+     * @param guildName the guild name
+     * @return the guild
+     */
     public Guild getGuild(String owner, String guildName) {
         try {
             outputStream.writeUTF("#getGuild");
@@ -314,6 +453,13 @@ public class AppController {
         }
     }
 
+    /**
+     * Add member to server .
+     *
+     * @param name  the name
+     * @param guild the guild
+     * @return the string
+     */
     public String addMemberToServer(String name, Guild guild) {
         try {
             User user = getUser(name);
@@ -334,6 +480,12 @@ public class AppController {
         return "something went wrong while adding member to server.";
     }
 
+    /**
+     * Add new text channel .
+     *
+     * @param guild the guild
+     * @return the string
+     */
     public String addNewTextChannel(Guild guild) {
         String response = null;
         try {
@@ -355,6 +507,12 @@ public class AppController {
         return response;
     }
 
+    /**
+     * Request for group chat.
+     *
+     * @param guild       the guild
+     * @param textChannel the text channel
+     */
     public void requestForGroupChat(Guild guild, TextChannel textChannel) {
         try {
             outputStream.writeUTF("#getTextChannel");
@@ -383,6 +541,13 @@ public class AppController {
         }
     }
 
+    /**
+     * Delete member from server.
+     *
+     * @param name  the name
+     * @param guild the guild
+     * @return the string
+     */
     public String deleteMemberFromServer(String name, Guild guild) {
         try {
             User user = getUser(name);
@@ -403,6 +568,12 @@ public class AppController {
         return "something went wrong while removing member from server.";
     }
 
+    /**
+     * Update user .
+     *
+     * @param user the user
+     * @return the boolean
+     */
     public boolean updateUser(User user) {
         try {
             outputStream.writeUTF("#updateUser");
@@ -422,6 +593,13 @@ public class AppController {
 
     }
 
+    /**
+     * Change guild name.
+     *
+     * @param guild   the guild
+     * @param newName the new name
+     * @return the string
+     */
     public String changeGuildName(Guild guild, String newName) {
         try {
             outputStream.writeUTF("#changeGuildName");
@@ -439,6 +617,13 @@ public class AppController {
         return "something went wrong while renaming server.";
     }
 
+    /**
+     * Remove text channel.
+     *
+     * @param guild       the guild
+     * @param textChannel the text channel
+     * @return the string
+     */
     public String removeTextChannel(Guild guild, TextChannel textChannel) {
         String response = null;
         try {
@@ -458,6 +643,13 @@ public class AppController {
         }
     }
 
+    /**
+     * Delete guild.
+     *
+     * @param guild  the guild
+     * @param gOwner the g owner
+     * @return the string
+     */
     public String deleteGuild(Guild guild, String gOwner) {
         try {
             outputStream.writeUTF("#deleteGuild");
@@ -473,6 +665,12 @@ public class AppController {
         }
     }
 
+    /**
+     * Parse error.
+     *
+     * @param errorCode the error code
+     * @return the string
+     */
     public String parseError(int errorCode) {
         String error;
         switch (errorCode) {

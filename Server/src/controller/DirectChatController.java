@@ -7,6 +7,9 @@ import model.User;
 import java.io.*;
 import java.util.*;
 
+/**
+ * The type Direct chat controller.
+ */
 public class DirectChatController implements Runnable {
 
     private Chat directChat;
@@ -16,6 +19,12 @@ public class DirectChatController implements Runnable {
     private HashSet<Connection> usersInChatConnection;
     private ArrayList<Message> pinnedMessages = new ArrayList<>();
 
+    /**
+     * Instantiates a new Direct chat controller.
+     *
+     * @param usersInChatConnection the users in chat connection
+     * @param participants          the participants
+     */
     public DirectChatController(HashSet<Connection> usersInChatConnection, ArrayList<User> participants) {
         directChat = new Chat();
         this.usersInChatConnection = usersInChatConnection;
@@ -25,6 +34,11 @@ public class DirectChatController implements Runnable {
     }
 
 
+    /**
+     * Generate hash code string.
+     *
+     * @return the string
+     */
     public String generateHashCode() {
         String hash;
         String user_1 = participants.get(0).getUsername();
@@ -37,16 +51,32 @@ public class DirectChatController implements Runnable {
         return hash;
     }
 
+    /**
+     * Add message.
+     *
+     * @param message the message
+     */
     public synchronized void addMessage(Message message) {
         messages.add(message);
         saveMessages();
         broadcastMessage(message);
     }
 
+    /**
+     * Num of users in chat int.
+     *
+     * @return the int
+     */
     public int numOfUsersInChat() {
         return usersInChatConnection.size();
     }
 
+    /**
+     * Get message index int.
+     *
+     * @param message the message
+     * @return the int
+     */
     public int getMessageIndex(Message message){
         for(int i = 0; i< messages.size();i++){
             if(messages.get(i).equals(message)){
@@ -55,7 +85,13 @@ public class DirectChatController implements Runnable {
         }
         return 0;
     }
-    public void broadcastMessage(Message message) { //TODO : print index of message before it.
+
+    /**
+     * Broadcast message.
+     *
+     * @param message the message
+     */
+    public void broadcastMessage(Message message) {
 
         int index = messages.indexOf(message);
         if(message.isFile())
@@ -65,6 +101,12 @@ public class DirectChatController implements Runnable {
         }
     }
 
+    /**
+     * Broadcast exit message.
+     *
+     * @param message        the message
+     * @param userConnection the user connection
+     */
     public void broadcastExitMessage(String message, Connection userConnection) {
         for (Connection connection : usersInChatConnection) {
             if (connection.getUsername().equals(userConnection.getUsername())) {
@@ -73,6 +115,11 @@ public class DirectChatController implements Runnable {
         }
     }
 
+    /**
+     * Broadcast messages.
+     *
+     * @param connection the connection
+     */
     public synchronized void broadcastMessages(Connection connection) {
         if (this.messages.size() > 6) {
             for (int i = messages.size() - 6; i < messages.size(); i++) {
@@ -87,21 +134,41 @@ public class DirectChatController implements Runnable {
 
     }
 
+    /**
+     * Pin message.
+     *
+     * @param index the index
+     */
     public synchronized void pinMessage(int index) {
         pinnedMessages.add(messages.get(index - 1));
         saveMessages();
     }
 
+    /**
+     * Show pinned messages.
+     *
+     * @param connection the connection
+     */
     public synchronized void showPinnedMessages(Connection connection) {
         for (int i = 0; i < pinnedMessages.size(); i++) {
             connection.sendMessage(pinnedMessages.get(i), (i + 1));
         }
     }
 
+    /**
+     * Add connection.
+     *
+     * @param connection the connection
+     */
     public synchronized void addConnection(Connection connection) {
         usersInChatConnection.add(connection);
     }
 
+    /**
+     * Remove connection.
+     *
+     * @param username the username
+     */
     public synchronized void removeConnection(String username) {
         Iterator<Connection> it = usersInChatConnection.iterator();
         while (it.hasNext()) {
@@ -113,6 +180,9 @@ public class DirectChatController implements Runnable {
 
     }
 
+    /**
+     * Save messages.
+     */
     public synchronized void saveMessages() {
         File theDir = new File("assets/direct_chat");
         if (!theDir.exists()) {
@@ -137,6 +207,9 @@ public class DirectChatController implements Runnable {
         }
     }
 
+    /**
+     * Load messages.
+     */
     public void loadMessages() {
         try {
             FileInputStream readData = new FileInputStream("assets/direct_chat/" + chatHashCode + ".bin");
@@ -156,10 +229,20 @@ public class DirectChatController implements Runnable {
     }
 
 
+    /**
+     * Gets direct chat.
+     *
+     * @return the direct chat
+     */
     public Chat getDirectChat() {
         return directChat;
     }
 
+    /**
+     * Gets chat hash code.
+     *
+     * @return the chat hash code
+     */
     public String getChatHashCode() {
         return chatHashCode;
     }
@@ -184,6 +267,13 @@ public class DirectChatController implements Runnable {
         return Objects.hash(getDirectChat(), messages, getChatHashCode(), participants, usersInChatConnection);
     }
 
+    /**
+     * React to message.
+     *
+     * @param index        the index
+     * @param reactionType the reaction type
+     * @param reactor      the reactor
+     */
     public void reactToMessage(int index, String reactionType, String reactor) {
         messages.get(index).setReaction(reactionType,reactor);
         saveMessages();

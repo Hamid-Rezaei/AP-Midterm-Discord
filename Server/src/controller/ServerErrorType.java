@@ -1,11 +1,46 @@
 package controller;
 
+/**
+ * The enum Server error type.
+ */
 public enum ServerErrorType {
-    NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4), Duplicate_ERROR(5), ALREADY_FRIEND(6), UNKNOWN_ERROR(404);
+    /**
+     * No error server error type.
+     */
+    NO_ERROR(1),
+    /**
+     * User already exists server error type.
+     */
+    USER_ALREADY_EXISTS(2),
+    /**
+     * Server connection failed server error type.
+     */
+    SERVER_CONNECTION_FAILED(3),
+    /**
+     * Database error server error type.
+     */
+    DATABASE_ERROR(4),
+    /**
+     * Duplicate error server error type.
+     */
+    Duplicate_ERROR(5),
+    /**
+     * Already friend server error type.
+     */
+    ALREADY_FRIEND(6),
+    /**
+     * Unknown error server error type.
+     */
+    UNKNOWN_ERROR(404);
 
 
     private final int code;
 
+    /**
+     * Gets code.
+     *
+     * @return the code
+     */
     public int getCode() {
         return code;
     }

@@ -13,21 +13,34 @@ import java.util.HashSet;
 
 import static view.MenuHandler.*;
 
+/**
+ * The type Application.
+ */
 public class Application {
     //fields
 
+    /**
+     * The constant user.
+     */
     public static User user;
+    /**
+     * The constant appController.
+     */
     public static AppController appController;
 
-    // handling application menus.
+    /**
+     * handling application menus. */
 
+    /**
+     * handles signup menu
+     */
     private static void signUpMenu() {
         String username = MenuHandler.getUsername();
         String password = MenuHandler.getPassword();
         String email = MenuHandler.getEmail();
         String phoneNumber = getPhoneNumber();
         InputStream img = MenuHandler.getAvatar();
-        String authenticationStatus = Authentication.checkValidationOfInfo(username, password, email);
+        String authenticationStatus = Authentication.checkValidationOfInfo(username, password, email,phoneNumber);
         if (authenticationStatus.equals("Success")) {
             String signUpResult = appController.signUp(username, password, email, phoneNumber, img);
             if (signUpResult.equals("Success")) {
@@ -43,7 +56,9 @@ public class Application {
 
     }
 
-
+    /**
+     * handles login menu
+     */
     private static void loginMenuHandler() {
         String username = MenuHandler.getUsername();
         String password = MenuHandler.getPassword();
@@ -56,6 +71,9 @@ public class Application {
         }
     }
 
+    /**
+     * handles in application menu
+     */
     private static void inApplication() {
         int choice = inAppMenu();
         switch (choice) {
@@ -70,6 +88,9 @@ public class Application {
         }
     }
 
+    /**
+     * handles status menu
+     */
     private static void statusMenuHandler() {
         ArrayList<String> statusList = new ArrayList<>(Arrays.asList("online", "offline", "idle", "do not disturb"));
         System.out.println("enter number of your new status: ");
@@ -87,7 +108,9 @@ public class Application {
         inApplication();
     }
 
-
+    /**
+     * handles server menu
+     */
     private static void serverMenuHandler() {
         int choice = showServerMenu();
         switch (choice) {
@@ -107,8 +130,9 @@ public class Application {
     }
 
 
-    // server handling section
-
+    /**
+     * server handling section
+     */
     private static void addNewServer() {
         System.out.print("Enter server name: ");
         String name = sc.nextLine();
@@ -116,7 +140,10 @@ public class Application {
         System.out.println(appController.addServer(new Guild(name, owner)));
     }
 
-
+    /**
+     * prints joined guilds of a user.
+     * @return chosen guild from guilds
+     */
     private static Guild listOfAllServer() {
 
         ArrayList<Guild> guilds = appController.listOfJoinedServers();
@@ -143,6 +170,10 @@ public class Application {
 
     }
 
+    /**
+     * handles inServerMenu of menuHandler class
+     * @param guild
+     */
     private static void inSelectedServer(Guild guild) {
         int choice = showInGuild();
         switch (choice) {
@@ -200,6 +231,10 @@ public class Application {
         }
     }
 
+    /**
+     * handles setting menu in MenuHandler class
+     * @param guild
+     */
     private static void serverSettingHandler(Guild guild){
         int i = serverSetting();
         switch (i){
@@ -228,6 +263,11 @@ public class Application {
         }
     }
 
+    /**
+     * deletes text channel of a guild
+     * @param guild the guild
+     * @return response of server
+     */
     private static String deleteTextChannel(Guild guild){
         ArrayList<TextChannel> textChannels = guild.getTextChannels();
         int i = 1;
@@ -239,6 +279,10 @@ public class Application {
         return appController.removeTextChannel(guild,textChannels.get(tChoice));
     }
 
+    /**
+     * prints text channels of a guild
+     * @param guild the guild
+     */
     private static void listOfTextChannel(Guild guild) {
         ArrayList<TextChannel> textChannels = guild.getTextChannels();
         int i = 1;
@@ -261,28 +305,47 @@ public class Application {
         appController.requestForGroupChat(guild, textChannel);
     }
 
-
+    /**
+     * adds voice channel to guild
+     * @param guild the guild
+     */
     private static void addNewVoiceChannel(Guild guild) {
     }
 
+    /**
+     * adds a text channel to guild
+     * @param guild the guild
+     */
     private static void addNewTextChannel(Guild guild) {
         String respone = appController.addNewTextChannel(guild);
         System.out.println(respone);
     }
 
+    /**
+     * adds member to guild
+     * @param guild the guild
+     * @return response of server
+     */
     private static String addMemberToServer(Guild guild) {
         String name = getFriendName();
         String respond = appController.addMemberToServer(name, guild);
         return respond;
     }
 
+    /**
+     * deletes Member From guild
+     * @param guild the guild
+     * @return response of server
+     */
     private static String deleteMemberFromServer(Guild guild) {
         String name = getFriendName();
         String respond = appController.deleteMemberFromServer(name, guild);
         return respond;
     }
 
-
+    /**
+     * handles friend menu in menuHandler class
+     */
     private static void friendMenuHandler() {
         int choice = showFriendMenu();
         switch (choice) {
@@ -310,12 +373,18 @@ public class Application {
         }
     }
 
+    /**
+     * adds given user to block list
+     */
     private static void blockUser() {
         System.out.print("enter username of the person you want to block:");
         String username = sc.nextLine();
         System.out.println(appController.blockUser(username));
     }
 
+    /**
+     * prints block list of a user
+     */
     private static void showBlockList() {
         HashSet<String> blockedList = appController.blockedList();
         if (blockedList == null) {
@@ -333,6 +402,9 @@ public class Application {
 
     }
 
+    /**
+     * handles setting menu in menuHandler class
+     */
     private static void settingMenuHandler() {
         int choice = showSettingMenu();
         switch (choice) {
@@ -350,6 +422,9 @@ public class Application {
         }
     }
 
+    /**
+     * change avatar
+     */
     private static void changeAvatar() {
         try {
             FileInputStream img = getAvatar();
@@ -362,6 +437,10 @@ public class Application {
         }
     }
 
+    /**
+     * changePass
+     *
+     */
     private static boolean changePass() {
         String pass = getPassword();
         if (Authentication.checkValidPass(pass)) {
@@ -382,8 +461,9 @@ public class Application {
     }
 
 
-    //Required methods for parts of friendMenuHandler.
-
+    /**
+     * Required methods for parts of friendMenuHandler.
+     * */
     private static void listOfFriendRequests() {
         HashSet<String> friendRequests = appController.friendRequestList(user.getUsername());
         System.out.println("All friend requests: ");
@@ -405,8 +485,6 @@ public class Application {
         System.out.println(response);
 
     }
-
-
     private static void listOfFriends() {
         HashSet<String> friends = appController.friendList(user.getUsername());
         printFriends(friends);
@@ -429,16 +507,12 @@ public class Application {
         appController.removeFromDirectChat(user, friend);
         // what's happened here with directChat...
     }
-
-
     private static void printFriends(HashSet<String> friends) {
         int i = 1;
         for (String friend : friends) {
             System.out.println(i++ + ". " + friend);
         }
     }
-
-
     private static User getFriendForChat() {
         System.out.print("chose friend you want to chat with (Enter username, Enter\"#exit\"to get back): ");
         String friendToChat = sc.nextLine();
@@ -467,6 +541,11 @@ public class Application {
         }
     }
 
+    /**
+     * The entry point of application.
+     *
+     * @param args the input arguments
+     */
     public static void main(String[] args) {
         appController = new AppController();
         runApp();
