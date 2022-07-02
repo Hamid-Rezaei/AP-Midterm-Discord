@@ -13,8 +13,6 @@ import static view.MenuHandler.sc;
 public class AppController {
 
 
-
-
     public enum ServerErrorType {
         NO_ERROR(1), USER_ALREADY_EXISTS(2), SERVER_CONNECTION_FAILED(3), DATABASE_ERROR(4), Duplicate_ERROR(5), ALREADY_FRIEND(6), UNKNOWN_ERROR(404);
 
@@ -93,8 +91,8 @@ public class AppController {
         }
     }
 
-    public String setStatus(String status,String username) {
-        try{
+    public String setStatus(String status, String username) {
+        try {
             outputStream.writeUTF("#setStatus");
             outputStream.flush();
             outputStream.writeUTF(username);
@@ -103,11 +101,12 @@ public class AppController {
             outputStream.flush();
             String respond = inputStream.readUTF();
             return respond;
-        }catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
             return "couldn't change status.";
         }
     }
+
     public String friendRequest(String username, String targetUser) {
         String answer;
         int answerCode;
@@ -411,9 +410,9 @@ public class AppController {
             outputStream.writeObject(user);
             outputStream.flush();
             String respone = inputStream.readUTF();
-            if(respone.equals("success.")){
+            if (respone.equals("success.")) {
                 return true;
-            } else{
+            } else {
                 return false;
             }
         } catch (IOException e) {
@@ -440,7 +439,26 @@ public class AppController {
         return "something went wrong while renaming server.";
     }
 
-    public String deleteGuild(Guild guild, String gOwner){
+    public String removeTextChannel(Guild guild, TextChannel textChannel) {
+        String response = null;
+        try {
+            outputStream.writeUTF("#deleteTextChannel");
+            outputStream.flush();
+            outputStream.writeUTF(guild.getOwnerName());
+            outputStream.flush();
+            outputStream.writeUTF(guild.getName());
+            outputStream.flush();
+            outputStream.writeObject(textChannel);
+            outputStream.flush();
+            response = inputStream.readUTF();
+            return response;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "couldn't delete text channel.";
+        }
+    }
+
+    public String deleteGuild(Guild guild, String gOwner) {
         try {
             outputStream.writeUTF("#deleteGuild");
             outputStream.flush();

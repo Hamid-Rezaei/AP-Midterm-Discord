@@ -77,7 +77,9 @@ public class Guild implements Serializable {
     public void removeTextChannel(TextChannel textChannel){
         textChannels.remove(textChannel);
     }
-
+    public void removeTextChannel(String textChannel){
+        textChannels.removeIf(textChannel1 -> textChannel1.getName().equals(textChannel));
+    }
     public void removeVoiceChannel(VoiceChannel voiceChannel) {
         voiceChannels.remove(voiceChannel);
     }

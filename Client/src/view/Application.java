@@ -173,8 +173,7 @@ public class Application {
             }
 
             case 6 -> {
-                deleteTextChannel(guild);
-                //TODO: update guild from server side.
+                System.out.println(deleteTextChannel(guild));
                 guild = appController.getGuild(guild.getOwnerName(), guild.getName());
                 inSelectedServer(guild);
             }
@@ -229,7 +228,7 @@ public class Application {
         }
     }
 
-    private static void deleteTextChannel(Guild guild){
+    private static String deleteTextChannel(Guild guild){
         ArrayList<TextChannel> textChannels = guild.getTextChannels();
         int i = 1;
         System.out.println("enter number of textChannel you want to delete :");
@@ -237,7 +236,7 @@ public class Application {
             System.out.println(i++ + ". " + textChannel.getName());
         }
         int tChoice = returnChoice() - 1;
-        guild.removeTextChannel(textChannels.get(tChoice));
+        return appController.removeTextChannel(guild,textChannels.get(tChoice));
     }
 
     private static void listOfTextChannel(Guild guild) {
@@ -257,6 +256,7 @@ public class Application {
                 #pins : show all pinned messages
                 #file>(path to file): send a file
                 #react>(msg index)>reaction(like-dislike-smile)
+                #music>(path to music, only wav format) : play music / #pause : stop music
                 """);
         appController.requestForGroupChat(guild, textChannel);
     }
@@ -423,6 +423,7 @@ public class Application {
                 #pins : show all pinned messages
                 #file>(path to file): send a file
                 #react>(msg index)>reaction(like-dislike-smile)
+                #music>(path to music, only wav format) : play music / #pause : stop music
                 """);
         appController.requestForDirectChat(friend);
         appController.removeFromDirectChat(user, friend);

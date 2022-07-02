@@ -67,6 +67,7 @@ public class ServerController implements Runnable {
                 case "#updateUser" -> updateUser();
                 case "#setStatus" -> changeStatus();
                 case "#deleteGuild" -> deleteGuild();
+                case "#deleteTextChannel" -> deleteTextChannel();
             }
 
         } catch (IOException e) {
@@ -83,6 +84,20 @@ public class ServerController implements Runnable {
             } catch (IOException err) {
                 err.printStackTrace();
             }
+        }
+    }
+
+    private void deleteTextChannel() {
+        try {
+            String gOwner = inputStream.readUTF();
+            String gName = inputStream.readUTF();
+            TextChannel textChannel = (TextChannel) inputStream.readObject();
+            getGuild(gOwner, gName).removeTextChannel(textChannel.getName());
+            saveGuilds();
+            outputStream.writeUTF("TextChannel " + textChannel.getName() + "removed successfully.");
+            outputStream.flush();
+        } catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
         }
     }
 
@@ -334,6 +349,10 @@ public class ServerController implements Runnable {
                         String reactor = message.getAuthorName();
                         directChatController.reactToMessage(index, reactionType, reactor);
                         directChatController.broadcastExitMessage("reacted to message with reaction of " + reactionType, connections.get(currentUser.getUsername()));
+                    } else if (message.getContent().split(">")[0].equals("#music")) {
+                        directChatController.broadcastMessage(message);
+                    } else if (message.getContent().startsWith("#pause")) {
+                        directChatController.broadcastExitMessage("#pause", connections.get(currentUser.getUsername()));
                     } else {
                         directChatController.addMessage(message);
                     }
@@ -374,6 +393,7 @@ public class ServerController implements Runnable {
                     Object obj = inputStream.readObject();
                     if (obj instanceof Message) {
                         message = (Message) obj;
+                        String msgContent = message.getContent();
                         if (message.getContent().equals("#exit")) {
                             textChannel.broadcastExitMessage("you exited text channel.", connections.get(appUsername));
                             textChannel.removeUser(connections.get(appUsername));
@@ -388,8 +408,12 @@ public class ServerController implements Runnable {
                             int index = Integer.parseInt(message.getContent().split(">")[1]) - 1;
                             String reactionType = message.getContent().split(">")[2].toLowerCase();
                             String reactor = message.getAuthorName();
-                            textChannel.reactToMessage(index,reactionType,reactor);
+                            textChannel.reactToMessage(index, reactionType, reactor);
                             textChannel.broadcastExitMessage("reacted to message with reaction of " + reactionType, connections.get(appUsername));
+                        } else if (msgContent.split(">")[0].equals("#music")) {
+                            textChannel.broadcastMessage(message);
+                        } else if (message.getContent().startsWith("#pause")) {
+                            textChannel.broadcastExitMessage("#pause", connections.get(appUsername));
                         } else {
                             textChannel.addMessage(message);
                         }

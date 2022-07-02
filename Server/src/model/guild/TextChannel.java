@@ -41,6 +41,8 @@ public class TextChannel extends Channel {
 
     public void broadcastMessage(Message message) {
         int index = getMessageIndex(message);
+        if(message.isFile())
+            index = -2;
         for (Connection connection : usersInChat) {
             connection.sendMessage(message, index + 1);
         }

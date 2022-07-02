@@ -1,5 +1,9 @@
 package model;
 
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.FloatControl;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -59,6 +63,7 @@ public class Chat implements Runnable, Serializable {
             OutputStream os = new FileOutputStream(file);
             os.write(bytes);
             os.close();
+            path = path + "/" + name;
             return path;
         } catch (IOException e) {
             e.printStackTrace();
@@ -69,6 +74,7 @@ public class Chat implements Runnable, Serializable {
 
     @Override
     public void run() {
+        Clip clip = null;
         exit = false;
         Scanner scanner = new Scanner(System.in);
         Thread snedMsg = new Thread(new Runnable() {
@@ -77,17 +83,26 @@ public class Chat implements Runnable, Serializable {
                 while (!input.equals("#exit")) {
                     input = scanner.nextLine();
                     Message message;
-                    if (input.startsWith("#file")) {
-                        message = new Message(input, currUser.getUsername(), LocalDateTime.now(), true);
-                    } else {
-                        message = new Message(input, currUser.getUsername(), LocalDateTime.now());
-                    }
                     try {
-                        outputStream.writeObject(message);
+                        if (input.startsWith("#file")) {
+                            message = new Message(input, currUser.getUsername(), LocalDateTime.now(), true);
+                            outputStream.writeObject(message);
+                            messages.add(message);
+                        } else if (input.startsWith("#music")) {
+                            message = new Message(input, currUser.getUsername(), LocalDateTime.now(), true);
+                            outputStream.writeObject(message);
+                            messages.add(message);
+                        } else if (input.startsWith("#pause")) {
+                            message = new Message(input, currUser.getUsername(), LocalDateTime.now());
+                            outputStream.writeObject(message);
+                        } else {
+                            message = new Message(input, currUser.getUsername(), LocalDateTime.now());
+                            outputStream.writeObject(message);
+                            messages.add(message);
+                        }
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    messages.add(message);
                 }
             }
         });
@@ -98,15 +113,29 @@ public class Chat implements Runnable, Serializable {
                 Object message = inputStream.readObject();
                 if (message instanceof Message msg) {
                     if (msg.isFile()) {
-                        if (!msg.getAuthorName().equals(currUser.getUsername()))
+                        if (msg.getContent().startsWith("#music")) {
+                            String path = saveFileInDownloads(msg);
+                            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(new File(path).getAbsoluteFile());
+                            clip = AudioSystem.getClip();
+                            clip.open(audioInputStream);
+                            clip.loop(Clip.LOOP_CONTINUOUSLY);
+                            FloatControl volume = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+                            volume.setValue(20f * (float) Math.log10(0.15f));
+                            clip.start();
+                        } else if (!msg.getAuthorName().equals(currUser.getUsername()))
                             System.out.println("file saved in: " + saveFileInDownloads(msg));
                     } else {
                         Object index = inputStream.readObject();
                         int ind = Integer.valueOf(index.toString());
                         System.out.println(ind + ". " + msg);
                     }
-                } else{
-                    System.out.println(message.toString());
+                } else {
+                    if (message.toString().equals("#pause")) {
+                        if (clip != null && clip.isRunning())
+                            //clip.stop();
+                            clip.close();
+                    } else
+                        System.out.println(message.toString());
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -119,6 +148,10 @@ public class Chat implements Runnable, Serializable {
             }
 
         }
+
+        if (clip != null && clip.isRunning())
+            clip.close();
+            //clip.stop();
 
     }
 }

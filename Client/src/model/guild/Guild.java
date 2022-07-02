@@ -31,11 +31,10 @@ public class Guild implements Serializable {
         return false;
     }
 
-    public void removeMember(GuildUser guildUser) {
+    public void removeMember(GuildUser guildUser){
         guildUsers.remove(guildUser);
     }
-
-    public void removeMember(String guildUser) {
+    public void removeMember(String guildUser){
         guildUsers.removeIf(guildUser1 -> guildUser1.getUsername().equals(guildUser));
     }
 
@@ -75,10 +74,12 @@ public class Guild implements Serializable {
         voiceChannels.add(voiceChannel);
     }
 
-    public void removeTextChannel(TextChannel textChannel) {
+    public void removeTextChannel(TextChannel textChannel){
         textChannels.remove(textChannel);
     }
-
+    public void removeTextChannel(String textChannel){
+        textChannels.removeIf(textChannel1 -> textChannel1.getName().equals(textChannel));
+    }
     public void removeVoiceChannel(VoiceChannel voiceChannel) {
         voiceChannels.remove(voiceChannel);
     }
@@ -95,4 +96,5 @@ public class Guild implements Serializable {
     public int hashCode() {
         return Objects.hash(getName(), owner, getGuildUsers(), getTextChannels(), getVoiceChannels());
     }
+
 }

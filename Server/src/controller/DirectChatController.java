@@ -56,7 +56,10 @@ public class DirectChatController implements Runnable {
         return 0;
     }
     public void broadcastMessage(Message message) { //TODO : print index of message before it.
+
         int index = messages.indexOf(message);
+        if(message.isFile())
+            index = -2;
         for (Connection connection : usersInChatConnection) {
             connection.sendMessage(message,index + 1);
         }
