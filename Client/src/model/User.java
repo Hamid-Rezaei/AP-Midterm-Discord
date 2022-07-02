@@ -16,7 +16,7 @@ public class User implements Serializable {
     private String phoneNumber;
     private Status status;
     private String token;
-    private transient BufferedImage avatar;
+    private byte[] avatar;
     private ArrayList<User> friends;
     private ArrayList<String> friendRequests;
 
@@ -29,7 +29,7 @@ public class User implements Serializable {
      * @param email       the email
      * @param phoneNumber the phone number
      */
-    public User(String username, String password, String email, String phoneNumber, String token, BufferedImage avatar) {
+    public User(String username, String password, String email, String phoneNumber, String token, byte[] avatar) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -40,7 +40,7 @@ public class User implements Serializable {
         this.avatar = avatar;
     }
 
-    public User(String username, String password, String email, String phoneNumber, String token, BufferedImage avatar,Status status) {
+    public User(String username, String password, String email, String phoneNumber, String token, byte[] avatar,Status status) {
         this.username = username;
         this.password = password;
         this.email = email;
@@ -51,16 +51,13 @@ public class User implements Serializable {
         this.avatar = avatar;
     }
 
-    public BufferedImage getAvatar() {
+    public byte[] getAvatar() {
         return avatar;
     }
 
-    public void setAvatar(BufferedImage avatar) {
-        this.avatar = avatar;
-    }
 
     public void setAvatar(byte[] avatar) throws IOException {
-        this.avatar = ImageIO.read(new ByteArrayInputStream(avatar));
+        this.avatar =avatar;
     }
 
     public void setStatus(Status status) {

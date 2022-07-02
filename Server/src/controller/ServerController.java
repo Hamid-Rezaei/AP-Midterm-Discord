@@ -156,10 +156,7 @@ public class ServerController implements Runnable {
                 outputStream.writeObject(answer);
                 return;
             }
-            BufferedImage userAvatar = answer.getAvatar();
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            ImageIO.write(userAvatar, "png", baos);
-            byte[] byteAvatar = baos.toByteArray();
+            byte[] byteAvatar = answer.getAvatar();
             answer.setStatus(Status.ONLINE);
             Database.updateUser(answer);
             outputStream.writeObject(answer);

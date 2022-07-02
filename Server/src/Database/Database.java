@@ -7,6 +7,7 @@ import model.User;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.sql.*;
 import java.util.HashSet;
@@ -38,7 +39,7 @@ public class Database {
             if (foundUser.next()) {
                 return ServerErrorType.USER_ALREADY_EXISTS;
             }
-            String insertQuery = "insert into users (userName, password, email, phoneNumber,userID,avatar) values(?, ?,?,?,?,?)";
+            String insertQuery = "insert into users (userName, password, email, phoneNumber,userID,avatar,status) values(?, ?,?,?,?,?,?)";
             PreparedStatement statement = connection.prepareStatement(insertQuery);
             statement.setString(1, username);
             statement.setString(2, password);
@@ -46,6 +47,7 @@ public class Database {
             statement.setString(4, phoneNumber);
             statement.setString(5, token);
             statement.setBytes(6, avatar);
+            statement.setString(7,"offline");
             statement.execute();
             connection.close();
             return ServerErrorType.NO_ERROR;
@@ -105,12 +107,8 @@ public class Database {
         String email = resultSet.getString("email");
         String phoneNumber = resultSet.getString("phoneNumber");
         String uId = resultSet.getString("userID");
-        BufferedImage avatar = null;
-        try {
-            avatar = ImageIO.read(new ByteArrayInputStream(resultSet.getBytes("avatar")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        byte[] avatar = null;
+        avatar = resultSet.getBytes("avatar");
         String strStatus = resultSet.getString("status");
         Status status = null;
         switch (strStatus) {
@@ -298,10 +296,16 @@ public class Database {
     public static boolean updateUser(User user) {
         Connection connection = connectToDB();
         try {
-            Statement statement = connection.createStatement();
+            PreparedStatement statement = connection.prepareStatement("UPDATE Users SET password=?, status=?, avatar=? WHERE userName =?");
             Status userStatus = user.getStatus();
             String status = userStatus.toString(userStatus);
-            statement.execute("UPDATE Users SET password = " + "'" + user.getPassword() + "'" + ", status = " + "'" + status + "'" + "WHERE userName = " + "'" + user.getUsername() + "';");
+            byte[] byteArr = user.getAvatar();
+            statement.setString(1, user.getPassword());
+            statement.setString(2, status);
+            statement.setBytes(3, byteArr);
+            statement.setString(4, user.getUsername());
+            statement.executeUpdate();
+//          statement.execute("UPDATE Users SET password = " + "'" + user.getPassword() + "'" + ", status = " + "'" + status + "'"  + " WHERE userName = " + "'" + user.getUsername() + "';");
             connection.close();
             return true;
         } catch (SQLException e) {

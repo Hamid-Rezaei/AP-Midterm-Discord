@@ -22,7 +22,7 @@ public class Connection {
         this.inputStream = inputStream; //new ObjectInputStream(socket.getInputStream());
     }
 
-    public void sendMessage(Message message, int index) {//TODO: print idnex of message.
+    public void sendMessage(Message message, int index) {
         try {
             outputStream.writeObject(message);
             outputStream.flush();

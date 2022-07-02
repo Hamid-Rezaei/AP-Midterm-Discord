@@ -384,7 +384,6 @@ public class AppController {
         }
     }
 
-    //TODO : check if this function works
     public String deleteMemberFromServer(String name, Guild guild) {
         try {
             User user = getUser(name);

@@ -63,12 +63,13 @@ public class MenuHandler {
     /**
      * Gets avatar.
      */
-    public static InputStream getAvatar()   {
+    public static FileInputStream getAvatar()   {
         System.out.print("Enter image address:");
         String path = sc.nextLine();
 
         try {
-            InputStream img = new FileInputStream(path);
+            FileInputStream img = new FileInputStream(path);
+
             return img;
         } catch (IOException e) {
             try {

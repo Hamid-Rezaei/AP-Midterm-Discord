@@ -4,6 +4,7 @@ import controller.*;
 import model.*;
 import model.guild.*;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -127,7 +128,7 @@ public class Application {
             }
             System.out.print("Enter server number to login: ");
             try {
-                int choice = Integer.parseInt(sc.nextLine()); // TODO: catch invalid input exception
+                int choice = Integer.parseInt(sc.nextLine());
                 Guild chosenGuild = guilds.get(choice - 1);
                 guilds.clear();
                 return chosenGuild;
@@ -147,8 +148,6 @@ public class Application {
         switch (choice) {
             case 1 -> {
                 listOfTextChannel(guild);
-                //TODO: end chat in text channel
-                //TODO: inSelectedServer(guild);
                 guild = appController.getGuild(guild.getOwnerName(), guild.getName());
                 inSelectedServer(guild);
             }
@@ -321,11 +320,11 @@ public class Application {
 
     private static void changeAvatar() {
         try {
-            InputStream img = getAvatar();
-            assert img != null;
-            user.setAvatar(img.readAllBytes());
-            //TODO: System.out.println(appController.updateUser());
-
+            FileInputStream img = getAvatar();
+            if(img != null) {
+                user.setAvatar(img.readAllBytes());
+                System.out.println(appController.updateUser(user));
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
