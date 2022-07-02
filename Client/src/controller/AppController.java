@@ -440,6 +440,21 @@ public class AppController {
         return "something went wrong while renaming server.";
     }
 
+    public String deleteGuild(Guild guild, String gOwner){
+        try {
+            outputStream.writeUTF("#deleteGuild");
+            outputStream.flush();
+            outputStream.writeUTF(gOwner);
+            outputStream.flush();
+            outputStream.writeObject(guild);
+            outputStream.flush();
+            return inputStream.readUTF();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return "Oops, Something went wong we can not delete server, please try again.";
+        }
+    }
+
     public String parseError(int errorCode) {
         String error;
         switch (errorCode) {
